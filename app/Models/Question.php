@@ -4,10 +4,12 @@ namespace App\Models;
 
 use App\Enums\PointType;
 use App\Enums\QuestionType;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Question extends Model
 {
@@ -24,6 +26,11 @@ class Question extends Model
         'order',
     ];
 
+    /**
+     * @var list<string>
+     */
+    protected $appends = ['image_url'];
+
     protected function casts(): array
     {
         return [
@@ -32,6 +39,20 @@ class Question extends Model
             'time_limit' => 'integer',
             'order' => 'integer',
         ];
+    }
+
+    /**
+     * @return Attribute<string|null, never>
+     */
+    protected function imageUrl(): Attribute
+    {
+        return Attribute::get(function (): ?string {
+            if (! $this->image || ! str_contains($this->image, '/')) {
+                return null;
+            }
+
+            return Storage::disk('s3')->url($this->image);
+        });
     }
 
     /**

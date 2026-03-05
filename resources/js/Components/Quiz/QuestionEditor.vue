@@ -27,7 +27,7 @@ watch(() => props.question, (newQ) => {
     questionText.value = newQ.question_text || '';
     answers.value = JSON.parse(JSON.stringify(newQ.answers || []));
     // Clear local file state after server has persisted the image
-    if (newQ.image && imageFile.value) {
+    if (newQ.image_url && imageFile.value) {
         imageFile.value = null;
         imagePreview.value = null;
     }
@@ -180,11 +180,11 @@ function getAnswerActiveClasses(color) {
             <div class="mt-4">
                 <!-- Existing image or preview -->
                 <div
-                    v-if="imagePreview || question.image"
+                    v-if="imagePreview || question.image_url"
                     class="relative rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-700/50"
                 >
                     <img
-                        :src="imagePreview || question.image"
+                        :src="imagePreview || question.image_url"
                         class="max-h-48 w-full object-contain"
                         alt=""
                     />
