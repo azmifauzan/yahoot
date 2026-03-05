@@ -90,7 +90,9 @@
         "copy_suffix": " (Salinan)",
         "delete_question_title": "Hapus Pertanyaan",
         "delete_question_confirm": "Yakin ingin menghapus pertanyaan ini?",
-        "question_deleted": "Pertanyaan berhasil dihapus"
+        "question_deleted": "Pertanyaan berhasil dihapus",
+        "upload_image": "Klik atau seret gambar ke sini",
+        "upload_hint": "PNG, JPG maksimal 2MB"
     },
     "game": {
         "game_code": "Kode Game",

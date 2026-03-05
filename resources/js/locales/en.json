@@ -90,7 +90,9 @@
         "copy_suffix": " (Copy)",
         "delete_question_title": "Delete Question",
         "delete_question_confirm": "Are you sure you want to delete this question?",
-        "question_deleted": "Question deleted successfully"
+        "question_deleted": "Question deleted successfully",
+        "upload_image": "Click or drag image here",
+        "upload_hint": "PNG, JPG up to 2MB"
     },
     "game": {
         "game_code": "Game Code",

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -9,15 +9,30 @@ const props = defineProps({
     answerColors: Array,
 });
 
-const emit = defineEmits(['update']);
+const emit = defineEmits(['update', 'remove-image']);
 
 // Local state for editing
 const questionText = ref(props.question.question_text || '');
 const answers = ref(JSON.parse(JSON.stringify(props.question.answers || [])));
+const imageFile = ref(null);
+const imagePreview = ref(null);
+const fileInput = ref(null);
+
+// Guard to prevent save loop when syncing from parent
+let syncing = false;
+
+// Sync local state when parent updates (e.g. type change from properties panel)
+watch(() => props.question, (newQ) => {
+    syncing = true;
+    questionText.value = newQ.question_text || '';
+    answers.value = JSON.parse(JSON.stringify(newQ.answers || []));
+    nextTick(() => { syncing = false; });
+}, { deep: true });
 
 // Debounced auto-save
 let saveTimeout = null;
 function scheduleUpdate() {
+    if (syncing) return;
     clearTimeout(saveTimeout);
     saveTimeout = setTimeout(() => {
         emitUpdate();
@@ -25,7 +40,7 @@ function scheduleUpdate() {
 }
 
 function emitUpdate() {
-    emit('update', {
+    const data = {
         question_text: questionText.value,
         type: props.question.type,
         time_limit: props.question.time_limit,
@@ -36,7 +51,37 @@ function emitUpdate() {
             is_correct: a.is_correct,
             color: a.color,
         })),
-    });
+    };
+    if (imageFile.value) {
+        data.image = imageFile.value;
+    }
+    emit('update', data);
+}
+
+// Image handling
+function onImageSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    imageFile.value = file;
+    imagePreview.value = URL.createObjectURL(file);
+    emitUpdate();
+    // Reset so same file can be re-selected
+    if (fileInput.value) fileInput.value.value = '';
+}
+
+function onDrop(e) {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    imageFile.value = file;
+    imagePreview.value = URL.createObjectURL(file);
+    emitUpdate();
+}
+
+function removeImage() {
+    imageFile.value = null;
+    imagePreview.value = null;
+    emit('remove-image');
 }
 
 // Watch for text changes
@@ -111,20 +156,59 @@ function getAnswerActiveClasses(color) {
 <template>
     <div class="mx-auto max-w-3xl">
         <!-- Question Text -->
-        <div class="mb-6 rounded-xl bg-white p-6 shadow-sm">
+        <div class="mb-6 rounded-xl bg-white p-6 shadow-sm dark:bg-gray-800">
             <textarea
                 v-model="questionText"
                 rows="3"
                 :placeholder="t('quiz.question_placeholder')"
-                class="w-full resize-none border-none bg-transparent text-center text-xl font-semibold text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-0"
+                class="w-full resize-none border-none bg-transparent text-center text-xl font-semibold text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-0 dark:text-gray-100 dark:placeholder-gray-600"
             ></textarea>
 
-            <!-- Question image upload area -->
-            <div
-                v-if="question.image"
-                class="relative mt-4 rounded-lg overflow-hidden"
-            >
-                <img :src="question.image" class="max-h-48 w-full object-contain" alt="" />
+            <!-- Question image -->
+            <div class="mt-4">
+                <!-- Existing image or preview -->
+                <div
+                    v-if="imagePreview || question.image"
+                    class="relative rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-700/50"
+                >
+                    <img
+                        :src="imagePreview || question.image"
+                        class="max-h-48 w-full object-contain"
+                        alt=""
+                    />
+                    <button
+                        @click="removeImage"
+                        class="absolute top-2 right-2 rounded-full bg-red-500 p-1.5 text-white shadow-md transition hover:bg-red-600"
+                        :title="t('common.delete')"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Upload area -->
+                <div
+                    v-else
+                    class="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-200 p-6 transition hover:border-primary-300 hover:bg-primary-50/50 dark:border-gray-600 dark:hover:border-primary-500 dark:hover:bg-primary-900/20"
+                    @click="fileInput?.click()"
+                    @dragover.prevent
+                    @drop="onDrop"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mb-2 h-8 w-8 text-gray-300 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p class="text-sm text-gray-400 dark:text-gray-500">{{ t('quiz.upload_image') }}</p>
+                    <p class="mt-1 text-xs text-gray-300 dark:text-gray-600">{{ t('quiz.upload_hint') }}</p>
+                </div>
+
+                <input
+                    ref="fileInput"
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    @change="onImageSelect"
+                />
             </div>
         </div>
 
@@ -179,11 +263,11 @@ function getAnswerActiveClasses(color) {
                     @input="(e) => onAnswerTextChange(index, e.target.value)"
                     @click.stop
                     :placeholder="t('quiz.answer_placeholder')"
-                    class="w-full border-none bg-transparent text-sm font-medium text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-0"
+                    class="w-full border-none bg-transparent text-sm font-medium text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-0 dark:text-gray-200 dark:placeholder-gray-500"
                 />
 
                 <!-- Fixed text for True/False -->
-                <p v-else class="text-sm font-semibold text-gray-700">
+                <p v-else class="text-sm font-semibold text-gray-700 dark:text-gray-200">
                     {{ answer.answer_text }}
                 </p>
             </div>

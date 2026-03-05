@@ -117,7 +117,52 @@ function selectQuestion(index) {
 // Update question
 function updateQuestion(question, data) {
     saving.value = true;
-    router.put(route('questions.update', question.id), data, {
+
+    // If data contains a file, use POST with method spoofing for FormData
+    if (data.image instanceof File) {
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
+        formData.append('type', data.type);
+        formData.append('question_text', data.question_text || '');
+        formData.append('time_limit', data.time_limit);
+        formData.append('points', data.points);
+        formData.append('image', data.image);
+
+        if (data.answers) {
+            data.answers.forEach((answer, i) => {
+                if (answer.id) formData.append(`answers[${i}][id]`, answer.id);
+                formData.append(`answers[${i}][answer_text]`, answer.answer_text || '');
+                formData.append(`answers[${i}][is_correct]`, answer.is_correct ? '1' : '0');
+                formData.append(`answers[${i}][color]`, answer.color);
+            });
+        }
+
+        router.post(route('questions.update', question.id), formData, {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: (page) => {
+                questions.value = page.props.quiz?.questions || [];
+                saving.value = false;
+            },
+            onError: () => { saving.value = false; },
+        });
+    } else {
+        router.put(route('questions.update', question.id), data, {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: (page) => {
+                questions.value = page.props.quiz?.questions || [];
+                saving.value = false;
+            },
+            onError: () => { saving.value = false; },
+        });
+    }
+}
+
+// Remove question image
+function removeQuestionImage(question) {
+    saving.value = true;
+    router.delete(route('questions.remove-image', question.id), {
         preserveScroll: true,
         preserveState: true,
         onSuccess: (page) => {
@@ -203,7 +248,7 @@ function isQuestionComplete(question) {
                 <div class="flex items-center gap-4">
                     <Link
                         :href="route('dashboard')"
-                        class="flex items-center gap-1 text-sm text-gray-500 transition hover:text-gray-700"
+                        class="flex items-center gap-1 text-sm text-gray-500 transition hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
@@ -217,14 +262,14 @@ function isQuestionComplete(question) {
                         v-model="quizForm.title"
                         type="text"
                         :placeholder="t('quiz.untitled')"
-                        class="border-none bg-transparent text-lg font-semibold text-gray-800 focus:outline-none focus:ring-0 p-0"
+                        class="border-none bg-transparent text-lg font-semibold text-gray-800 focus:outline-none focus:ring-0 p-0 dark:text-gray-100"
                     />
                     <input
                         v-else
                         v-model="quizForm.title"
                         type="text"
                         :placeholder="t('quiz.untitled')"
-                        class="border-none bg-transparent text-lg font-semibold text-gray-800 focus:outline-none focus:ring-0 p-0"
+                        class="border-none bg-transparent text-lg font-semibold text-gray-800 focus:outline-none focus:ring-0 p-0 dark:text-gray-100"
                     />
                 </div>
 
@@ -274,13 +319,14 @@ function isQuestionComplete(question) {
             />
 
             <!-- Main Content - Question Editor -->
-            <div class="flex-1 overflow-y-auto bg-gray-50 p-6">
+            <div class="flex-1 overflow-y-auto bg-gray-50 p-6 dark:bg-gray-900">
                 <QuestionEditor
                     v-if="selectedQuestion"
                     :key="selectedQuestion.id"
                     :question="selectedQuestion"
                     :answerColors="answerColors"
                     @update="(data) => updateQuestion(selectedQuestion, data)"
+                    @remove-image="removeQuestionImage(selectedQuestion)"
                 />
 
                 <div v-else class="flex h-full items-center justify-center">
@@ -290,7 +336,7 @@ function isQuestionComplete(question) {
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                             </svg>
                         </div>
-                        <p class="mb-4 text-gray-500">{{ t('quiz.add_question') }}</p>
+                        <p class="mb-4 text-gray-500 dark:text-gray-400">{{ t('quiz.add_question') }}</p>
                         <button
                             @click="addQuestion"
                             class="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-600"

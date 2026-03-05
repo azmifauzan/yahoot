@@ -6,6 +6,7 @@ import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
 import LanguageSwitcher from '@/Components/UI/LanguageSwitcher.vue';
+import ThemeSwitcher from '@/Components/UI/ThemeSwitcher.vue';
 
 const { t } = useI18n();
 
@@ -33,18 +34,21 @@ const submit = () => {
         </template>
 
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-gray-800">{{ t('nav.register') }}</h2>
-            <LanguageSwitcher />
+            <h2 class="text-xl font-bold text-gray-800 dark:text-white">{{ t('nav.register') }}</h2>
+            <div class="flex items-center gap-2">
+                <LanguageSwitcher />
+                <ThemeSwitcher />
+            </div>
         </div>
 
         <form @submit.prevent="submit">
             <div>
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">{{ t('auth.name') }}</label>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">{{ t('auth.name') }}</label>
                 <input
                     id="name"
                     v-model="form.name"
                     type="text"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     required
                     autofocus
                     autocomplete="name"
@@ -54,12 +58,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">Email</label>
                 <input
                     id="email"
                     v-model="form.email"
                     type="email"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     required
                     autocomplete="username"
                     placeholder="nama@email.com"
@@ -68,12 +72,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">Password</label>
                 <input
                     id="password"
                     v-model="form.password"
                     type="password"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     required
                     autocomplete="new-password"
                     placeholder="••••••••"
@@ -82,12 +86,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">{{ t('auth.confirm_password') }}</label>
+                <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">{{ t('auth.confirm_password') }}</label>
                 <input
                     id="password_confirmation"
                     v-model="form.password_confirmation"
                     type="password"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     required
                     autocomplete="new-password"
                     placeholder="••••••••"

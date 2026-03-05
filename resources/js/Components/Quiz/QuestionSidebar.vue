@@ -62,9 +62,9 @@ function getTypeIcon(type) {
 </script>
 
 <template>
-    <div class="w-64 flex-shrink-0 overflow-y-auto border-r border-gray-200 bg-white">
+    <div class="w-64 flex-shrink-0 overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
         <!-- Header -->
-        <div class="sticky top-0 z-10 border-b border-gray-100 bg-white p-3">
+        <div class="sticky top-0 z-10 border-b border-gray-100 bg-white p-3 dark:border-gray-700 dark:bg-gray-800">
             <button
                 @click="emit('add')"
                 class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-primary-600"
@@ -91,9 +91,9 @@ function getTypeIcon(type) {
                 :class="[
                     'group relative cursor-pointer rounded-lg border-2 p-2 transition',
                     selectedIndex === index
-                        ? 'border-primary-500 bg-primary-50'
-                        : 'border-transparent hover:border-gray-200 hover:bg-gray-50',
-                    dragOverIndex === index ? 'border-primary-300 bg-primary-50/50' : '',
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                        : 'border-transparent hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-600 dark:hover:bg-gray-700',
+                    dragOverIndex === index ? 'border-primary-300 bg-primary-50/50 dark:bg-primary-900/20' : '',
                     draggedIndex === index ? 'opacity-50' : '',
                 ]"
             >
@@ -133,8 +133,8 @@ function getTypeIcon(type) {
                 </div>
 
                 <!-- Mini preview -->
-                <div class="rounded bg-gray-50 p-1.5">
-                    <p class="truncate text-xs text-gray-600">
+                <div class="rounded bg-gray-50 p-1.5 dark:bg-gray-700/50">
+                    <p class="truncate text-xs text-gray-600 dark:text-gray-400">
                         {{ question.question_text || t('quiz.question_placeholder') }}
                     </p>
                     <!-- Answer color dots -->
@@ -157,7 +157,7 @@ function getTypeIcon(type) {
 
         <!-- Empty state -->
         <div v-if="questions.length === 0" class="p-4 text-center">
-            <p class="text-xs text-gray-400">{{ t('quiz.add_question') }}</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500">{{ t('quiz.add_question') }}</p>
         </div>
     </div>
 </template>

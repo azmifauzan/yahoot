@@ -97,8 +97,8 @@ function getQuestionTypeLabel(qt) {
 </script>
 
 <template>
-    <div class="w-64 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-white p-4">
-        <h3 class="mb-4 text-sm font-semibold text-gray-500 uppercase tracking-wide">
+    <div class="w-64 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+        <h3 class="mb-4 text-sm font-semibold text-gray-500 uppercase tracking-wide dark:text-gray-400">
             {{ t('quiz.question_type') }}
         </h3>
 
@@ -112,8 +112,8 @@ function getQuestionTypeLabel(qt) {
                     :class="[
                         'flex w-full items-center gap-3 rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition',
                         getQuestionTypeValue(question) === (qt.value || qt)
-                            ? 'border-primary-500 bg-primary-50 text-primary-700'
-                            : 'border-gray-200 text-gray-600 hover:border-gray-300',
+                            ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
+                            : 'border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500',
                     ]"
                 >
                     <span v-if="(qt.value || qt) === 'multiple_choice'" class="text-base">📝</span>
@@ -125,13 +125,13 @@ function getQuestionTypeLabel(qt) {
 
         <!-- Time Limit -->
         <div class="mb-6">
-            <h3 class="mb-2 text-sm font-semibold text-gray-500 uppercase tracking-wide">
+            <h3 class="mb-2 text-sm font-semibold text-gray-500 uppercase tracking-wide dark:text-gray-400">
                 {{ t('quiz.time_limit') }}
             </h3>
             <select
                 :value="question.time_limit"
                 @change="(e) => updateTimeLimit(e.target.value)"
-                class="w-full rounded-lg border-gray-300 text-sm focus:border-primary-500 focus:ring-primary-500"
+                class="w-full rounded-lg border-gray-300 text-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
             >
                 <option v-for="limit in timeLimits" :key="limit" :value="limit">
                     {{ t('quiz.seconds', { n: limit }) }}
@@ -141,7 +141,7 @@ function getQuestionTypeLabel(qt) {
 
         <!-- Points -->
         <div class="mb-6">
-            <h3 class="mb-2 text-sm font-semibold text-gray-500 uppercase tracking-wide">
+            <h3 class="mb-2 text-sm font-semibold text-gray-500 uppercase tracking-wide dark:text-gray-400">
                 {{ t('quiz.points') }}
             </h3>
             <div class="space-y-2">
@@ -152,8 +152,8 @@ function getQuestionTypeLabel(qt) {
                     :class="[
                         'flex w-full items-center justify-between rounded-lg border-2 px-3 py-2 text-sm font-medium transition',
                         getPointsValue(question) === (pt.value || pt)
-                            ? 'border-primary-500 bg-primary-50 text-primary-700'
-                            : 'border-gray-200 text-gray-600 hover:border-gray-300',
+                            ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
+                            : 'border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500',
                     ]"
                 >
                     {{ getPointLabel(pt) }}

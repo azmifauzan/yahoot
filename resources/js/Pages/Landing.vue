@@ -3,6 +3,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import { ref } from 'vue';
 import LanguageSwitcher from '@/Components/UI/LanguageSwitcher.vue';
+import ThemeSwitcher from '@/Components/UI/ThemeSwitcher.vue';
 import AvatarDisplay from '@/Components/Avatar/AvatarDisplay.vue';
 
 const { t } = useI18n();
@@ -49,6 +50,7 @@ const steps = [
                 <!-- Right side -->
                 <div class="flex items-center gap-3">
                     <LanguageSwitcher />
+                    <ThemeSwitcher />
 
                     <template v-if="canLogin">
                         <Link

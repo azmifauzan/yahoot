@@ -6,6 +6,7 @@ import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
 import LanguageSwitcher from '@/Components/UI/LanguageSwitcher.vue';
+import ThemeSwitcher from '@/Components/UI/ThemeSwitcher.vue';
 
 const { t } = useI18n();
 
@@ -39,8 +40,11 @@ const submit = () => {
         </template>
 
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-gray-800">{{ t('nav.login') }}</h2>
-            <LanguageSwitcher />
+            <h2 class="text-xl font-bold text-gray-800 dark:text-white">{{ t('nav.login') }}</h2>
+            <div class="flex items-center gap-2">
+                <LanguageSwitcher />
+                <ThemeSwitcher />
+            </div>
         </div>
 
         <div v-if="status" class="mb-4 rounded-lg bg-green-50 p-3 text-sm font-medium text-green-600">
@@ -49,12 +53,12 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">Email</label>
                 <input
                     id="email"
                     v-model="form.email"
                     type="email"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     required
                     autofocus
                     autocomplete="username"
@@ -64,12 +68,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">Password</label>
                 <input
                     id="password"
                     v-model="form.password"
                     type="password"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     required
                     autocomplete="current-password"
                     placeholder="••••••••"
@@ -80,7 +84,7 @@ const submit = () => {
             <div class="flex items-center justify-between mt-4">
                 <label class="flex items-center">
                     <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600">{{ t('auth.remember_me') }}</span>
+                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-300">{{ t('auth.remember_me') }}</span>
                 </label>
                 <Link v-if="canResetPassword" :href="route('password.request')" class="text-sm text-primary-600 hover:text-primary-700 font-medium">
                     {{ t('auth.forgot_password') }}
@@ -95,7 +99,7 @@ const submit = () => {
                 {{ t('nav.login') }}
             </button>
 
-            <p class="mt-4 text-center text-sm text-gray-600">
+            <p class="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
                 {{ t('auth.no_account') }}
                 <Link :href="route('register')" class="font-semibold text-primary-600 hover:text-primary-700">
                     {{ t('nav.register') }}
