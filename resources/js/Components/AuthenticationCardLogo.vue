@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <Link :href="'/'" class="flex items-center gap-2">
+    <Link :href="'/'" class="flex items-center gap-0.5">
         <svg viewBox="0 0 40 40" class="h-12 w-12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="40" height="40" rx="10" class="fill-gray-900 dark:fill-white"/>
             <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" class="fill-white dark:fill-gray-900" font-size="22" font-weight="bold" font-family="Inter, sans-serif">Y</text>

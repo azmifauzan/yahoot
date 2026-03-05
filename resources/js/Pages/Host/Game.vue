@@ -1,10 +1,12 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import { useGame } from '@/Composables/useGame';
 import { useTimer } from '@/Composables/useTimer';
 import AvatarDisplay from '@/Components/Avatar/AvatarDisplay.vue';
+import ConfettiEffect from '@/Components/Game/ConfettiEffect.vue';
+import QRCodeDisplay from '@/Components/Game/QRCodeDisplay.vue';
 
 const { t } = useI18n();
 
@@ -16,6 +18,13 @@ const props = defineProps({
 });
 
 const countdownValue = ref(null);
+const showConfetti = ref(false);
+const isCountdownRunning = ref(false);
+
+const joinUrl = computed(() => {
+    const base = window.location.origin;
+    return `${base}/play?code=${props.gameSession.game_code}`;
+});
 const { timeRemaining, progress, start: startTimer, stop: stopTimer } = useTimer();
 
 const {
@@ -47,12 +56,13 @@ onMounted(() => {
 
 // Watch for question state to start timer
 watch(gameState, (state) => {
-    if (state === 'question' && timeLimit.value > 0) {
+    if (state === 'question' && timeLimit.value > 0 && !isCountdownRunning.value) {
         runCountdown();
     }
 });
 
 async function runCountdown() {
+    isCountdownRunning.value = true;
     countdownValue.value = 3;
     gameState.value = 'countdown';
 
@@ -65,6 +75,8 @@ async function runCountdown() {
 
     countdownValue.value = null;
     gameState.value = 'question';
+    await nextTick();
+    isCountdownRunning.value = false;
     startTimer(timeLimit.value);
 }
 
@@ -97,18 +109,51 @@ const answerColorMap = {
     yellow: { bg: 'bg-yellow-500', text: 'text-white', shape: '●' },
     green: { bg: 'bg-green-500', text: 'text-white', shape: '■' },
 };
+
+function isCorrectAnswer(answerId) {
+    return correctAnswer.value?.answers?.some(a => a.id === answerId) ?? false;
+}
+
+function getAnswerCount(answerId) {
+    return answerStats.value?.answer_counts?.find(s => s.answer_id === answerId)?.count ?? 0;
+}
+
+function getAnswerPercentage(answerId) {
+    const total = answerStats.value?.answer_counts?.reduce((sum, s) => sum + s.count, 0) ?? 0;
+    if (total === 0) return 0;
+    return Math.round((getAnswerCount(answerId) / total) * 100);
+}
+
+// Trigger confetti when game finishes
+watch(gameState, (state) => {
+    if (state === 'finished') {
+        setTimeout(() => { showConfetti.value = true; }, 1200);
+    }
+});
 </script>
 
 <template>
     <Head :title="`${quiz.title} - Host`" />
     <div class="min-h-screen flex flex-col">
+        <!-- Confetti overlay -->
+        <ConfettiEffect v-if="showConfetti" :duration="6000" @complete="showConfetti = false" />
+
         <!-- LOBBY -->
         <div v-if="gameState === 'lobby'" class="flex-1 flex flex-col bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
-            <!-- Header -->
-            <div class="text-center pt-8 pb-4">
-                <p class="text-lg opacity-80 mb-2">{{ t('host.join_at') }} <span class="font-bold">yahoot.my.id</span></p>
-                <div class="text-7xl font-extrabold tracking-[0.3em] bg-white/10 inline-block px-8 py-4 rounded-2xl backdrop-blur">
-                    {{ gameSession.game_code }}
+            <!-- Header with QR Code -->
+            <div class="flex flex-col md:flex-row items-center justify-center gap-6 pt-8 pb-4 px-6 animate-slide-in-down">
+                <!-- QR Code -->
+                <div class="bg-white p-3 rounded-2xl shadow-lg">
+                    <QRCodeDisplay :value="joinUrl" :size="160" />
+                    <p class="text-xs text-gray-500 text-center mt-1 font-medium">{{ t('host.scan_to_join') }}</p>
+                </div>
+                <!-- Game Code -->
+                <div class="text-center">
+                    <p class="text-lg opacity-80 mb-2">{{ t('host.join_at') }} <span class="font-bold">yahoot.my.id</span></p>
+                    <div class="text-7xl font-extrabold tracking-[0.3em] bg-white/10 inline-block px-8 py-4 rounded-2xl backdrop-blur">
+                        {{ gameSession.game_code }}
+                    </div>
+                    <p class="text-sm opacity-60 mt-2">{{ t('host.or_scan_qr') }}</p>
                 </div>
             </div>
 
@@ -126,7 +171,9 @@ const answerColorMap = {
                         :key="player.id"
                         class="flex flex-col items-center animate-bounce-in"
                     >
-                        <AvatarDisplay :name="player.avatar" :size="56" />
+                        <div class="animate-float">
+                            <AvatarDisplay :name="player.avatar" :size="56" />
+                        </div>
                         <span class="mt-1 text-sm font-medium truncate max-w-[80px]">{{ player.nickname }}</span>
                     </div>
                 </div>
@@ -140,7 +187,7 @@ const answerColorMap = {
                 <button
                     @click="startGame"
                     :disabled="livePlayers.length === 0"
-                    class="px-12 py-4 bg-white text-indigo-600 font-extrabold text-xl rounded-2xl hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xl"
+                    class="px-12 py-4 bg-white text-indigo-600 font-extrabold text-xl rounded-2xl hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xl hover:scale-105 active:scale-95"
                 >
                     {{ t('host.start_game') }}
                 </button>
@@ -154,7 +201,11 @@ const answerColorMap = {
             'bg-green-500': countdownValue === 1,
             'bg-indigo-600': countdownValue === 'START!',
         }">
-            <div class="text-[140px] font-extrabold text-white" :class="{ 'text-[80px]': countdownValue === 'START!' }">
+            <div
+                :key="countdownValue"
+                :class="countdownValue === 'START!' ? 'text-[80px] animate-pop-bounce' : 'text-[140px] animate-zoom-countdown'"
+                class="font-extrabold text-white"
+            >
                 {{ countdownValue }}
             </div>
         </div>
@@ -171,7 +222,7 @@ const answerColorMap = {
             </div>
 
             <!-- Question header -->
-            <div class="flex items-center justify-between px-6 py-3 bg-gray-800">
+            <div class="flex items-center justify-between px-6 py-3 bg-gray-800 animate-slide-in-down">
                 <span class="text-sm font-medium text-gray-400">
                     {{ questionNumber }} / {{ totalQuestions }}
                 </span>
@@ -182,7 +233,7 @@ const answerColorMap = {
             </div>
 
             <!-- Question text -->
-            <div class="flex-1 flex items-center justify-center px-8 py-4">
+            <div class="flex-1 flex items-center justify-center px-8 py-4 animate-slide-in-down" style="animation-delay: 0.1s">
                 <div class="text-center max-w-3xl">
                     <h2 class="text-3xl md:text-4xl font-extrabold leading-tight">
                         {{ currentQuestion?.question_text }}
@@ -193,12 +244,13 @@ const answerColorMap = {
             </div>
 
             <!-- Answer options -->
-            <div class="px-4 pb-4" :class="currentQuestion?.type === 'true_false' ? 'grid grid-cols-2 gap-3' : 'grid grid-cols-2 gap-3'">
+            <div class="px-4 pb-4 grid grid-cols-2 gap-3">
                 <div
-                    v-for="answer in currentQuestion?.answers"
+                    v-for="(answer, idx) in currentQuestion?.answers"
                     :key="answer.id"
                     :class="answerColorMap[answer.color]?.bg"
-                    class="p-4 rounded-2xl flex items-center gap-3 min-h-[70px]"
+                    class="p-4 rounded-2xl flex items-center gap-3 min-h-[70px] animate-slide-in-up"
+                    :style="{ animationDelay: `${0.1 + idx * 0.1}s` }"
                 >
                     <span class="text-3xl">{{ answerColorMap[answer.color]?.shape }}</span>
                     <span class="text-lg font-bold">{{ answer.answer_text }}</span>
@@ -207,7 +259,7 @@ const answerColorMap = {
 
             <!-- Reveal button -->
             <div class="p-4 text-center bg-gray-800">
-                <button @click="revealAnswer" class="px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition-colors">
+                <button @click="revealAnswer" class="px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition-all hover:scale-105 active:scale-95">
                     {{ t('host.reveal_answer') }}
                 </button>
             </div>
@@ -215,31 +267,42 @@ const answerColorMap = {
 
         <!-- RESULT / ANSWER REVEAL -->
         <div v-else-if="gameState === 'result'" class="flex-1 flex flex-col bg-gray-900 text-white">
-            <div class="p-6 text-center">
+            <div class="p-6 text-center animate-slide-in-down">
                 <h2 class="text-2xl font-extrabold mb-6">{{ currentQuestion?.question_text }}</h2>
             </div>
 
-            <div class="flex-1 px-4" :class="currentQuestion?.type === 'true_false' ? 'grid grid-cols-2 gap-4' : 'grid grid-cols-2 gap-4'">
+            <div class="flex-1 px-4 grid grid-cols-2 gap-4">
                 <div
-                    v-for="answer in currentQuestion?.answers"
+                    v-for="(answer, idx) in currentQuestion?.answers"
                     :key="answer.id"
                     :class="[
                         answerColorMap[answer.color]?.bg,
-                        correctAnswer?.answers?.some(a => a.id === answer.id) ? 'ring-4 ring-white scale-105' : 'opacity-40'
+                        isCorrectAnswer(answer.id) ? 'ring-4 ring-white scale-105 animate-pulse-glow' : 'animate-fade-dim'
                     ]"
                     class="p-4 rounded-2xl flex flex-col items-center justify-center min-h-[100px] transition-all"
                 >
                     <span class="text-2xl font-bold mb-1">{{ answerColorMap[answer.color]?.shape }} {{ answer.answer_text }}</span>
-                    <span v-if="correctAnswer?.answers?.some(a => a.id === answer.id)" class="text-3xl">✓</span>
+                    <span v-if="isCorrectAnswer(answer.id)" class="text-3xl animate-score-reveal">✓</span>
                     <!-- Answer count bar -->
-                    <div class="mt-2 text-sm">
-                        {{ answerStats?.answer_counts?.find(s => s.answer_id === answer.id)?.count || 0 }} {{ t('host.votes') }}
+                    <div class="mt-2 w-full">
+                        <div class="h-6 bg-black/20 rounded-full overflow-hidden">
+                            <div
+                                class="h-full bg-white/30 rounded-full animate-bar-grow"
+                                :style="{
+                                    width: getAnswerPercentage(answer.id) + '%',
+                                    animationDelay: `${idx * 0.15}s`,
+                                }"
+                            ></div>
+                        </div>
+                        <p class="text-sm mt-1 text-center">
+                            {{ getAnswerCount(answer.id) }} {{ t('host.votes') }}
+                        </p>
                     </div>
                 </div>
             </div>
 
             <div class="p-6 text-center">
-                <button @click="nextQuestion" class="px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition-colors text-lg">
+                <button @click="nextQuestion" class="px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition-all hover:scale-105 active:scale-95 text-lg">
                     {{ t('host.next') }} →
                 </button>
             </div>
@@ -247,28 +310,32 @@ const answerColorMap = {
 
         <!-- SCOREBOARD -->
         <div v-else-if="gameState === 'scoreboard'" class="flex-1 flex flex-col bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
-            <div class="p-6 text-center">
+            <div class="p-6 text-center animate-slide-in-down">
                 <h2 class="text-3xl font-extrabold">{{ t('host.scoreboard') }}</h2>
             </div>
 
             <div class="flex-1 flex flex-col items-center justify-center px-8 max-w-2xl mx-auto w-full">
-                <div
-                    v-for="(entry, index) in leaderboard"
-                    :key="entry.player_id"
-                    class="w-full flex items-center gap-4 mb-3 bg-white/10 rounded-xl p-4 backdrop-blur"
-                    :style="{ animationDelay: `${(leaderboard.length - index) * 200}ms` }"
-                >
-                    <span class="text-2xl font-extrabold w-10 text-center">
-                        {{ entry.rank <= 3 ? ['🥇','🥈','🥉'][entry.rank - 1] : `#${entry.rank}` }}
-                    </span>
-                    <AvatarDisplay :name="entry.avatar" :size="44" />
-                    <span class="flex-1 text-lg font-bold truncate">{{ entry.nickname }}</span>
-                    <span class="text-xl font-extrabold">{{ entry.score }}</span>
-                </div>
+                <TransitionGroup name="scoreboard-list" tag="div" class="w-full">
+                    <div
+                        v-for="(entry, index) in leaderboard"
+                        :key="entry.player_id"
+                        class="w-full flex items-center gap-4 mb-3 bg-white/10 rounded-xl p-4 backdrop-blur animate-slide-in-up"
+                        :style="{ animationDelay: `${(leaderboard.length - index) * 0.15}s` }"
+                    >
+                        <span class="text-2xl font-extrabold w-10 text-center">
+                            {{ entry.rank <= 3 ? ['🥇','🥈','🥉'][entry.rank - 1] : `#${entry.rank}` }}
+                        </span>
+                        <AvatarDisplay :name="entry.avatar" :size="44" />
+                        <span class="flex-1 text-lg font-bold truncate">{{ entry.nickname }}</span>
+                        <span class="text-xl font-extrabold animate-score-reveal" :style="{ animationDelay: `${(leaderboard.length - index) * 0.15 + 0.3}s` }">
+                            {{ entry.score }}
+                        </span>
+                    </div>
+                </TransitionGroup>
             </div>
 
             <div class="p-6 text-center">
-                <button @click="nextQuestion" class="px-8 py-3 bg-white text-indigo-600 font-bold rounded-xl hover:bg-gray-100 transition-colors text-lg">
+                <button @click="nextQuestion" class="px-8 py-3 bg-white text-indigo-600 font-bold rounded-xl hover:bg-gray-100 transition-all hover:scale-105 active:scale-95 text-lg">
                     {{ t('host.next') }} →
                 </button>
             </div>
@@ -276,14 +343,14 @@ const answerColorMap = {
 
         <!-- FINISHED / PODIUM -->
         <div v-else-if="gameState === 'finished'" class="flex-1 flex flex-col bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 text-white">
-            <div class="p-6 text-center">
+            <div class="p-6 text-center animate-slide-in-down">
                 <h2 class="text-4xl font-extrabold">🏆 {{ t('host.game_over') }}</h2>
             </div>
 
             <!-- Podium -->
             <div class="flex items-end justify-center gap-4 px-8 py-6" v-if="podium.length > 0">
                 <!-- 2nd place -->
-                <div v-if="podium[1]" class="text-center">
+                <div v-if="podium[1]" class="text-center animate-podium-rise" style="animation-delay: 0.5s">
                     <AvatarDisplay :name="podium[1].avatar" :size="64" class="mx-auto mb-2" />
                     <p class="font-bold text-sm truncate max-w-[100px]">{{ podium[1].nickname }}</p>
                     <p class="text-xs">{{ podium[1].score }}</p>
@@ -292,7 +359,10 @@ const answerColorMap = {
                     </div>
                 </div>
                 <!-- 1st place -->
-                <div v-if="podium[0]" class="text-center">
+                <div v-if="podium[0]" class="text-center animate-podium-rise" style="animation-delay: 1.2s">
+                    <div class="animate-crown-drop" style="animation-delay: 2s">
+                        <span class="text-3xl">👑</span>
+                    </div>
                     <AvatarDisplay :name="podium[0].avatar" :size="80" class="mx-auto mb-2" />
                     <p class="font-bold truncate max-w-[100px]">{{ podium[0].nickname }}</p>
                     <p class="text-sm">{{ podium[0].score }}</p>
@@ -301,7 +371,7 @@ const answerColorMap = {
                     </div>
                 </div>
                 <!-- 3rd place -->
-                <div v-if="podium[2]" class="text-center">
+                <div v-if="podium[2]" class="text-center animate-podium-rise" style="animation-delay: 0.2s">
                     <AvatarDisplay :name="podium[2].avatar" :size="56" class="mx-auto mb-2" />
                     <p class="font-bold text-sm truncate max-w-[100px]">{{ podium[2].nickname }}</p>
                     <p class="text-xs">{{ podium[2].score }}</p>
@@ -315,9 +385,10 @@ const answerColorMap = {
             <div class="flex-1 overflow-y-auto px-8 pb-4">
                 <div class="max-w-2xl mx-auto">
                     <div
-                        v-for="entry in finalLeaderboard"
+                        v-for="(entry, index) in finalLeaderboard"
                         :key="entry.player_id"
-                        class="flex items-center gap-3 mb-2 bg-white/10 rounded-xl p-3 backdrop-blur"
+                        class="flex items-center gap-3 mb-2 bg-white/10 rounded-xl p-3 backdrop-blur animate-slide-in-up"
+                        :style="{ animationDelay: `${1.5 + index * 0.08}s` }"
                     >
                         <span class="font-extrabold w-8 text-center">#{{ entry.rank }}</span>
                         <AvatarDisplay :name="entry.avatar" :size="36" />
@@ -331,13 +402,13 @@ const answerColorMap = {
             <div class="p-6 flex justify-center gap-4 bg-black/20">
                 <a
                     :href="route('game.export', gameSession.id)"
-                    class="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl transition-colors"
+                    class="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl transition-all hover:scale-105 active:scale-95"
                 >
                     📥 {{ t('host.download_csv') }}
                 </a>
                 <button
                     @click="router.visit(route('dashboard'))"
-                    class="px-6 py-3 bg-white text-indigo-600 font-bold rounded-xl hover:bg-gray-100 transition-colors"
+                    class="px-6 py-3 bg-white text-indigo-600 font-bold rounded-xl hover:bg-gray-100 transition-all hover:scale-105 active:scale-95"
                 >
                     {{ t('host.finish') }}
                 </button>
@@ -347,12 +418,23 @@ const answerColorMap = {
 </template>
 
 <style scoped>
-@keyframes bounce-in {
-    0% { transform: scale(0); opacity: 0; }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); opacity: 1; }
+/* TransitionGroup for scoreboard ranking changes */
+.scoreboard-list-move {
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.animate-bounce-in {
-    animation: bounce-in 0.4s ease-out;
+.scoreboard-list-enter-active {
+    transition: all 0.4s ease-out;
+}
+.scoreboard-list-leave-active {
+    transition: all 0.3s ease-in;
+    position: absolute;
+}
+.scoreboard-list-enter-from {
+    opacity: 0;
+    transform: translateX(-30px);
+}
+.scoreboard-list-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
 }
 </style>

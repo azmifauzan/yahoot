@@ -6,6 +6,197 @@
     display: none;
 }
 
+/* ===== Game Animations ===== */
+
+/* Bounce In — Lobby player joins */
+@keyframes bounceIn {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.animate-bounce-in {
+    animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Float Idle — Avatar floating in lobby */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Zoom Countdown — 3..2..1 numbers */
+@keyframes zoomCountdown {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.1); opacity: 1; }
+    80% { transform: scale(0.95); }
+    100% { transform: scale(1); opacity: 0; }
+}
+.animate-zoom-countdown {
+    animation: zoomCountdown 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Pop Bounce — START! text */
+@keyframes popBounce {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.3); opacity: 1; }
+    80% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.animate-pop-bounce {
+    animation: popBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Slide In Down — Question entering */
+@keyframes slideInDown {
+    0% { transform: translateY(-40px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+.animate-slide-in-down {
+    animation: slideInDown 0.5s ease-out both;
+}
+
+/* Slide In Up — Elements entering from bottom */
+@keyframes slideInUp {
+    0% { transform: translateY(40px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+.animate-slide-in-up {
+    animation: slideInUp 0.5s ease-out both;
+}
+
+/* Ripple — Button press effect */
+@keyframes ripple {
+    0% { transform: scale(0); opacity: 0.6; }
+    100% { transform: scale(4); opacity: 0; }
+}
+.ripple-effect {
+    position: relative;
+    overflow: hidden;
+}
+.ripple-effect::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(0);
+    opacity: 0;
+}
+.ripple-effect.ripple-active::after {
+    animation: ripple 0.5s ease-out;
+}
+
+/* Shake — Wrong answer */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 50%, 90% { transform: translateX(-6px); }
+    30%, 70% { transform: translateX(6px); }
+}
+.animate-shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Pulse Glow — Correct answer highlight */
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+    50% { box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.3); }
+}
+.animate-pulse-glow {
+    animation: pulseGlow 1s ease-in-out infinite;
+}
+
+/* Score Count Up — Numbers counting animation */
+@keyframes scoreReveal {
+    0% { transform: scale(0.5); opacity: 0; }
+    60% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.animate-score-reveal {
+    animation: scoreReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Bar Grow — Answer stats bars */
+@keyframes barGrow {
+    0% { transform: scaleY(0); }
+    100% { transform: scaleY(1); }
+}
+.animate-bar-grow {
+    animation: barGrow 0.8s ease-out both;
+    transform-origin: bottom;
+}
+
+/* Podium Rise — Podiums rising from bottom */
+@keyframes podiumRise {
+    0% { transform: translateY(100%); opacity: 0; }
+    60% { transform: translateY(-10%); }
+    100% { transform: translateY(0); opacity: 1; }
+}
+.animate-podium-rise {
+    animation: podiumRise 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Crown Drop — Crown falling on winner */
+@keyframes crownDrop {
+    0% { transform: translateY(-60px) rotate(-20deg); opacity: 0; }
+    60% { transform: translateY(5px) rotate(5deg); opacity: 1; }
+    80% { transform: translateY(-3px) rotate(-3deg); }
+    100% { transform: translateY(0) rotate(0); opacity: 1; }
+}
+.animate-crown-drop {
+    animation: crownDrop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Fade Dim — Wrong answers fading */
+.animate-fade-dim {
+    transition: opacity 0.5s ease-out;
+    opacity: 0.3;
+}
+
+/* Stagger classes for sequential animation delays */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+.stagger-7 { animation-delay: 0.7s; }
+.stagger-8 { animation-delay: 0.8s; }
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+    .animate-bounce-in,
+    .animate-float,
+    .animate-zoom-countdown,
+    .animate-pop-bounce,
+    .animate-slide-in-down,
+    .animate-slide-in-up,
+    .animate-shake,
+    .animate-pulse-glow,
+    .animate-score-reveal,
+    .animate-bar-grow,
+    .animate-podium-rise,
+    .animate-crown-drop {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .animate-fade-dim {
+        transition: none !important;
+    }
+
+    .ripple-effect::after {
+        animation: none !important;
+    }
+}
+
 /* SweetAlert2 Yahoot Theme */
 .swal-yahoot-popup {
     @apply rounded-2xl font-sans;

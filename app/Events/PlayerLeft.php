@@ -3,8 +3,8 @@
 namespace App\Events;
 
 use App\Models\GamePlayer;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -25,7 +25,7 @@ class PlayerLeft implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('game.'.$this->gameSessionId),
+            new Channel('game.'.$this->gameSessionId),
         ];
     }
 

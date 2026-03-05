@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import { ref } from 'vue';
 import LanguageSwitcher from '@/Components/UI/LanguageSwitcher.vue';
@@ -32,6 +32,12 @@ const steps = [
     { key: 'step2', icon: 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1' },
     { key: 'step3', icon: 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
 ];
+
+function joinFromLanding() {
+    if (gameCode.value.length === 6) {
+        router.visit(`/play?code=${gameCode.value}`);
+    }
+}
 </script>
 
 <template>
@@ -42,7 +48,7 @@ const steps = [
         <nav class="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-950/80">
             <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
                 <!-- Logo -->
-                <Link href="/" class="flex items-center gap-2">
+                <Link href="/" class="flex items-center gap-0.5">
                     <svg viewBox="0 0 32 32" class="h-8 w-8" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="32" height="32" rx="8" class="fill-gray-900 dark:fill-white"/>
                         <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" class="fill-white dark:fill-gray-900" font-size="18" font-weight="bold" font-family="Inter, sans-serif">Y</text>
@@ -120,21 +126,23 @@ const steps = [
                     <!-- CTA -->
                     <div class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                         <!-- Join Game Input -->
-                        <div class="flex overflow-hidden rounded-xl border-2 border-gray-200 bg-white shadow-sm transition focus-within:border-gray-400 dark:border-gray-700 dark:bg-gray-900">
+                        <form @submit.prevent="joinFromLanding" class="flex overflow-hidden rounded-xl border-2 border-gray-200 bg-white shadow-sm transition focus-within:border-gray-400 dark:border-gray-700 dark:bg-gray-900">
                             <input
                                 v-model="gameCode"
                                 type="text"
+                                inputmode="numeric"
                                 :placeholder="t('landing.enter_code')"
                                 maxlength="6"
                                 class="w-40 border-0 bg-transparent px-4 py-3 text-center text-lg font-mono tracking-widest placeholder-gray-400 focus:outline-none focus:ring-0 dark:text-white sm:w-48"
                             />
                             <button
+                                type="submit"
                                 class="bg-gray-900 px-6 py-3 font-semibold text-white transition hover:bg-gray-800 disabled:opacity-50 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
                                 :disabled="gameCode.length < 6"
                             >
                                 {{ t('landing.join_game') }}
                             </button>
-                        </div>
+                        </form>
 
                         <span class="text-sm text-gray-400 dark:text-gray-500">{{ t('common.or') }}</span>
 

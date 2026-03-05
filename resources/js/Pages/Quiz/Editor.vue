@@ -9,7 +9,7 @@ import QuestionProperties from '@/Components/Quiz/QuestionProperties.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
-const { toast, confirm } = useSwal();
+const { toast, confirm, error: swalError } = useSwal();
 
 const props = defineProps({
     quiz: Object,
@@ -301,6 +301,13 @@ function togglePublish() {
         onSuccess: (page) => {
             // Update from server
         },
+        onError: (errors) => {
+            if (errors.publish) {
+                const publishErrors = errors.publish instanceof Array ? errors.publish : [errors.publish];
+                const errorList = publishErrors.map(e => `<li>${e}</li>`).join('');
+                swalError(t('quiz.validation_error'), `<ul class="text-left space-y-1">${errorList}</ul>`);
+            }
+        },
     });
 }
 
@@ -402,6 +409,18 @@ function isQuestionComplete(question) {
                         {{ quiz.is_published ? t('quiz.unpublish') : t('quiz.publish') }}
                     </button>
 
+                    <!-- Play button (only for published quizzes) -->
+                    <button
+                        v-if="!isNew && quiz.is_published"
+                        @click="router.post(route('game.store', quiz.id))"
+                        class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 flex items-center gap-1.5"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                        </svg>
+                        {{ t('dashboard.play') }}
+                    </button>
+
                     <!-- Create button for new quiz -->
                     <button
                         v-if="isNew"
@@ -497,16 +516,6 @@ function isQuestionComplete(question) {
             </div>
         </div>
 
-        <!-- Publish errors -->
-        <div v-if="$page.props.errors?.publish" class="fixed bottom-4 right-4 z-50 max-w-sm">
-            <div class="rounded-xl bg-red-50 p-4 shadow-lg">
-                <h4 class="mb-2 text-sm font-semibold text-red-700">{{ t('quiz.validation_error') }}</h4>
-                <ul class="space-y-1">
-                    <li v-for="(error, i) in ($page.props.errors.publish instanceof Array ? $page.props.errors.publish : [$page.props.errors.publish])" :key="i" class="text-xs text-red-600">
-                        {{ error }}
-                    </li>
-                </ul>
-            </div>
-        </div>
+
     </AppLayout>
 </template>

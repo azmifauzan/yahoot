@@ -57,7 +57,8 @@
         "stats_quizzes": "Total Quizzes",
         "stats_games": "Total Games",
         "deleted_success": "Quiz deleted successfully",
-        "duplicated_success": "Quiz duplicated successfully"
+        "duplicated_success": "Quiz duplicated successfully",
+        "publish_first": "Quiz must be published first"
     },
     "quiz": {
         "untitled": "Untitled Quiz",
@@ -210,7 +211,9 @@
         "correct": "Correct",
         "streak": "Streak",
         "score": "Score",
-        "back_dashboard": "Back to Dashboard"
+        "back_dashboard": "Back to Dashboard",
+        "scan_to_join": "Scan to join",
+        "or_scan_qr": "or scan the QR code above"
     },
     "common": {
         "save": "Save",

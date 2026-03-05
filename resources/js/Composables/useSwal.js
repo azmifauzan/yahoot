@@ -50,7 +50,7 @@ export function useSwal() {
         return Swal.fire({
             ...defaultOptions,
             title,
-            text,
+            html: text,
             icon: 'error',
             confirmButtonText: 'OK',
         });

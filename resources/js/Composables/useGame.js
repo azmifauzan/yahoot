@@ -23,16 +23,7 @@ export function useGame(gameSessionId) {
     function joinChannel() {
         if (!window.Echo || !gameSessionId) return;
 
-        channel.value = window.Echo.join(`game.${gameSessionId}`)
-            .here((users) => {
-                // Initial list of users in channel
-            })
-            .joining((user) => {
-                // User joined
-            })
-            .leaving((user) => {
-                // User left
-            })
+        channel.value = window.Echo.channel(`game.${gameSessionId}`)
             .listen('PlayerJoined', (e) => {
                 players.value.push(e.player);
                 totalPlayers.value = e.totalPlayers;

@@ -67,6 +67,14 @@ function duplicateQuiz(quiz) {
     });
 }
 
+function playQuiz(quiz) {
+    if (!quiz.is_published) {
+        toast(t('dashboard.publish_first'), 'warning');
+        return;
+    }
+    router.post(route('game.store', quiz.id));
+}
+
 const placeholderColors = [
     'from-gray-400 to-gray-600',
     'from-gray-500 to-gray-700',
@@ -215,6 +223,13 @@ function getPlaceholderColor(index) {
                             <!-- Actions -->
                             <div class="flex items-center gap-2" @click.stop>
                                 <button
+                                    v-if="quiz.is_published"
+                                    @click="playQuiz(quiz)"
+                                    class="flex-1 rounded-lg bg-indigo-50 py-1.5 text-center text-xs font-medium text-indigo-600 transition hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50"
+                                >
+                                    ▶ {{ t('dashboard.play') }}
+                                </button>
+                                <button
                                     @click="duplicateQuiz(quiz)"
                                     class="flex-1 rounded-lg bg-gray-50 py-1.5 text-center text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                                 >
@@ -264,6 +279,13 @@ function getPlaceholderColor(index) {
                         </span>
                         <!-- Actions -->
                         <div class="flex items-center gap-2" @click.stop>
+                            <button
+                                v-if="quiz.is_published"
+                                @click="playQuiz(quiz)"
+                                class="rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-600 transition hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50"
+                            >
+                                ▶ {{ t('dashboard.play') }}
+                            </button>
                             <button
                                 @click="duplicateQuiz(quiz)"
                                 class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
