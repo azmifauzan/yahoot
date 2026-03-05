@@ -31,6 +31,19 @@ const selectedQuestion = computed(() =>
     selectedQuestionIndex.value >= 0 ? questions.value[selectedQuestionIndex.value] : null
 );
 const saving = ref(false);
+const hasUnsavedChanges = ref(false);
+
+// Track when question has pending unsaved edits
+function markDirty() {
+    hasUnsavedChanges.value = true;
+}
+
+// Manual save: triggers immediate save of the current question via QuestionEditor
+const questionEditorRef = ref(null);
+function manualSave() {
+    if (!selectedQuestion.value || saving.value || !hasUnsavedChanges.value) return;
+    questionEditorRef.value?.emitUpdateNow();
+}
 
 // Create quiz if new
 const isNew = computed(() => !props.quiz);
@@ -143,6 +156,7 @@ function updateQuestion(question, data) {
             onSuccess: (page) => {
                 questions.value = page.props.quiz?.questions || [];
                 saving.value = false;
+                hasUnsavedChanges.value = false;
             },
             onError: () => { saving.value = false; },
         });
@@ -153,6 +167,7 @@ function updateQuestion(question, data) {
             onSuccess: (page) => {
                 questions.value = page.props.quiz?.questions || [];
                 saving.value = false;
+                hasUnsavedChanges.value = false;
             },
             onError: () => { saving.value = false; },
         });
@@ -275,9 +290,37 @@ function isQuestionComplete(question) {
 
                 <div class="flex items-center gap-3">
                     <!-- Saving indicator -->
-                    <span v-if="saving" class="text-xs text-gray-400">
+                    <span v-if="saving" class="text-xs text-gray-400 flex items-center gap-1">
+                        <svg class="h-3.5 w-3.5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
                         {{ t('common.loading') }}
                     </span>
+                    <span v-else-if="!hasUnsavedChanges && !isNew && questions.length > 0" class="text-xs text-green-500 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        {{ t('quiz.saved') }}
+                    </span>
+
+                    <!-- Save button -->
+                    <button
+                        v-if="!isNew && selectedQuestion"
+                        @click="manualSave"
+                        :disabled="saving || !hasUnsavedChanges"
+                        :class="[
+                            'rounded-lg px-4 py-2 text-sm font-semibold transition flex items-center gap-1.5',
+                            saving || !hasUnsavedChanges
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600',
+                        ]"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                        </svg>
+                        {{ t('quiz.save') }}
+                    </button>
 
                     <!-- Publish button -->
                     <button
@@ -322,10 +365,11 @@ function isQuestionComplete(question) {
             <div class="flex-1 overflow-y-auto bg-gray-50 p-6 dark:bg-gray-900">
                 <QuestionEditor
                     v-if="selectedQuestion"
+                    ref="questionEditorRef"
                     :key="selectedQuestion.id"
                     :question="selectedQuestion"
                     :answerColors="answerColors"
-                    @update="(data) => updateQuestion(selectedQuestion, data)"
+                    @update="(data) => { markDirty(); updateQuestion(selectedQuestion, data); }"
                     @remove-image="removeQuestionImage(selectedQuestion)"
                 />
 

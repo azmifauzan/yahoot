@@ -62,6 +62,7 @@
     "quiz": {
         "untitled": "Untitled Quiz",
         "save": "Save",
+        "saved": "Saved",
         "back": "Back",
         "add_question": "Add Question",
         "question_number": "Question {number}",
@@ -137,7 +138,11 @@
         "avatar_section": "Avatar",
         "language_section": "Language",
         "select_language": "Select Language",
-        "saved": "Profile saved successfully"
+        "saved": "Profile saved successfully",
+        "tab_profile": "Profile",
+        "tab_security": "Security",
+        "tab_sessions": "Sessions",
+        "tab_account": "Account"
     },
     "avatar_categories": {
         "animals": "Animals",

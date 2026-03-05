@@ -22,13 +22,13 @@ class UpdateQuestionRequest extends FormRequest
     {
         return [
             'type' => ['sometimes', 'required', Rule::enum(QuestionType::class)],
-            'question_text' => ['sometimes', 'required', 'string', 'max:500'],
+            'question_text' => ['sometimes', 'nullable', 'string', 'max:500'],
             'image' => ['nullable', 'image', 'max:2048'],
             'time_limit' => ['sometimes', 'required', 'integer', Rule::in([5, 10, 20, 30, 60, 90, 120])],
             'points' => ['sometimes', 'required', Rule::enum(PointType::class)],
             'answers' => ['sometimes', 'required', 'array', 'min:2', 'max:4'],
             'answers.*.id' => ['nullable', 'integer'],
-            'answers.*.answer_text' => ['required', 'string', 'max:255'],
+            'answers.*.answer_text' => ['nullable', 'string', 'max:255'],
             'answers.*.is_correct' => ['required', 'boolean'],
             'answers.*.color' => ['required', Rule::enum(AnswerColor::class)],
         ];

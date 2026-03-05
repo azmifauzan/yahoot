@@ -62,6 +62,7 @@
     "quiz": {
         "untitled": "Kuis Tanpa Judul",
         "save": "Simpan",
+        "saved": "Tersimpan",
         "back": "Kembali",
         "add_question": "Tambah Pertanyaan",
         "question_number": "Pertanyaan {number}",
@@ -137,7 +138,11 @@
         "avatar_section": "Avatar",
         "language_section": "Bahasa",
         "select_language": "Pilih Bahasa",
-        "saved": "Profil berhasil disimpan"
+        "saved": "Profil berhasil disimpan",
+        "tab_profile": "Profil",
+        "tab_security": "Keamanan",
+        "tab_sessions": "Sesi",
+        "tab_account": "Akun"
     },
     "avatar_categories": {
         "animals": "Hewan",

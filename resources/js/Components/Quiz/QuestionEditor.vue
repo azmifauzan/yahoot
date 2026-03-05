@@ -26,6 +26,11 @@ watch(() => props.question, (newQ) => {
     syncing = true;
     questionText.value = newQ.question_text || '';
     answers.value = JSON.parse(JSON.stringify(newQ.answers || []));
+    // Clear local file state after server has persisted the image
+    if (newQ.image && imageFile.value) {
+        imageFile.value = null;
+        imagePreview.value = null;
+    }
     nextTick(() => { syncing = false; });
 }, { deep: true });
 
@@ -108,6 +113,13 @@ function toggleCorrect(index) {
 }
 
 const isTrueFalse = computed(() => props.question.type === 'true_false');
+
+// Expose for parent to trigger immediate save
+function emitUpdateNow() {
+    clearTimeout(saveTimeout);
+    emitUpdate();
+}
+defineExpose({ emitUpdateNow });
 
 // Color helpers
 function getColorHex(colorValue) {

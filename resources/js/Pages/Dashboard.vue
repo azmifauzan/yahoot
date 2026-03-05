@@ -186,7 +186,8 @@ function getPlaceholderColor(index) {
                     <div
                         v-for="(quiz, index) in quizzes"
                         :key="quiz.id"
-                        class="group overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-md dark:bg-gray-800"
+                        class="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-md dark:bg-gray-800"
+                        @click="$inertia.visit(route('quizzes.edit', quiz.id))"
                     >
                         <!-- Cover -->
                         <div class="relative h-32 overflow-hidden">
@@ -212,16 +213,10 @@ function getPlaceholderColor(index) {
                                 {{ new Date(quiz.created_at).toLocaleDateString() }}
                             </p>
                             <!-- Actions -->
-                            <div class="flex items-center gap-2">
-                                <Link
-                                    :href="route('quizzes.edit', quiz.id)"
-                                    class="flex-1 rounded-lg bg-primary-50 py-1.5 text-center text-xs font-medium text-primary-600 transition hover:bg-primary-100"
-                                >
-                                    {{ t('dashboard.edit') }}
-                                </Link>
+                            <div class="flex items-center gap-2" @click.stop>
                                 <button
                                     @click="duplicateQuiz(quiz)"
-                                    class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                                    class="flex-1 rounded-lg bg-gray-50 py-1.5 text-center text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                                 >
                                     {{ t('dashboard.duplicate') }}
                                 </button>
@@ -241,7 +236,8 @@ function getPlaceholderColor(index) {
                     <div
                         v-for="(quiz, index) in quizzes"
                         :key="quiz.id"
-                        :class="['flex items-center gap-4 p-4', index > 0 ? 'border-t border-gray-100 dark:border-gray-700' : '']"
+                        :class="['flex items-center gap-4 p-4 cursor-pointer transition hover:bg-gray-50 dark:hover:bg-gray-700/50', index > 0 ? 'border-t border-gray-100 dark:border-gray-700' : '']"
+                        @click="$inertia.visit(route('quizzes.edit', quiz.id))"
                     >
                         <!-- Mini cover -->
                         <div class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
@@ -267,13 +263,7 @@ function getPlaceholderColor(index) {
                             {{ quiz.is_published ? t('dashboard.published') : t('dashboard.draft') }}
                         </span>
                         <!-- Actions -->
-                        <div class="flex items-center gap-2">
-                            <Link
-                                :href="route('quizzes.edit', quiz.id)"
-                                class="rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-600 transition hover:bg-primary-100"
-                            >
-                                {{ t('dashboard.edit') }}
-                            </Link>
+                        <div class="flex items-center gap-2" @click.stop>
                             <button
                                 @click="duplicateQuiz(quiz)"
                                 class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
