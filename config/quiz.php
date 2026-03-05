@@ -12,6 +12,6 @@ return [
     |
     */
 
-    'image_disk' => env('QUIZ_IMAGE_DISK', 'public'),
+    'image_disk' => env('QUIZ_IMAGE_DISK', 's3'),
 
 ];
