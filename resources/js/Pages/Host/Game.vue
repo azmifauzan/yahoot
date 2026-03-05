@@ -1,0 +1,358 @@
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue';
+import { Head, router } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+import { useGame } from '@/Composables/useGame';
+import { useTimer } from '@/Composables/useTimer';
+import AvatarDisplay from '@/Components/Avatar/AvatarDisplay.vue';
+
+const { t } = useI18n();
+
+const props = defineProps({
+    gameSession: Object,
+    quiz: Object,
+    questions: Array,
+    players: Array,
+});
+
+const countdownValue = ref(null);
+const { timeRemaining, progress, start: startTimer, stop: stopTimer } = useTimer();
+
+const {
+    gameState, players: livePlayers, currentQuestion, questionNumber, totalQuestions,
+    timeLimit, answeredCount, totalPlayers, leaderboard, playerPositions,
+    correctAnswer, answerStats, playerResults, finalLeaderboard, podium,
+    joinChannel,
+} = useGame(props.gameSession.id);
+
+// Initialize from props
+onMounted(() => {
+    livePlayers.value = props.players.map(p => ({
+        id: p.id,
+        nickname: p.nickname,
+        avatar: p.avatar,
+    }));
+    totalPlayers.value = props.players.length;
+
+    if (props.gameSession.status === 'waiting') {
+        gameState.value = 'lobby';
+    } else if (props.gameSession.status === 'playing') {
+        gameState.value = 'question';
+    } else if (props.gameSession.status === 'finished') {
+        gameState.value = 'finished';
+    }
+
+    joinChannel();
+});
+
+// Watch for question state to start timer
+watch(gameState, (state) => {
+    if (state === 'question' && timeLimit.value > 0) {
+        runCountdown();
+    }
+});
+
+async function runCountdown() {
+    countdownValue.value = 3;
+    gameState.value = 'countdown';
+
+    for (let i = 3; i >= 1; i--) {
+        countdownValue.value = i;
+        await new Promise(r => setTimeout(r, 1000));
+    }
+    countdownValue.value = 'START!';
+    await new Promise(r => setTimeout(r, 500));
+
+    countdownValue.value = null;
+    gameState.value = 'question';
+    startTimer(timeLimit.value);
+}
+
+function startGame() {
+    router.post(route('game.start', props.gameSession.id), {}, { preserveState: true });
+}
+
+function revealAnswer() {
+    stopTimer();
+    router.post(route('game.reveal', props.gameSession.id), {}, { preserveState: true });
+}
+
+function nextQuestion() {
+    router.post(route('game.next', props.gameSession.id), {}, { preserveState: true });
+}
+
+function endGame() {
+    router.post(route('game.end', props.gameSession.id), {}, { preserveState: true });
+}
+
+const timerColor = computed(() => {
+    if (progress.value > 50) return 'bg-green-500';
+    if (progress.value > 25) return 'bg-yellow-500';
+    return 'bg-red-500';
+});
+
+const answerColorMap = {
+    red: { bg: 'bg-red-500', text: 'text-white', shape: '▲' },
+    blue: { bg: 'bg-blue-500', text: 'text-white', shape: '◆' },
+    yellow: { bg: 'bg-yellow-500', text: 'text-white', shape: '●' },
+    green: { bg: 'bg-green-500', text: 'text-white', shape: '■' },
+};
+</script>
+
+<template>
+    <Head :title="`${quiz.title} - Host`" />
+    <div class="min-h-screen flex flex-col">
+        <!-- LOBBY -->
+        <div v-if="gameState === 'lobby'" class="flex-1 flex flex-col bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
+            <!-- Header -->
+            <div class="text-center pt-8 pb-4">
+                <p class="text-lg opacity-80 mb-2">{{ t('host.join_at') }} <span class="font-bold">yahoot.my.id</span></p>
+                <div class="text-7xl font-extrabold tracking-[0.3em] bg-white/10 inline-block px-8 py-4 rounded-2xl backdrop-blur">
+                    {{ gameSession.game_code }}
+                </div>
+            </div>
+
+            <!-- Players grid -->
+            <div class="flex-1 px-8 py-4 overflow-y-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold">{{ t('host.players') }}</h3>
+                    <span class="bg-white/20 px-4 py-1 rounded-full text-sm font-bold">
+                        {{ livePlayers.length }} {{ t('host.joined') }}
+                    </span>
+                </div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                    <div
+                        v-for="player in livePlayers"
+                        :key="player.id"
+                        class="flex flex-col items-center animate-bounce-in"
+                    >
+                        <AvatarDisplay :name="player.avatar" :size="56" />
+                        <span class="mt-1 text-sm font-medium truncate max-w-[80px]">{{ player.nickname }}</span>
+                    </div>
+                </div>
+                <div v-if="livePlayers.length === 0" class="text-center py-12 opacity-60">
+                    <p class="text-xl">{{ t('host.waiting_players') }}</p>
+                </div>
+            </div>
+
+            <!-- Start button -->
+            <div class="p-6 text-center">
+                <button
+                    @click="startGame"
+                    :disabled="livePlayers.length === 0"
+                    class="px-12 py-4 bg-white text-indigo-600 font-extrabold text-xl rounded-2xl hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xl"
+                >
+                    {{ t('host.start_game') }}
+                </button>
+            </div>
+        </div>
+
+        <!-- COUNTDOWN -->
+        <div v-else-if="gameState === 'countdown'" class="flex-1 flex items-center justify-center" :class="{
+            'bg-red-500': countdownValue === 3,
+            'bg-yellow-500': countdownValue === 2,
+            'bg-green-500': countdownValue === 1,
+            'bg-indigo-600': countdownValue === 'START!',
+        }">
+            <div class="text-[140px] font-extrabold text-white" :class="{ 'text-[80px]': countdownValue === 'START!' }">
+                {{ countdownValue }}
+            </div>
+        </div>
+
+        <!-- QUESTION -->
+        <div v-else-if="gameState === 'question'" class="flex-1 flex flex-col bg-gray-900 text-white">
+            <!-- Timer bar -->
+            <div class="h-2 bg-gray-700">
+                <div
+                    :class="timerColor"
+                    class="h-full transition-all duration-100 ease-linear"
+                    :style="{ width: progress + '%' }"
+                ></div>
+            </div>
+
+            <!-- Question header -->
+            <div class="flex items-center justify-between px-6 py-3 bg-gray-800">
+                <span class="text-sm font-medium text-gray-400">
+                    {{ questionNumber }} / {{ totalQuestions }}
+                </span>
+                <span class="text-3xl font-extrabold">{{ Math.ceil(timeRemaining) }}</span>
+                <span class="text-sm font-medium text-gray-400">
+                    {{ answeredCount }} / {{ totalPlayers }} {{ t('host.answered') }}
+                </span>
+            </div>
+
+            <!-- Question text -->
+            <div class="flex-1 flex items-center justify-center px-8 py-4">
+                <div class="text-center max-w-3xl">
+                    <h2 class="text-3xl md:text-4xl font-extrabold leading-tight">
+                        {{ currentQuestion?.question_text }}
+                    </h2>
+                    <img v-if="currentQuestion?.image_url" :src="currentQuestion.image_url"
+                        class="mt-4 max-h-60 mx-auto rounded-xl" alt="Question image" />
+                </div>
+            </div>
+
+            <!-- Answer options -->
+            <div class="px-4 pb-4" :class="currentQuestion?.type === 'true_false' ? 'grid grid-cols-2 gap-3' : 'grid grid-cols-2 gap-3'">
+                <div
+                    v-for="answer in currentQuestion?.answers"
+                    :key="answer.id"
+                    :class="answerColorMap[answer.color]?.bg"
+                    class="p-4 rounded-2xl flex items-center gap-3 min-h-[70px]"
+                >
+                    <span class="text-3xl">{{ answerColorMap[answer.color]?.shape }}</span>
+                    <span class="text-lg font-bold">{{ answer.answer_text }}</span>
+                </div>
+            </div>
+
+            <!-- Reveal button -->
+            <div class="p-4 text-center bg-gray-800">
+                <button @click="revealAnswer" class="px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition-colors">
+                    {{ t('host.reveal_answer') }}
+                </button>
+            </div>
+        </div>
+
+        <!-- RESULT / ANSWER REVEAL -->
+        <div v-else-if="gameState === 'result'" class="flex-1 flex flex-col bg-gray-900 text-white">
+            <div class="p-6 text-center">
+                <h2 class="text-2xl font-extrabold mb-6">{{ currentQuestion?.question_text }}</h2>
+            </div>
+
+            <div class="flex-1 px-4" :class="currentQuestion?.type === 'true_false' ? 'grid grid-cols-2 gap-4' : 'grid grid-cols-2 gap-4'">
+                <div
+                    v-for="answer in currentQuestion?.answers"
+                    :key="answer.id"
+                    :class="[
+                        answerColorMap[answer.color]?.bg,
+                        correctAnswer?.answers?.some(a => a.id === answer.id) ? 'ring-4 ring-white scale-105' : 'opacity-40'
+                    ]"
+                    class="p-4 rounded-2xl flex flex-col items-center justify-center min-h-[100px] transition-all"
+                >
+                    <span class="text-2xl font-bold mb-1">{{ answerColorMap[answer.color]?.shape }} {{ answer.answer_text }}</span>
+                    <span v-if="correctAnswer?.answers?.some(a => a.id === answer.id)" class="text-3xl">✓</span>
+                    <!-- Answer count bar -->
+                    <div class="mt-2 text-sm">
+                        {{ answerStats?.answer_counts?.find(s => s.answer_id === answer.id)?.count || 0 }} {{ t('host.votes') }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 text-center">
+                <button @click="nextQuestion" class="px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition-colors text-lg">
+                    {{ t('host.next') }} →
+                </button>
+            </div>
+        </div>
+
+        <!-- SCOREBOARD -->
+        <div v-else-if="gameState === 'scoreboard'" class="flex-1 flex flex-col bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
+            <div class="p-6 text-center">
+                <h2 class="text-3xl font-extrabold">{{ t('host.scoreboard') }}</h2>
+            </div>
+
+            <div class="flex-1 flex flex-col items-center justify-center px-8 max-w-2xl mx-auto w-full">
+                <div
+                    v-for="(entry, index) in leaderboard"
+                    :key="entry.player_id"
+                    class="w-full flex items-center gap-4 mb-3 bg-white/10 rounded-xl p-4 backdrop-blur"
+                    :style="{ animationDelay: `${(leaderboard.length - index) * 200}ms` }"
+                >
+                    <span class="text-2xl font-extrabold w-10 text-center">
+                        {{ entry.rank <= 3 ? ['🥇','🥈','🥉'][entry.rank - 1] : `#${entry.rank}` }}
+                    </span>
+                    <AvatarDisplay :name="entry.avatar" :size="44" />
+                    <span class="flex-1 text-lg font-bold truncate">{{ entry.nickname }}</span>
+                    <span class="text-xl font-extrabold">{{ entry.score }}</span>
+                </div>
+            </div>
+
+            <div class="p-6 text-center">
+                <button @click="nextQuestion" class="px-8 py-3 bg-white text-indigo-600 font-bold rounded-xl hover:bg-gray-100 transition-colors text-lg">
+                    {{ t('host.next') }} →
+                </button>
+            </div>
+        </div>
+
+        <!-- FINISHED / PODIUM -->
+        <div v-else-if="gameState === 'finished'" class="flex-1 flex flex-col bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 text-white">
+            <div class="p-6 text-center">
+                <h2 class="text-4xl font-extrabold">🏆 {{ t('host.game_over') }}</h2>
+            </div>
+
+            <!-- Podium -->
+            <div class="flex items-end justify-center gap-4 px-8 py-6" v-if="podium.length > 0">
+                <!-- 2nd place -->
+                <div v-if="podium[1]" class="text-center">
+                    <AvatarDisplay :name="podium[1].avatar" :size="64" class="mx-auto mb-2" />
+                    <p class="font-bold text-sm truncate max-w-[100px]">{{ podium[1].nickname }}</p>
+                    <p class="text-xs">{{ podium[1].score }}</p>
+                    <div class="bg-gray-300/30 w-24 h-24 rounded-t-xl mt-2 flex items-center justify-center">
+                        <span class="text-4xl">🥈</span>
+                    </div>
+                </div>
+                <!-- 1st place -->
+                <div v-if="podium[0]" class="text-center">
+                    <AvatarDisplay :name="podium[0].avatar" :size="80" class="mx-auto mb-2" />
+                    <p class="font-bold truncate max-w-[100px]">{{ podium[0].nickname }}</p>
+                    <p class="text-sm">{{ podium[0].score }}</p>
+                    <div class="bg-yellow-300/30 w-28 h-32 rounded-t-xl mt-2 flex items-center justify-center">
+                        <span class="text-5xl">🥇</span>
+                    </div>
+                </div>
+                <!-- 3rd place -->
+                <div v-if="podium[2]" class="text-center">
+                    <AvatarDisplay :name="podium[2].avatar" :size="56" class="mx-auto mb-2" />
+                    <p class="font-bold text-sm truncate max-w-[100px]">{{ podium[2].nickname }}</p>
+                    <p class="text-xs">{{ podium[2].score }}</p>
+                    <div class="bg-orange-300/30 w-20 h-16 rounded-t-xl mt-2 flex items-center justify-center">
+                        <span class="text-3xl">🥉</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full leaderboard -->
+            <div class="flex-1 overflow-y-auto px-8 pb-4">
+                <div class="max-w-2xl mx-auto">
+                    <div
+                        v-for="entry in finalLeaderboard"
+                        :key="entry.player_id"
+                        class="flex items-center gap-3 mb-2 bg-white/10 rounded-xl p-3 backdrop-blur"
+                    >
+                        <span class="font-extrabold w-8 text-center">#{{ entry.rank }}</span>
+                        <AvatarDisplay :name="entry.avatar" :size="36" />
+                        <span class="flex-1 font-bold truncate">{{ entry.nickname }}</span>
+                        <span class="font-extrabold">{{ entry.score }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="p-6 flex justify-center gap-4 bg-black/20">
+                <a
+                    :href="route('game.export', gameSession.id)"
+                    class="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl transition-colors"
+                >
+                    📥 {{ t('host.download_csv') }}
+                </a>
+                <button
+                    @click="router.visit(route('dashboard'))"
+                    class="px-6 py-3 bg-white text-indigo-600 font-bold rounded-xl hover:bg-gray-100 transition-colors"
+                >
+                    {{ t('host.finish') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+@keyframes bounce-in {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.animate-bounce-in {
+    animation: bounce-in 0.4s ease-out;
+}
+</style>

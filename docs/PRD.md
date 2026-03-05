@@ -1175,15 +1175,15 @@ docker-compose.yml                 # Docker Compose services
 - [x] .env.example & environment documentation
 
 ### Fase 2 — Quiz Creator (Sprint 3-4)
-- [ ] Dashboard kreator
-- [ ] Quiz CRUD
-- [ ] Question CRUD
-- [ ] Answer management
-- [ ] Image upload (S3)
-- [ ] Drag & drop reorder
-- [ ] Quiz validation & publish
-- [ ] Duplicate quiz
-- [ ] Tests untuk semua Quiz & Question endpoints
+- [x] Dashboard kreator
+- [x] Quiz CRUD
+- [x] Question CRUD
+- [x] Answer management
+- [x] Image upload (S3)
+- [x] Drag & drop reorder
+- [x] Quiz validation & publish
+- [x] Duplicate quiz
+- [x] Tests untuk semua Quiz & Question endpoints
 
 ### Fase 3 — Game Engine (Sprint 5-7)
 - [ ] Laravel Reverb setup
