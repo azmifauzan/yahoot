@@ -93,7 +93,10 @@
         "delete_question_confirm": "Yakin ingin menghapus pertanyaan ini?",
         "question_deleted": "Pertanyaan berhasil dihapus",
         "upload_image": "Klik atau seret gambar ke sini",
-        "upload_hint": "PNG, JPG maksimal 2MB"
+        "upload_hint": "PNG, JPG maksimal 2MB",
+        "unsaved_title": "Perubahan Belum Disimpan",
+        "unsaved_text": "Ada perubahan yang belum disimpan. Yakin ingin keluar?",
+        "leave": "Keluar"
     },
     "game": {
         "game_code": "Kode Game",

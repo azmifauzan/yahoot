@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue';
+import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -32,17 +32,76 @@ const selectedQuestion = computed(() =>
 );
 const saving = ref(false);
 const hasUnsavedChanges = ref(false);
+const titleDirty = ref(false);
 
-// Track when question has pending unsaved edits
+// Track dirty state from child QuestionEditor
 function markDirty() {
     hasUnsavedChanges.value = true;
+    resetIdleTimer();
 }
 
 // Manual save: triggers immediate save of the current question via QuestionEditor
 const questionEditorRef = ref(null);
 function manualSave() {
-    if (!selectedQuestion.value || saving.value || !hasUnsavedChanges.value) return;
-    questionEditorRef.value?.emitUpdateNow();
+    if (saving.value) return;
+    // Save title if changed
+    if (titleDirty.value) {
+        saveQuizTitle();
+    }
+    // Save question if dirty
+    if (hasUnsavedChanges.value && selectedQuestion.value && questionEditorRef.value) {
+        const data = questionEditorRef.value.buildData();
+        updateQuestion(selectedQuestion.value, data);
+    }
+}
+
+// Idle-based autosave: save after 5 seconds of inactivity
+let idleTimer = null;
+function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+        if (hasUnsavedChanges.value || titleDirty.value) {
+            manualSave();
+        }
+    }, 5000);
+}
+
+// beforeunload: warn user about unsaved changes
+function onBeforeUnload(e) {
+    if (hasUnsavedChanges.value || titleDirty.value) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+}
+
+onMounted(() => {
+    window.addEventListener('beforeunload', onBeforeUnload);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('beforeunload', onBeforeUnload);
+    clearTimeout(idleTimer);
+});
+
+// Intercept Back navigation
+function goBack() {
+    if (hasUnsavedChanges.value || titleDirty.value) {
+        confirm({
+            title: t('quiz.unsaved_title'),
+            text: t('quiz.unsaved_text'),
+            confirmText: t('quiz.leave'),
+            cancelText: t('common.cancel'),
+            icon: 'warning',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                hasUnsavedChanges.value = false;
+                titleDirty.value = false;
+                router.visit(route('dashboard'));
+            }
+        });
+    } else {
+        router.visit(route('dashboard'));
+    }
 }
 
 // Create quiz if new
@@ -59,26 +118,28 @@ function createQuiz() {
 }
 
 // Save quiz title/description
-let saveTimeout = null;
-function autoSaveQuiz() {
-    if (isNew.value) return;
-    clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(() => {
-        saving.value = true;
-        router.put(route('quizzes.update', props.quiz.id), {
-            title: quizForm.title,
-            description: quizForm.description,
-        }, {
-            preserveState: true,
-            preserveScroll: true,
-            onFinish: () => { saving.value = false; },
-        });
-    }, 800);
+function saveQuizTitle() {
+    if (isNew.value || !titleDirty.value) return;
+    saving.value = true;
+    router.put(route('quizzes.update', props.quiz.id), {
+        title: quizForm.title,
+        description: quizForm.description,
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+        onFinish: () => {
+            saving.value = false;
+            titleDirty.value = false;
+        },
+    });
 }
 
-// Watch title changes for auto-save
+// Watch title changes — only mark dirty, no auto-save
 watch(() => quizForm.title, () => {
-    if (!isNew.value) autoSaveQuiz();
+    if (!isNew.value) {
+        titleDirty.value = true;
+        resetIdleTimer();
+    }
 });
 
 // Default answer templates
@@ -122,8 +183,13 @@ function addQuestion() {
     });
 }
 
-// Select question
+// Select question — save current if dirty before switching
 function selectQuestion(index) {
+    if (index === selectedQuestionIndex.value) return;
+    if (hasUnsavedChanges.value && selectedQuestion.value && questionEditorRef.value) {
+        const data = questionEditorRef.value.buildData();
+        updateQuestion(selectedQuestion.value, data);
+    }
     selectedQuestionIndex.value = index;
 }
 
@@ -261,15 +327,15 @@ function isQuestionComplete(question) {
         <template #header>
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <Link
-                        :href="route('dashboard')"
+                    <button
+                        @click="goBack"
                         class="flex items-center gap-1 text-sm text-gray-500 transition hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
                         {{ t('quiz.back') }}
-                    </Link>
+                    </button>
 
                     <!-- Inline title edit -->
                     <input
@@ -297,7 +363,7 @@ function isQuestionComplete(question) {
                         </svg>
                         {{ t('common.loading') }}
                     </span>
-                    <span v-else-if="!hasUnsavedChanges && !isNew && questions.length > 0" class="text-xs text-green-500 flex items-center gap-1">
+                    <span v-else-if="!hasUnsavedChanges && !titleDirty && !isNew && questions.length > 0" class="text-xs text-green-500 flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
@@ -308,10 +374,10 @@ function isQuestionComplete(question) {
                     <button
                         v-if="!isNew && selectedQuestion"
                         @click="manualSave"
-                        :disabled="saving || !hasUnsavedChanges"
+                        :disabled="saving || (!hasUnsavedChanges && !titleDirty)"
                         :class="[
                             'rounded-lg px-4 py-2 text-sm font-semibold transition flex items-center gap-1.5',
-                            saving || !hasUnsavedChanges
+                            saving || (!hasUnsavedChanges && !titleDirty)
                                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600',
                         ]"
@@ -369,7 +435,8 @@ function isQuestionComplete(question) {
                     :key="selectedQuestion.id"
                     :question="selectedQuestion"
                     :answerColors="answerColors"
-                    @update="(data) => { markDirty(); updateQuestion(selectedQuestion, data); }"
+                    @update="(data) => updateQuestion(selectedQuestion, data)"
+                    @dirty="markDirty"
                     @remove-image="removeQuestionImage(selectedQuestion)"
                 />
 

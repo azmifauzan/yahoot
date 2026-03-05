@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed, nextTick } from 'vue';
+import { ref, watch, computed, nextTick, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -9,7 +9,7 @@ const props = defineProps({
     answerColors: Array,
 });
 
-const emit = defineEmits(['update', 'remove-image']);
+const emit = defineEmits(['update', 'remove-image', 'dirty']);
 
 // Local state for editing
 const questionText = ref(props.question.question_text || '');
@@ -34,17 +34,13 @@ watch(() => props.question, (newQ) => {
     nextTick(() => { syncing = false; });
 }, { deep: true });
 
-// Debounced auto-save
-let saveTimeout = null;
-function scheduleUpdate() {
+// Mark parent as dirty without triggering a save
+function markDirty() {
     if (syncing) return;
-    clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(() => {
-        emitUpdate();
-    }, 600);
+    emit('dirty');
 }
 
-function emitUpdate() {
+function buildData() {
     const data = {
         question_text: questionText.value,
         type: props.question.type,
@@ -60,7 +56,11 @@ function emitUpdate() {
     if (imageFile.value) {
         data.image = imageFile.value;
     }
-    emit('update', data);
+    return data;
+}
+
+function emitUpdate() {
+    emit('update', buildData());
 }
 
 // Image handling
@@ -69,7 +69,7 @@ function onImageSelect(e) {
     if (!file) return;
     imageFile.value = file;
     imagePreview.value = URL.createObjectURL(file);
-    emitUpdate();
+    markDirty();
     // Reset so same file can be re-selected
     if (fileInput.value) fileInput.value.value = '';
 }
@@ -80,7 +80,7 @@ function onDrop(e) {
     if (!file || !file.type.startsWith('image/')) return;
     imageFile.value = file;
     imagePreview.value = URL.createObjectURL(file);
-    emitUpdate();
+    markDirty();
 }
 
 function removeImage() {
@@ -89,37 +89,34 @@ function removeImage() {
     emit('remove-image');
 }
 
-// Watch for text changes
-watch(questionText, () => scheduleUpdate());
+// Watch for text changes — only mark dirty, no auto-save
+watch(questionText, () => markDirty());
 
 function onAnswerTextChange(index, value) {
     answers.value[index].answer_text = value;
-    scheduleUpdate();
+    markDirty();
 }
 
 function toggleCorrect(index) {
     if (props.question.type === 'multiple_choice') {
-        // Single correct answer for now
         answers.value.forEach((a, i) => {
             a.is_correct = i === index;
         });
     } else {
-        // True/False: toggle
         answers.value.forEach((a, i) => {
             a.is_correct = i === index;
         });
     }
-    emitUpdate();
+    markDirty();
 }
 
 const isTrueFalse = computed(() => props.question.type === 'true_false');
 
 // Expose for parent to trigger immediate save
 function emitUpdateNow() {
-    clearTimeout(saveTimeout);
     emitUpdate();
 }
-defineExpose({ emitUpdateNow });
+defineExpose({ emitUpdateNow, buildData });
 
 // Color helpers
 function getColorHex(colorValue) {
