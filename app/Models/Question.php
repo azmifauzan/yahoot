@@ -1,0 +1,52 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\PointType;
+use App\Enums\QuestionType;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Question extends Model
+{
+    /** @use HasFactory<\Database\Factories\QuestionFactory> */
+    use HasFactory;
+
+    protected $fillable = [
+        'quiz_id',
+        'type',
+        'question_text',
+        'image',
+        'time_limit',
+        'points',
+        'order',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'type' => QuestionType::class,
+            'points' => PointType::class,
+            'time_limit' => 'integer',
+            'order' => 'integer',
+        ];
+    }
+
+    /**
+     * @return BelongsTo<\App\Models\Quiz, $this>
+     */
+    public function quiz(): BelongsTo
+    {
+        return $this->belongsTo(Quiz::class);
+    }
+
+    /**
+     * @return HasMany<\App\Models\Answer, $this>
+     */
+    public function answers(): HasMany
+    {
+        return $this->hasMany(Answer::class)->orderBy('order');
+    }
+}

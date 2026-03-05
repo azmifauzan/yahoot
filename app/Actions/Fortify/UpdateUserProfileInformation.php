@@ -10,6 +10,14 @@ use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 
 class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
+    /** @var array<string> */
+    private const VALID_AVATARS = [
+        'cat', 'dog', 'panda', 'rabbit', 'fox', 'owl',
+        'robot_blue', 'robot_red', 'robot_green', 'robot_yellow', 'robot_purple', 'robot_pink',
+        'monster_1', 'monster_2', 'monster_3', 'monster_4', 'monster_5', 'monster_6',
+        'star', 'moon', 'sun', 'cloud', 'rainbow', 'lightning',
+    ];
+
     /**
      * Validate and update the given user's profile information.
      *
@@ -21,6 +29,8 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
+            'avatar' => ['nullable', 'string', Rule::in(self::VALID_AVATARS)],
+            'locale' => ['nullable', 'string', Rule::in(['id', 'en'])],
         ])->validateWithBag('updateProfileInformation');
 
         if (isset($input['photo'])) {
@@ -34,6 +44,8 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             $user->forceFill([
                 'name' => $input['name'],
                 'email' => $input['email'],
+                'avatar' => $input['avatar'] ?? $user->avatar,
+                'locale' => $input['locale'] ?? $user->locale,
             ])->save();
         }
     }
@@ -49,6 +61,8 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'name' => $input['name'],
             'email' => $input['email'],
             'email_verified_at' => null,
+            'avatar' => $input['avatar'] ?? $user->avatar,
+            'locale' => $input['locale'] ?? $user->locale,
         ])->save();
 
         $user->sendEmailVerificationNotification();

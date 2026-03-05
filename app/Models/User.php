@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -16,6 +16,7 @@ class User extends Authenticatable
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
+
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
@@ -29,6 +30,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'avatar',
+        'locale',
     ];
 
     /**
@@ -63,5 +66,29 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * @return HasMany<\App\Models\Quiz, $this>
+     */
+    public function quizzes(): HasMany
+    {
+        return $this->hasMany(Quiz::class);
+    }
+
+    /**
+     * @return HasMany<\App\Models\GameSession, $this>
+     */
+    public function hostedGameSessions(): HasMany
+    {
+        return $this->hasMany(GameSession::class, 'host_id');
+    }
+
+    /**
+     * @return HasMany<\App\Models\GamePlayer, $this>
+     */
+    public function gamePlayers(): HasMany
+    {
+        return $this->hasMany(GamePlayer::class);
     }
 }

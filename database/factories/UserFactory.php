@@ -26,6 +26,13 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $avatars = [
+            'cat', 'dog', 'panda', 'rabbit', 'fox', 'owl',
+            'robot-blue', 'robot-red', 'robot-green', 'robot-yellow', 'robot-purple', 'robot-pink',
+            'monster-1', 'monster-2', 'monster-3', 'monster-4', 'monster-5', 'monster-6',
+            'star', 'moon', 'sun', 'cloud', 'rainbow', 'lightning',
+        ];
+
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
@@ -36,6 +43,8 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'profile_photo_path' => null,
             'current_team_id' => null,
+            'avatar' => fake()->randomElement($avatars),
+            'locale' => 'id',
         ];
     }
 

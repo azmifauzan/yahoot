@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { Link, router, useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import ActionMessage from '@/Components/ActionMessage.vue';
 import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/Components/InputError.vue';
@@ -8,6 +9,10 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import AvatarGrid from '@/Components/Avatar/AvatarGrid.vue';
+import AvatarDisplay from '@/Components/Avatar/AvatarDisplay.vue';
+
+const { t, locale: i18nLocale } = useI18n();
 
 const props = defineProps({
     user: Object,
@@ -18,11 +23,19 @@ const form = useForm({
     name: props.user.name,
     email: props.user.email,
     photo: null,
+    avatar: props.user.avatar,
+    locale: props.user.locale || 'id',
 });
 
 const verificationLinkSent = ref(null);
 const photoPreview = ref(null);
 const photoInput = ref(null);
+const showAvatarPicker = ref(false);
+
+const languages = [
+    { code: 'id', label: '🇮🇩 Indonesia' },
+    { code: 'en', label: '🇬🇧 English' },
+];
 
 const updateProfileInformation = () => {
     if (photoInput.value) {
@@ -32,7 +45,11 @@ const updateProfileInformation = () => {
     form.post(route('user-profile-information.update'), {
         errorBag: 'updateProfileInformation',
         preserveScroll: true,
-        onSuccess: () => clearPhotoFileInput(),
+        onSuccess: () => {
+            clearPhotoFileInput();
+            i18nLocale.value = form.locale;
+            document.cookie = `locale=${form.locale};path=/;max-age=${60 * 60 * 24 * 365}`;
+        },
     });
 };
 
@@ -174,6 +191,36 @@ const clearPhotoFileInput = () => {
                         A new verification link has been sent to your email address.
                     </div>
                 </div>
+            </div>
+
+            <!-- Avatar -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel :value="t('profile.avatar_section')" />
+                <div class="mt-2 flex items-center gap-4">
+                    <AvatarDisplay :name="form.avatar || 'cat'" :size="64" />
+                    <SecondaryButton type="button" @click="showAvatarPicker = !showAvatarPicker">
+                        {{ showAvatarPicker ? t('common.close') : t('common.edit') }}
+                    </SecondaryButton>
+                </div>
+                <div v-if="showAvatarPicker" class="mt-4 rounded-xl border border-gray-200 p-4 dark:border-gray-700">
+                    <AvatarGrid v-model="form.avatar" :size="48" />
+                </div>
+                <InputError :message="form.errors.avatar" class="mt-2" />
+            </div>
+
+            <!-- Language -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="locale" :value="t('profile.language_section')" />
+                <select
+                    id="locale"
+                    v-model="form.locale"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                >
+                    <option v-for="lang in languages" :key="lang.code" :value="lang.code">
+                        {{ lang.label }}
+                    </option>
+                </select>
+                <InputError :message="form.errors.locale" class="mt-2" />
             </div>
         </template>
 
