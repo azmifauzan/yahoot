@@ -68,12 +68,12 @@ function duplicateQuiz(quiz) {
 }
 
 const placeholderColors = [
-    'from-primary-400 to-primary-600',
-    'from-accent-red to-pink-500',
-    'from-accent-blue to-teal-600',
-    'from-amber-400 to-orange-500',
-    'from-accent-green to-emerald-500',
-    'from-violet-400 to-purple-600',
+    'from-gray-400 to-gray-600',
+    'from-gray-500 to-gray-700',
+    'from-gray-300 to-gray-500',
+    'from-gray-600 to-gray-800',
+    'from-gray-400 to-gray-600',
+    'from-gray-500 to-gray-700',
 ];
 
 function getPlaceholderColor(index) {
@@ -90,7 +90,7 @@ function getPlaceholderColor(index) {
                 </h2>
                 <Link
                     :href="route('quizzes.create')"
-                    class="inline-flex items-center gap-2 rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-600"
+                    class="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -104,13 +104,13 @@ function getPlaceholderColor(index) {
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Stats -->
                 <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-2">
-                    <div class="rounded-xl bg-white p-4 shadow-sm dark:bg-gray-800">
+                    <div class="rounded-xl bg-white p-4 shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
                         <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('dashboard.stats_quizzes') }}</p>
-                        <p class="text-2xl font-bold text-primary-500">{{ stats.total_quizzes }}</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.total_quizzes }}</p>
                     </div>
-                    <div class="rounded-xl bg-white p-4 shadow-sm dark:bg-gray-800">
+                    <div class="rounded-xl bg-white p-4 shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
                         <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('dashboard.stats_games') }}</p>
-                        <p class="text-2xl font-bold text-primary-500">{{ stats.total_games }}</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.total_games }}</p>
                     </div>
                 </div>
 
@@ -124,8 +124,8 @@ function getPlaceholderColor(index) {
                             :class="[
                                 'rounded-lg px-4 py-2 text-sm font-medium transition',
                                 activeFilter === option.value
-                                    ? 'bg-primary-500 text-white'
-                                    : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700',
+                                    ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                                    : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800',
                             ]"
                         >
                             {{ option.label() }}
@@ -141,20 +141,20 @@ function getPlaceholderColor(index) {
                                 @input="onSearchInput"
                                 type="text"
                                 :placeholder="t('dashboard.search_placeholder')"
-                                class="rounded-lg border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
+                                class="rounded-lg border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-gray-900 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-500 dark:focus:border-gray-400 dark:focus:ring-gray-400"
                             />
                         </div>
                         <!-- View toggle -->
-                        <div class="hidden sm:flex items-center gap-1 rounded-lg bg-white p-1 dark:bg-gray-800">
+                        <div class="hidden sm:flex items-center gap-1 rounded-lg bg-white p-1 border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
                             <button
                                 @click="viewMode = 'grid'"
-                                :class="['rounded-md p-1.5 transition', viewMode === 'grid' ? 'bg-primary-100 text-primary-600' : 'text-gray-400 hover:text-gray-600']"
+                                :class="['rounded-md p-1.5 transition', viewMode === 'grid' ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-400 hover:text-gray-600']"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
                             </button>
                             <button
                                 @click="viewMode = 'list'"
-                                :class="['rounded-md p-1.5 transition', viewMode === 'list' ? 'bg-primary-100 text-primary-600' : 'text-gray-400 hover:text-gray-600']"
+                                :class="['rounded-md p-1.5 transition', viewMode === 'list' ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-400 hover:text-gray-600']"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
                             </button>
@@ -163,16 +163,16 @@ function getPlaceholderColor(index) {
                 </div>
 
                 <!-- Empty State -->
-                <div v-if="quizzes.length === 0" class="flex flex-col items-center justify-center rounded-xl bg-white py-16 shadow-sm dark:bg-gray-800">
-                    <div class="mb-4 rounded-full bg-primary-50 p-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <div v-if="quizzes.length === 0" class="flex flex-col items-center justify-center rounded-xl bg-white py-16 shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
+                    <div class="mb-4 rounded-full bg-gray-100 dark:bg-gray-800 p-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                     </div>
                     <p class="mb-4 text-gray-500 dark:text-gray-400">{{ t('dashboard.empty') }}</p>
                     <Link
                         :href="route('quizzes.create')"
-                        class="inline-flex items-center gap-2 rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-600"
+                        class="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -186,7 +186,7 @@ function getPlaceholderColor(index) {
                     <div
                         v-for="(quiz, index) in quizzes"
                         :key="quiz.id"
-                        class="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-md dark:bg-gray-800"
+                        class="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100 transition hover:shadow-md dark:bg-gray-900 dark:border-gray-800"
                         @click="$inertia.visit(route('quizzes.edit', quiz.id))"
                     >
                         <!-- Cover -->
@@ -232,11 +232,11 @@ function getPlaceholderColor(index) {
                 </div>
 
                 <!-- List View -->
-                <div v-else class="overflow-hidden rounded-xl bg-white shadow-sm dark:bg-gray-800">
+                <div v-else class="overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
                     <div
                         v-for="(quiz, index) in quizzes"
                         :key="quiz.id"
-                        :class="['flex items-center gap-4 p-4 cursor-pointer transition hover:bg-gray-50 dark:hover:bg-gray-700/50', index > 0 ? 'border-t border-gray-100 dark:border-gray-700' : '']"
+                        :class="['flex items-center gap-4 p-4 cursor-pointer transition hover:bg-gray-50 dark:hover:bg-gray-800/50', index > 0 ? 'border-t border-gray-100 dark:border-gray-800' : '']"
                         @click="$inertia.visit(route('quizzes.edit', quiz.id))"
                     >
                         <!-- Mini cover -->

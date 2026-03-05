@@ -199,7 +199,7 @@ function getAnswerActiveClasses(color) {
                 <!-- Upload area -->
                 <div
                     v-else
-                    class="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-200 p-6 transition hover:border-primary-300 hover:bg-primary-50/50 dark:border-gray-600 dark:hover:border-primary-500 dark:hover:bg-primary-900/20"
+                    class="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-200 p-6 transition hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-800"
                     @click="fileInput?.click()"
                     @dragover.prevent
                     @drop="onDrop"

@@ -28,8 +28,8 @@ const logout = () => {
 
         <Banner />
 
-        <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <nav class="bg-white border-b border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700">
+        <div class="min-h-screen bg-white dark:bg-gray-950">
+            <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200 dark:bg-gray-950/80 dark:border-gray-800">
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
@@ -46,7 +46,7 @@ const logout = () => {
                                 <Link
                                     :href="route('dashboard')"
                                     class="rounded-lg px-3 py-2 text-sm font-medium transition"
-                                    :class="route().current('dashboard') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white'"
+                                    :class="route().current('dashboard') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'"
                                 >
                                     {{ t('nav.dashboard') }}
                                 </Link>
@@ -64,12 +64,12 @@ const logout = () => {
                             <div class="relative">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
-                                        <button v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-primary-300 transition">
+                                        <button v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
                                             <img class="size-8 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name">
                                         </button>
 
                                         <span v-else class="inline-flex rounded-lg">
-                                            <button type="button" class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus:outline-none dark:text-gray-300 dark:hover:bg-gray-700">
+                                            <button type="button" class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus:outline-none dark:text-gray-300 dark:hover:bg-gray-800">
                                                 {{ $page.props.auth.user.name }}
                                                 <svg class="size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -125,18 +125,18 @@ const logout = () => {
                 </div>
 
                 <!-- Responsive Navigation Menu -->
-                <div :class="{'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown}" class="sm:hidden border-t border-gray-100 dark:border-gray-700">
+                <div :class="{'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown}" class="sm:hidden border-t border-gray-200 dark:border-gray-800">
                     <div class="pt-2 pb-3 space-y-1 px-4">
                         <Link
                             :href="route('dashboard')"
                             class="block rounded-lg px-3 py-2 text-sm font-medium transition"
-                            :class="route().current('dashboard') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'"
+                            :class="route().current('dashboard') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'"
                         >
                             {{ t('nav.dashboard') }}
                         </Link>
                     </div>
 
-                    <div class="pt-4 pb-3 border-t border-gray-100 dark:border-gray-700">
+                    <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-800">
                         <div class="flex items-center justify-between px-4">
                             <div class="flex items-center">
                                 <div v-if="$page.props.jetstream.managesProfilePhotos" class="shrink-0 me-3">
@@ -154,12 +154,12 @@ const logout = () => {
                         </div>
 
                         <div class="mt-3 space-y-1 px-4">
-                            <Link :href="route('profile.show')" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                            <Link :href="route('profile.show')" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800">
                                 {{ t('nav.profile') }}
                             </Link>
 
                             <form method="POST" @submit.prevent="logout">
-                                <button type="submit" class="block w-full text-left rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                                <button type="submit" class="block w-full text-left rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800">
                                     {{ t('nav.logout') }}
                                 </button>
                             </form>
@@ -169,7 +169,7 @@ const logout = () => {
             </nav>
 
             <!-- Page Heading -->
-            <header v-if="$slots.header" class="bg-white shadow-sm dark:bg-gray-800">
+            <header v-if="$slots.header" class="bg-white shadow-sm dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
                 <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>

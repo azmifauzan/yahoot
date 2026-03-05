@@ -396,7 +396,7 @@ function isQuestionComplete(question) {
                             'rounded-lg px-4 py-2 text-sm font-semibold transition',
                             quiz.is_published
                                 ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                : 'bg-primary-500 text-white hover:bg-primary-600',
+                                : 'bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100',
                         ]"
                     >
                         {{ quiz.is_published ? t('quiz.unpublish') : t('quiz.publish') }}
@@ -406,7 +406,7 @@ function isQuestionComplete(question) {
                     <button
                         v-if="isNew"
                         @click="createQuiz"
-                        class="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-600"
+                        class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
                     >
                         {{ t('quiz.save') }}
                     </button>
@@ -428,7 +428,7 @@ function isQuestionComplete(question) {
             />
 
             <!-- Main Content - Question Editor -->
-            <div class="flex-1 overflow-y-auto bg-gray-50 p-6 dark:bg-gray-900">
+            <div class="flex-1 overflow-y-auto bg-gray-50 p-6 dark:bg-gray-950">
                 <QuestionEditor
                     v-if="selectedQuestion"
                     ref="questionEditorRef"
@@ -442,15 +442,15 @@ function isQuestionComplete(question) {
 
                 <div v-else class="flex h-full items-center justify-center">
                     <div class="text-center">
-                        <div class="mb-4 rounded-full bg-primary-50 p-6 inline-block">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <div class="mb-4 rounded-full bg-gray-100 dark:bg-gray-800 p-6 inline-block">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                             </svg>
                         </div>
                         <p class="mb-4 text-gray-500 dark:text-gray-400">{{ t('quiz.add_question') }}</p>
                         <button
                             @click="addQuestion"
-                            class="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-600"
+                            class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
                         >
                             {{ t('quiz.add_question') }}
                         </button>
@@ -471,7 +471,7 @@ function isQuestionComplete(question) {
         <!-- New Quiz Form -->
         <div v-else class="py-12">
             <div class="mx-auto max-w-xl px-4">
-                <div class="rounded-xl bg-white p-8 shadow-sm">
+                <div class="rounded-xl bg-white p-8 shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
                     <h3 class="mb-6 text-lg font-semibold text-gray-800">{{ t('dashboard.create_quiz') }}</h3>
 
                     <div class="space-y-4">
@@ -481,14 +481,14 @@ function isQuestionComplete(question) {
                                 v-model="quizForm.title"
                                 type="text"
                                 :placeholder="t('quiz.untitled')"
-                                class="w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-500"
+                                class="w-full rounded-lg border-gray-300 focus:border-gray-900 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-gray-400 dark:focus:ring-gray-400"
                                 @keyup.enter="createQuiz"
                             />
                         </div>
 
                         <button
                             @click="createQuiz"
-                            class="w-full rounded-lg bg-primary-500 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-600"
+                            class="w-full rounded-lg bg-gray-900 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
                         >
                             {{ t('dashboard.create_quiz') }}
                         </button>

@@ -48,7 +48,7 @@ const submit = () => {
                     id="name"
                     v-model="form.name"
                     type="text"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-gray-400 dark:focus:ring-gray-400"
                     required
                     autofocus
                     autocomplete="name"
@@ -63,7 +63,7 @@ const submit = () => {
                     id="email"
                     v-model="form.email"
                     type="email"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-gray-400 dark:focus:ring-gray-400"
                     required
                     autocomplete="username"
                     placeholder="nama@email.com"
@@ -77,7 +77,7 @@ const submit = () => {
                     id="password"
                     v-model="form.password"
                     type="password"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-gray-400 dark:focus:ring-gray-400"
                     required
                     autocomplete="new-password"
                     placeholder="••••••••"
@@ -91,7 +91,7 @@ const submit = () => {
                     id="password_confirmation"
                     v-model="form.password_confirmation"
                     type="password"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-gray-400 dark:focus:ring-gray-400"
                     required
                     autocomplete="new-password"
                     placeholder="••••••••"
@@ -104,9 +104,9 @@ const submit = () => {
                     <Checkbox id="terms" v-model:checked="form.terms" name="terms" required class="mt-0.5" />
                     <span class="text-sm text-gray-600">
                         {{ t('auth.agree_to') }}
-                        <a target="_blank" :href="route('terms.show')" class="font-medium text-primary-600 hover:text-primary-700">{{ t('auth.terms') }}</a>
+                        <a target="_blank" :href="route('terms.show')" class="font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">{{ t('auth.terms') }}</a>
                         {{ t('common.and') }}
-                        <a target="_blank" :href="route('policy.show')" class="font-medium text-primary-600 hover:text-primary-700">{{ t('auth.privacy') }}</a>
+                        <a target="_blank" :href="route('policy.show')" class="font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">{{ t('auth.privacy') }}</a>
                     </span>
                 </label>
                 <InputError class="mt-1.5" :message="form.errors.terms" />
@@ -114,7 +114,7 @@ const submit = () => {
 
             <button
                 type="submit"
-                class="mt-6 w-full rounded-lg bg-primary-500 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50"
+                class="mt-6 w-full rounded-lg bg-gray-900 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 disabled:opacity-50"
                 :disabled="form.processing"
             >
                 {{ t('nav.register') }}
@@ -122,7 +122,7 @@ const submit = () => {
 
             <p class="mt-4 text-center text-sm text-gray-600">
                 {{ t('auth.has_account') }}
-                <Link :href="route('login')" class="font-semibold text-primary-600 hover:text-primary-700">
+                <Link :href="route('login')" class="font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
                     {{ t('nav.login') }}
                 </Link>
             </p>

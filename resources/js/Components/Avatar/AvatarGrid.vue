@@ -54,7 +54,7 @@ function select(avatar) {
                     type="button"
                     class="flex items-center justify-center rounded-xl p-1.5 transition-all hover:scale-110 hover:bg-gray-100 dark:hover:bg-gray-700"
                     :class="{
-                        'ring-2 ring-primary-500 ring-offset-2 bg-primary-50 dark:bg-primary-900/20 dark:ring-offset-gray-800': modelValue === avatar,
+                        'ring-2 ring-gray-900 ring-offset-2 bg-gray-100 dark:ring-white dark:bg-gray-800 dark:ring-offset-gray-900': modelValue === avatar,
                     }"
                     @click="select(avatar)"
                 >

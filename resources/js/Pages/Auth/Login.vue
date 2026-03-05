@@ -58,7 +58,7 @@ const submit = () => {
                     id="email"
                     v-model="form.email"
                     type="email"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-gray-400 dark:focus:ring-gray-400"
                     required
                     autofocus
                     autocomplete="username"
@@ -73,7 +73,7 @@ const submit = () => {
                     id="password"
                     v-model="form.password"
                     type="password"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-gray-400 dark:focus:ring-gray-400"
                     required
                     autocomplete="current-password"
                     placeholder="••••••••"
@@ -86,14 +86,14 @@ const submit = () => {
                     <Checkbox v-model:checked="form.remember" name="remember" />
                     <span class="ms-2 text-sm text-gray-600 dark:text-gray-300">{{ t('auth.remember_me') }}</span>
                 </label>
-                <Link v-if="canResetPassword" :href="route('password.request')" class="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                <Link v-if="canResetPassword" :href="route('password.request')" class="text-sm text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white font-medium">
                     {{ t('auth.forgot_password') }}
                 </Link>
             </div>
 
             <button
                 type="submit"
-                class="mt-6 w-full rounded-lg bg-primary-500 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50"
+                class="mt-6 w-full rounded-lg bg-gray-900 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 disabled:opacity-50"
                 :disabled="form.processing"
             >
                 {{ t('nav.login') }}
@@ -101,7 +101,7 @@ const submit = () => {
 
             <p class="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
                 {{ t('auth.no_account') }}
-                <Link :href="route('register')" class="font-semibold text-primary-600 hover:text-primary-700">
+                <Link :href="route('register')" class="font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
                     {{ t('nav.register') }}
                 </Link>
             </p>

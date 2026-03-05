@@ -36,7 +36,7 @@ const tabs = [
         <div class="py-8">
             <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
                 <!-- Tabs -->
-                <div class="mb-6 flex gap-1 rounded-xl bg-white p-1 shadow-sm dark:bg-gray-800">
+                <div class="mb-6 flex gap-1 rounded-xl bg-white p-1 shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
                     <button
                         v-for="tab in tabs"
                         :key="tab.key"
@@ -45,7 +45,7 @@ const tabs = [
                             'flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition',
                             activeTab === tab.key
                                 ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
-                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200',
+                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200',
                         ]"
                     >
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -56,7 +56,7 @@ const tabs = [
                 </div>
 
                 <!-- Tab Content -->
-                <div class="rounded-xl bg-white shadow-sm dark:bg-gray-800">
+                <div class="rounded-xl bg-white shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
                     <!-- Profile Tab -->
                     <div v-if="activeTab === 'profile'">
                         <div v-if="$page.props.jetstream.canUpdateProfileInformation">
@@ -70,7 +70,7 @@ const tabs = [
                             <UpdatePasswordForm />
                         </div>
 
-                        <div v-if="$page.props.jetstream.canManageTwoFactorAuthentication" class="border-t border-gray-100 dark:border-gray-700">
+                        <div v-if="$page.props.jetstream.canManageTwoFactorAuthentication" class="border-t border-gray-100 dark:border-gray-800">
                             <TwoFactorAuthenticationForm
                                 :requires-confirmation="confirmsTwoFactorAuthentication"
                             />

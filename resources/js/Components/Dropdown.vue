@@ -12,7 +12,7 @@ const props = defineProps({
     },
     contentClasses: {
         type: Array,
-        default: () => ['py-1', 'bg-white', 'dark:bg-gray-800'],
+        default: () => ['py-1', 'bg-white', 'dark:bg-gray-900'],
     },
 });
 
@@ -70,7 +70,7 @@ const alignmentClasses = computed(() => {
                 style="display: none;"
                 @click="open = false"
             >
-                <div class="rounded-md ring-1 ring-black ring-opacity-5 dark:ring-gray-600" :class="contentClasses">
+                <div class="rounded-md ring-1 ring-black ring-opacity-5 dark:ring-gray-700" :class="contentClasses">
                     <slot name="content" />
                 </div>
             </div>

@@ -180,7 +180,7 @@ const clearPhotoFileInput = () => {
                             :href="route('verification.send')"
                             method="post"
                             as="button"
-                            class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                            class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                             @click.prevent="sendEmailVerification"
                         >
                             Click here to re-send the verification email.
@@ -214,7 +214,7 @@ const clearPhotoFileInput = () => {
                 <select
                     id="locale"
                     v-model="form.locale"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-gray-400 dark:focus:ring-gray-400"
                 >
                     <option v-for="lang in languages" :key="lang.code" :value="lang.code">
                         {{ lang.label }}
