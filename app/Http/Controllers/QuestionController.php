@@ -61,6 +61,10 @@ class QuestionController extends Controller
         DB::transaction(function () use ($question, $data, $request) {
             $updateData = collect($data)->only(['type', 'question_text', 'time_limit', 'points'])->toArray();
 
+            if (array_key_exists('question_text', $updateData)) {
+                $updateData['question_text'] = $updateData['question_text'] ?? '';
+            }
+
             if ($request->hasFile('image')) {
                 if ($question->image) {
                     Storage::disk('s3')->delete($question->image);
@@ -78,7 +82,7 @@ class QuestionController extends Controller
                 foreach ($data['answers'] as $index => $answerData) {
                     $color = AnswerColor::from($answerData['color']);
                     $attributes = [
-                        'answer_text' => $answerData['answer_text'],
+                        'answer_text' => $answerData['answer_text'] ?? '',
                         'is_correct' => $answerData['is_correct'],
                         'color' => $color,
                         'shape' => $color->shape(),
