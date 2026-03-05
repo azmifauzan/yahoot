@@ -51,7 +51,7 @@ class Question extends Model
                 return null;
             }
 
-            return Storage::disk('s3')->url($this->image);
+            return Storage::disk(config('quiz.image_disk'))->url($this->image);
         });
     }
 

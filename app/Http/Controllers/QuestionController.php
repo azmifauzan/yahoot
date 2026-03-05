@@ -25,7 +25,8 @@ class QuestionController extends Controller
         DB::transaction(function () use ($quiz, $data, $request, $maxOrder) {
             $imagePath = null;
             if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('question-images', 's3');
+                $stored = $request->file('image')->store('question-images', config('quiz.image_disk'));
+                $imagePath = $stored ?: null;
             }
 
             $question = $quiz->questions()->create([
@@ -66,10 +67,15 @@ class QuestionController extends Controller
             }
 
             if ($request->hasFile('image')) {
-                if ($question->image) {
-                    Storage::disk('s3')->delete($question->image);
+                $disk = config('quiz.image_disk');
+                $stored = $request->file('image')->store('question-images', $disk);
+
+                if ($stored) {
+                    if ($question->image) {
+                        Storage::disk($disk)->delete($question->image);
+                    }
+                    $updateData['image'] = $stored;
                 }
-                $updateData['image'] = $request->file('image')->store('question-images', 's3');
             }
 
             $question->update($updateData);
@@ -106,7 +112,7 @@ class QuestionController extends Controller
         $this->authorize('update', $question->quiz);
 
         if ($question->image) {
-            Storage::disk('s3')->delete($question->image);
+            Storage::disk(config('quiz.image_disk'))->delete($question->image);
         }
 
         $question->delete();
@@ -134,7 +140,7 @@ class QuestionController extends Controller
         $this->authorize('update', $question->quiz);
 
         if ($question->image) {
-            Storage::disk('s3')->delete($question->image);
+            Storage::disk(config('quiz.image_disk'))->delete($question->image);
             $question->update(['image' => null]);
         }
 
