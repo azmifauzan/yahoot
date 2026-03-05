@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\QuestionImageController;
 use App\Http\Controllers\QuizController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -11,6 +12,10 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
     ]);
 })->name('landing');
+
+Route::get('/images/{path}', [QuestionImageController::class, 'show'])
+    ->where('path', '.*')
+    ->name('question-images.show');
 
 Route::middleware([
     'auth:sanctum',

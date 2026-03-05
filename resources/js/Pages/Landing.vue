@@ -151,7 +151,7 @@ const steps = [
         </section>
 
         <!-- Features Section -->
-        <section class="border-t border-gray-100 py-20 dark:border-gray-800">
+        <!-- <section class="border-t border-gray-100 py-20 dark:border-gray-800">
             <div class="mx-auto max-w-6xl px-4 sm:px-6">
                 <h2 class="mb-12 text-center text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
                     {{ t('landing.features_title') }}
@@ -177,7 +177,7 @@ const steps = [
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <!-- How to Play -->
         <section class="border-t border-gray-100 bg-gray-50 py-20 dark:border-gray-800 dark:bg-gray-900">
