@@ -1186,25 +1186,25 @@ docker-compose.yml                 # Docker Compose services
 - [x] Tests untuk semua Quiz & Question endpoints
 
 ### Fase 3 — Game Engine (Sprint 5-7)
-- [ ] Laravel Reverb setup
-- [ ] Game session creation & game code
-- [ ] Lobby system (host & player)
-- [ ] Join game (guest & authenticated)
-- [ ] Real-time player join/leave
-- [ ] Question flow (countdown → question → answer → reveal → scoreboard)
-- [ ] Timer system
-- [ ] Answer submission & validation
-- [ ] Scoring service
-- [ ] Scoreboard per pertanyaan
-- [ ] Tests untuk game flow
+- [x] Laravel Reverb setup
+- [x] Game session creation & game code
+- [x] Lobby system (host & player)
+- [x] Join game (guest & authenticated)
+- [x] Real-time player join/leave
+- [x] Question flow (countdown → question → answer → reveal → scoreboard)
+- [x] Timer system
+- [x] Answer submission & validation
+- [x] Scoring service
+- [x] Scoreboard per pertanyaan
+- [x] Tests untuk game flow
 
 ### Fase 4 — Polish & Animation (Sprint 8-9)
 - [ ] Semua animasi (lihat Section 10)
 - [ ] Confetti effect
-- [ ] Podium & final leaderboard
+- [x] Podium & final leaderboard
 - [ ] Sound effects (opsional)
 - [ ] Motivational messages
-- [ ] CSV export
+- [x] CSV export
 - [ ] Responsive testing
 - [ ] Performance optimization
 - [ ] Accessibility (reduced motion)
