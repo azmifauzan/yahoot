@@ -6,8 +6,10 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import QuestionSidebar from '@/Components/Quiz/QuestionSidebar.vue';
 import QuestionEditor from '@/Components/Quiz/QuestionEditor.vue';
 import QuestionProperties from '@/Components/Quiz/QuestionProperties.vue';
+import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
+const { toast, confirm } = useSwal();
 
 const props = defineProps({
     quiz: Object,
@@ -128,18 +130,27 @@ function updateQuestion(question, data) {
 
 // Delete question
 function deleteQuestion(question) {
-    const indexToDelete = questions.value.findIndex(q => q.id === question.id);
-    router.delete(route('questions.destroy', question.id), {
-        preserveScroll: true,
-        onSuccess: (page) => {
-            questions.value = page.props.quiz?.questions || [];
-            if (selectedQuestionIndex.value >= questions.value.length) {
-                selectedQuestionIndex.value = Math.max(0, questions.value.length - 1);
-            }
-            if (questions.value.length === 0) {
-                selectedQuestionIndex.value = -1;
-            }
-        },
+    confirm({
+        title: t('quiz.delete_question_title'),
+        text: t('quiz.delete_question_confirm'),
+        confirmText: t('common.delete'),
+        cancelText: t('common.cancel'),
+    }).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(route('questions.destroy', question.id), {
+                preserveScroll: true,
+                onSuccess: (page) => {
+                    questions.value = page.props.quiz?.questions || [];
+                    if (selectedQuestionIndex.value >= questions.value.length) {
+                        selectedQuestionIndex.value = Math.max(0, questions.value.length - 1);
+                    }
+                    if (questions.value.length === 0) {
+                        selectedQuestionIndex.value = -1;
+                    }
+                    toast(t('quiz.question_deleted'));
+                },
+            });
+        }
     });
 }
 

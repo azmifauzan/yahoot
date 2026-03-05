@@ -22,12 +22,12 @@ class StoreQuestionRequest extends FormRequest
     {
         return [
             'type' => ['required', Rule::enum(QuestionType::class)],
-            'question_text' => ['required', 'string', 'max:500'],
+            'question_text' => ['nullable', 'string', 'max:500'],
             'image' => ['nullable', 'image', 'max:2048'],
             'time_limit' => ['required', 'integer', Rule::in([5, 10, 20, 30, 60, 90, 120])],
             'points' => ['required', Rule::enum(PointType::class)],
             'answers' => ['required', 'array', 'min:2', 'max:4'],
-            'answers.*.answer_text' => ['required', 'string', 'max:255'],
+            'answers.*.answer_text' => ['nullable', 'string', 'max:255'],
             'answers.*.is_correct' => ['required', 'boolean'],
             'answers.*.color' => ['required', Rule::enum(AnswerColor::class)],
         ];

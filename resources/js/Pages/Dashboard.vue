@@ -3,11 +3,10 @@ import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import ConfirmationModal from '@/Components/ConfirmationModal.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
+import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
+const { toast, confirm } = useSwal();
 
 const props = defineProps({
     quizzes: Array,
@@ -18,8 +17,6 @@ const props = defineProps({
 const search = ref(props.filters.search || '');
 const activeFilter = ref(props.filters.filter || 'all');
 const viewMode = ref('grid');
-const deleteModal = ref(false);
-const quizToDelete = ref(null);
 
 const filterOptions = [
     { value: 'all', label: () => t('dashboard.filter_all') },
@@ -49,22 +46,25 @@ function onSearchInput() {
 }
 
 function confirmDelete(quiz) {
-    quizToDelete.value = quiz;
-    deleteModal.value = true;
-}
-
-function deleteQuiz() {
-    if (!quizToDelete.value) return;
-    router.delete(route('quizzes.destroy', quizToDelete.value.id), {
-        onFinish: () => {
-            deleteModal.value = false;
-            quizToDelete.value = null;
-        },
+    confirm({
+        title: t('dashboard.delete'),
+        text: t('dashboard.confirm_delete'),
+        confirmText: t('common.delete'),
+        cancelText: t('common.cancel'),
+        icon: 'warning',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(route('quizzes.destroy', quiz.id), {
+                onSuccess: () => toast(t('dashboard.deleted_success')),
+            });
+        }
     });
 }
 
 function duplicateQuiz(quiz) {
-    router.post(route('quizzes.duplicate', quiz.id));
+    router.post(route('quizzes.duplicate', quiz.id), {}, {
+        onSuccess: () => toast(t('dashboard.duplicated_success')),
+    });
 }
 
 const placeholderColors = [
@@ -292,14 +292,5 @@ function getPlaceholderColor(index) {
             </div>
         </div>
 
-        <!-- Delete Confirmation Modal -->
-        <ConfirmationModal :show="deleteModal" @close="deleteModal = false">
-            <template #title>{{ t('dashboard.delete') }}</template>
-            <template #content>{{ t('dashboard.confirm_delete') }}</template>
-            <template #footer>
-                <SecondaryButton @click="deleteModal = false">{{ t('common.cancel') }}</SecondaryButton>
-                <DangerButton class="ms-3" @click="deleteQuiz">{{ t('common.delete') }}</DangerButton>
-            </template>
-        </ConfirmationModal>
     </AppLayout>
 </template>

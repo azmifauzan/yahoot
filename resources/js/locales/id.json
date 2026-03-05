@@ -55,7 +55,9 @@
         "delete": "Hapus",
         "confirm_delete": "Yakin ingin menghapus kuis ini?",
         "stats_quizzes": "Total Kuis",
-        "stats_games": "Total Game"
+        "stats_games": "Total Game",
+        "deleted_success": "Kuis berhasil dihapus",
+        "duplicated_success": "Kuis berhasil diduplikat"
     },
     "quiz": {
         "untitled": "Kuis Tanpa Judul",
@@ -85,7 +87,10 @@
         "need_correct": "Harus ada jawaban benar",
         "need_text": "Pertanyaan harus memiliki teks",
         "duplicate_success": "Kuis berhasil diduplikat",
-        "copy_suffix": " (Salinan)"
+        "copy_suffix": " (Salinan)",
+        "delete_question_title": "Hapus Pertanyaan",
+        "delete_question_confirm": "Yakin ingin menghapus pertanyaan ini?",
+        "question_deleted": "Pertanyaan berhasil dihapus"
     },
     "game": {
         "game_code": "Kode Game",
@@ -138,6 +143,18 @@
         "monsters": "Monster",
         "abstract": "Abstrak"
     },
+    "auth": {
+        "remember_me": "Ingat saya",
+        "forgot_password": "Lupa password?",
+        "no_account": "Belum punya akun?",
+        "has_account": "Sudah punya akun?",
+        "name": "Nama",
+        "name_placeholder": "Nama lengkap",
+        "confirm_password": "Konfirmasi Password",
+        "agree_to": "Saya menyetujui",
+        "terms": "Ketentuan Layanan",
+        "privacy": "Kebijakan Privasi"
+    },
     "common": {
         "save": "Simpan",
         "cancel": "Batal",
@@ -148,6 +165,8 @@
         "loading": "Memuat...",
         "error": "Terjadi kesalahan",
         "success": "Berhasil",
-        "or": "atau"
+        "or": "atau",
+        "and": "dan",
+        "yes": "Ya"
     }
 }

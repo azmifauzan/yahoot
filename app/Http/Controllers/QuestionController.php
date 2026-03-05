@@ -30,7 +30,7 @@ class QuestionController extends Controller
 
             $question = $quiz->questions()->create([
                 'type' => $data['type'],
-                'question_text' => $data['question_text'],
+                'question_text' => $data['question_text'] ?? '',
                 'image' => $imagePath,
                 'time_limit' => $data['time_limit'],
                 'points' => $data['points'],
@@ -40,7 +40,7 @@ class QuestionController extends Controller
             foreach ($data['answers'] as $index => $answerData) {
                 $color = AnswerColor::from($answerData['color']);
                 $question->answers()->create([
-                    'answer_text' => $answerData['answer_text'],
+                    'answer_text' => $answerData['answer_text'] ?? '',
                     'is_correct' => $answerData['is_correct'],
                     'color' => $color,
                     'shape' => $color->shape(),

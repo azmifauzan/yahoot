@@ -1,12 +1,13 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import LanguageSwitcher from '@/Components/UI/LanguageSwitcher.vue';
+
+const { t } = useI18n();
 
 defineProps({
     canResetPassword: Boolean,
@@ -30,61 +31,76 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Log in" />
+    <Head :title="t('nav.login')" />
 
     <AuthenticationCard>
         <template #logo>
             <AuthenticationCardLogo />
         </template>
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-gray-800">{{ t('nav.login') }}</h2>
+            <LanguageSwitcher />
+        </div>
+
+        <div v-if="status" class="mb-4 rounded-lg bg-green-50 p-3 text-sm font-medium text-green-600">
             {{ status }}
         </div>
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input
                     id="email"
                     v-model="form.email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                     required
                     autofocus
                     autocomplete="username"
+                    placeholder="nama@email.com"
                 />
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError class="mt-1.5" :message="form.errors.email" />
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-                <TextInput
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input
                     id="password"
                     v-model="form.password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                     required
                     autocomplete="current-password"
+                    placeholder="••••••••"
                 />
-                <InputError class="mt-2" :message="form.errors.password" />
+                <InputError class="mt-1.5" :message="form.errors.password" />
             </div>
 
-            <div class="block mt-4">
+            <div class="flex items-center justify-between mt-4">
                 <label class="flex items-center">
                     <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600">Remember me</span>
+                    <span class="ms-2 text-sm text-gray-600">{{ t('auth.remember_me') }}</span>
                 </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <Link v-if="canResetPassword" :href="route('password.request')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Forgot your password?
+                <Link v-if="canResetPassword" :href="route('password.request')" class="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                    {{ t('auth.forgot_password') }}
                 </Link>
-
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
-                </PrimaryButton>
             </div>
+
+            <button
+                type="submit"
+                class="mt-6 w-full rounded-lg bg-primary-500 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50"
+                :disabled="form.processing"
+            >
+                {{ t('nav.login') }}
+            </button>
+
+            <p class="mt-4 text-center text-sm text-gray-600">
+                {{ t('auth.no_account') }}
+                <Link :href="route('register')" class="font-semibold text-primary-600 hover:text-primary-700">
+                    {{ t('nav.register') }}
+                </Link>
+            </p>
         </form>
     </AuthenticationCard>
 </template>
