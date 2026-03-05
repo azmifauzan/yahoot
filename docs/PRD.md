@@ -5,7 +5,8 @@
 **Versi:** 1.0  
 **Tanggal:** 5 Maret 2026  
 **Lisensi:** MIT (Free & Open Source)  
-**Stack:** Laravel 12, Inertia.js v2, Vue 3, Tailwind CSS, Laravel Reverb (WebSocket)
+**Stack:** Laravel 12, Inertia.js v2, Vue 3, Tailwind CSS, Laravel Reverb (WebSocket)  
+**Domain:** yahoot.my.id
 
 ---
 
@@ -44,9 +45,14 @@ Yahoot bersifat **free & open source** tanpa batasan fitur, jumlah pemain, atau 
 | Animation | CSS Transitions/Keyframes + Vue Transition |
 | Auth | Laravel Fortify + Jetstream |
 | API Token | Laravel Sanctum |
-| Database | MySQL / PostgreSQL / SQLite |
+| Database | PostgreSQL 17 |
+| File Storage | S3-compatible (IDCloudHost Object Storage) |
+| Email | SMTP via Brevo (Sendinblue) |
 | Testing | Pest 4 |
 | Routing (JS) | Ziggy v2 |
+| Containerization | Docker + Docker Compose |
+| Reverse Proxy | Nginx |
+| Domain | yahoot.my.id |
 
 ---
 
@@ -113,6 +119,7 @@ PlayerAnswer N──1 Answer
 | password | string | Password (hashed) |
 | avatar | string nullable | Nama avatar yang dipilih |
 | locale | string default 'id' | Bahasa pilihan (id/en) |
+| is_admin | boolean default false | Admin flag |
 | email_verified_at | timestamp nullable | |
 | timestamps | | created_at, updated_at |
 
@@ -540,6 +547,44 @@ Points Earned = floor(Base Points × Time Bonus Factor) + Streak Bonus
 
 ---
 
+### 6.7 Admin Panel
+
+Admin panel hanya bisa diakses oleh user dengan `is_admin = true`. Menggunakan middleware authorization.
+
+#### 6.7.1 Dashboard Admin
+- Statistik overview:
+  - Total user (terdaftar)
+  - Total kuis (aktif / draf / dihapus)
+  - Total game session (hari ini / bulan ini / total)
+  - Total pemain (registered / guest)
+- Grafik aktivitas (game session per hari, 30 hari terakhir)
+- Daftar game session terbaru
+
+#### 6.7.2 Manajemen User
+- Daftar semua user dengan search & filter
+- Kolom: Avatar, Nama, Email, Kuis Dibuat, Game Dimainkan, Tanggal Daftar, Status
+- Aksi: Lihat detail, Nonaktifkan, Hapus, Toggle admin
+- Detail user: profil, daftar kuis, riwayat game
+
+#### 6.7.3 Manajemen Kuis
+- Daftar semua kuis (semua user)
+- Filter: Publik, Privat, Dipublikasi, Draf, Dihapus (trashed)
+- Kolom: Judul, Kreator, Pertanyaan, Visibility, Status, Dibuat
+- Aksi: Lihat detail, Hapus, Restore (soft deleted)
+
+#### 6.7.4 Riwayat Game
+- Daftar semua game session
+- Filter: Status (Waiting, Playing, Finished), Tanggal
+- Kolom: Game Code, Kuis, Host, Pemain, Status, Waktu
+- Aksi: Lihat detail, Hapus
+
+#### 6.7.5 Pengaturan Sistem
+- Pengaturan umum (nama aplikasi, bahasa default)
+- Toggle fitur: registrasi, email verification, guest play
+- Maintenance mode
+
+---
+
 ## 7. Halaman & Route
 
 ### 7.1 Halaman Publik
@@ -596,6 +641,19 @@ Points Earned = floor(Base Points × Time Bonus Factor) + Streak Bonus
 | POST | `/api/games/join` | Join game (code + nickname + avatar) |
 | POST | `/api/games/{session}/answer` | Kirim jawaban |
 | GET | `/api/games/{session}/status` | Status game saat ini |
+
+### 7.6 Halaman Admin (Admin Required)
+
+| Route | Halaman | Deskripsi |
+|-------|---------|-----------|
+| `GET /admin` | Admin Dashboard | Statistik & overview |
+| `GET /admin/users` | Manajemen User | Daftar & kelola user |
+| `GET /admin/users/{user}` | Detail User | Profil & aktivitas user |
+| `GET /admin/quizzes` | Manajemen Kuis | Daftar semua kuis |
+| `GET /admin/quizzes/{quiz}` | Detail Kuis | Detail kuis & pertanyaan |
+| `GET /admin/games` | Riwayat Game | Daftar game session |
+| `GET /admin/games/{session}` | Detail Game | Detail game session |
+| `GET /admin/settings` | Pengaturan | Pengaturan sistem |
 
 ---
 
@@ -805,7 +863,60 @@ Gradients:
 
 ---
 
-## 13. Keamanan
+## 13. Infrastructure & Deployment
+
+### 13.1 Production Environment
+- **Domain:** yahoot.my.id
+- **Container Runtime:** Docker + Docker Compose
+- **Reverse Proxy:** Nginx (host-level) → Docker containers
+- **SSL:** Let's Encrypt (Certbot) auto-renewal
+
+### 13.2 Docker Services
+
+| Service | Image / Build | Port | Deskripsi |
+|---------|--------------|------|-----------|
+| `app` | PHP 8.4 FPM Alpine (custom) | 9000 | Laravel application |
+| `nginx` | nginx:1.27-alpine | 8000 | Web server |
+| `postgres` | postgres:17-alpine | 5432 | Database |
+| `redis` | redis:7-alpine | 6379 | Cache & queue |
+| `reverb` | PHP 8.4 FPM Alpine (custom) | 8080 | WebSocket server |
+| `queue` | PHP 8.4 FPM Alpine (custom) | — | Queue worker |
+| `scheduler` | PHP 8.4 FPM Alpine (custom) | — | Task scheduler |
+
+### 13.3 File Storage
+- **Provider:** IDCloudHost Object Storage (S3-compatible)
+- **Endpoint:** `https://is3.cloudhost.id`
+- **Bucket:** `yahoot`
+- **Digunakan untuk:** Cover image kuis, gambar pertanyaan, export CSV
+- **Konfigurasi:** Menggunakan Laravel Flysystem S3 driver (`league/flysystem-aws-s3-v3`)
+
+### 13.4 Email Service
+- **Provider:** Brevo (Sendinblue)
+- **Protokol:** SMTP relay (`smtp-relay.brevo.com:587`)
+- **From Address:** `noreply@yahoot.my.id`
+- **Digunakan untuk:** Verifikasi email, reset password, notifikasi
+
+### 13.5 Database
+- **Engine:** PostgreSQL 17
+- **Persistent Volume:** Docker named volume `postgres_data`
+- **Backup:** pg_dump via scheduled task
+
+### 13.6 Deployment Flow
+```
+1. Push ke branch `main`
+2. SSH ke server
+3. git pull origin main
+4. docker compose build --no-cache app
+5. docker compose up -d
+6. docker compose exec app php artisan migrate --force
+7. docker compose exec app php artisan config:cache
+8. docker compose exec app php artisan route:cache
+9. docker compose exec app php artisan view:cache
+```
+
+---
+
+## 14. Keamanan
 
 | Aspek | Implementasi |
 |-------|-------------|
@@ -822,7 +933,7 @@ Gradients:
 
 ---
 
-## 14. Performance
+## 15. Performance
 
 | Aspek | Strategi |
 |-------|----------|
@@ -836,7 +947,7 @@ Gradients:
 
 ---
 
-## 15. Struktur File Project
+## 16. Struktur File Project
 
 ```
 app/
@@ -847,7 +958,13 @@ app/
 │   │   ├── QuestionController.php
 │   │   ├── GameSessionController.php
 │   │   ├── PlayerController.php
-│   │   └── LanguageController.php
+│   │   ├── LanguageController.php
+│   │   └── Admin/
+│   │       ├── AdminDashboardController.php
+│   │       ├── AdminUserController.php
+│   │       ├── AdminQuizController.php
+│   │       ├── AdminGameController.php
+│   │       └── AdminSettingController.php
 │   ├── Requests/
 │   │   ├── Quiz/
 │   │   │   ├── StoreQuizRequest.php
@@ -860,7 +977,8 @@ app/
 │   │       ├── JoinGameRequest.php
 │   │       └── SubmitAnswerRequest.php
 │   └── Middleware/
-│       └── SetLocale.php
+│       ├── SetLocale.php
+│       └── EnsureUserIsAdmin.php
 ├── Models/
 │   ├── User.php
 │   ├── Quiz.php
@@ -966,11 +1084,23 @@ resources/
 │       │   ├── Lobby.vue
 │       │   ├── Game.vue
 │       │   └── Results.vue
-│       └── Player/
-│           ├── Join.vue
-│           ├── Setup.vue
-│           ├── Lobby.vue
-│           └── Game.vue
+│       ├── Player/
+│       │   ├── Join.vue
+│       │   ├── Setup.vue
+│       │   ├── Lobby.vue
+│       │   └── Game.vue
+│       └── Admin/
+│           ├── Dashboard.vue
+│           ├── Users/
+│           │   ├── Index.vue
+│           │   └── Show.vue
+│           ├── Quizzes/
+│           │   ├── Index.vue
+│           │   └── Show.vue
+│           ├── Games/
+│           │   ├── Index.vue
+│           │   └── Show.vue
+│           └── Settings.vue
 
 lang/
 ├── id/
@@ -999,34 +1129,57 @@ tests/
 │   │   ├── SubmitAnswerTest.php
 │   │   ├── ScoringTest.php
 │   │   └── GameFlowTest.php
+│   ├── Admin/
+│   │   ├── AdminDashboardTest.php
+│   │   ├── AdminUserManagementTest.php
+│   │   ├── AdminQuizManagementTest.php
+│   │   └── AdminGameManagementTest.php
 │   └── Auth/
 │       └── ProfileAvatarTest.php
 └── Unit/
     ├── ScoringServiceTest.php
     └── GameCodeServiceTest.php
+
+docker/
+├── nginx/
+│   ├── default.conf              # Container nginx config
+│   └── yahoot.my.id.conf         # Production reverse proxy
+└── php/
+    ├── php.ini                    # PHP configuration
+    └── opcache.ini                # OPcache configuration
+
+Dockerfile                         # Multi-stage Docker build
+docker-compose.yml                 # Docker Compose services
+.dockerignore                      # Docker ignore rules
 ```
 
 ---
 
-## 16. Milestone & Fase Pengembangan
+## 17. Milestone & Fase Pengembangan
 
 ### Fase 1 — Foundation (Sprint 1-2)
 - [x] Setup project Laravel + Inertia + Vue
-- [ ] Database migrations & models
-- [ ] Factories & seeders
-- [ ] Enums
-- [ ] Internationalization (i18n) setup
-- [ ] Avatar system (SVG components)
-- [ ] Landing page
-- [ ] User profile (avatar & language selection)
-- [ ] Middleware SetLocale
+- [x] Database migrations & models
+- [x] Factories & seeders
+- [x] Enums
+- [x] Internationalization (i18n) setup
+- [x] Avatar system (SVG components)
+- [x] Landing page
+- [x] User profile (avatar & language selection)
+- [x] Middleware SetLocale
+- [x] S3-compatible storage setup (IDCloudHost)
+- [x] Email service setup (Brevo/SMTP)
+- [x] Docker & Docker Compose setup
+- [x] Nginx reverse proxy configuration
+- [x] Admin middleware & is_admin migration
+- [x] .env.example & environment documentation
 
 ### Fase 2 — Quiz Creator (Sprint 3-4)
 - [ ] Dashboard kreator
 - [ ] Quiz CRUD
 - [ ] Question CRUD
 - [ ] Answer management
-- [ ] Image upload
+- [ ] Image upload (S3)
 - [ ] Drag & drop reorder
 - [ ] Quiz validation & publish
 - [ ] Duplicate quiz
@@ -1056,17 +1209,21 @@ tests/
 - [ ] Performance optimization
 - [ ] Accessibility (reduced motion)
 
-### Fase 5 — Testing & Launch (Sprint 10)
+### Fase 5 — Admin Panel & Launch (Sprint 10-11)
+- [ ] Admin dashboard (statistik & overview)
+- [ ] Manajemen user (CRUD, toggle admin)
+- [ ] Manajemen kuis (view, delete, restore)
+- [ ] Riwayat game session
+- [ ] Pengaturan sistem
 - [ ] Integration testing
 - [ ] E2E testing semua flow
 - [ ] Bug fixing
 - [ ] Documentation
-- [ ] Deployment guide
-- [ ] Launch 🚀
+- [ ] Deployment & launch 🚀
 
 ---
 
-## 17. Hal yang Tidak Termasuk (Out of Scope v1)
+## 18. Hal yang Tidak Termasuk (Out of Scope v1)
 
 Fitur berikut **tidak** akan dikembangkan di versi 1:
 - Tipe pertanyaan selain Multiple Choice & True/False (Puzzle, Poll, Slider, dll)
@@ -1082,7 +1239,7 @@ Fitur berikut **tidak** akan dikembangkan di versi 1:
 
 ---
 
-## 18. Glosarium
+## 19. Glosarium
 
 | Istilah | Definisi |
 |---------|----------|

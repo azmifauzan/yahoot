@@ -2,6 +2,8 @@
 
 Platform kuis interaktif real-time yang terinspirasi dari Kahoot. Gratis, open source, tanpa batasan.
 
+**Production:** [https://yahoot.my.id](https://yahoot.my.id)
+
 ## Tentang
 
 Yahoot memungkinkan kreator membuat kuis dan memainkannya bersama pemain secara real-time. Pemain bergabung menggunakan kode game 6 digit, memilih avatar, dan berkompetisi menjawab pertanyaan untuk meraih skor tertinggi.
@@ -14,6 +16,7 @@ Yahoot memungkinkan kreator membuat kuis dan memainkannya bersama pemain secara 
 - **Guest Play** — Pemain tidak perlu registrasi untuk bermain
 - **Scoring & Streak** — Sistem poin berbasis kecepatan + bonus streak
 - **Scoreboard & Leaderboard** — Peringkat per pertanyaan + podium akhir
+- **Admin Panel** — Dashboard admin untuk manajemen user, kuis, dan game
 - **Animasi** — Countdown, confetti, podium rise, dan lainnya
 - **24 Avatar** — Hewan, Robot, Monster, dan Abstrak (SVG)
 - **Dwibahasa** — Indonesia (default) & English
@@ -29,7 +32,11 @@ Yahoot memungkinkan kreator membuat kuis dan memainkannya bersama pemain secara 
 | Real-time | Laravel Reverb (WebSocket) |
 | Auth | Laravel Fortify + Jetstream + Sanctum |
 | Testing | Pest 4 |
-| Database | MySQL / PostgreSQL / SQLite |
+| Database | PostgreSQL 17 |
+| File Storage | S3-compatible (IDCloudHost) |
+| Email | Brevo (SMTP) |
+| Container | Docker + Docker Compose |
+| Reverse Proxy | Nginx |
 
 ## Persyaratan
 
@@ -37,25 +44,29 @@ Yahoot memungkinkan kreator membuat kuis dan memainkannya bersama pemain secara 
 - Composer
 - Node.js >= 18
 - npm
+- PostgreSQL 17 (atau via Docker)
 
 ## Instalasi
 
 ```bash
 # Clone repository
-git clone https://github.com/your-username/yahoot.git
+git clone https://github.com/azmifauzan/yahoot.git
 cd yahoot
 
-# Install dependencies & setup
-composer setup
-```
+# Install dependencies
+composer install
+npm install
 
-Perintah `composer setup` akan menjalankan:
-1. `composer install`
-2. Copy `.env.example` ke `.env`
-3. Generate application key
-4. Jalankan migrasi database
-5. `npm install`
-6. `npm run build`
+# Setup environment
+cp .env.example .env
+php artisan key:generate
+
+# Jalankan migrasi & seeder
+php artisan migrate --seed
+
+# Build frontend
+npm run build
+```
 
 ## Development
 
@@ -63,6 +74,55 @@ Perintah `composer setup` akan menjalankan:
 # Jalankan development server (Laravel + Vite)
 composer run dev
 ```
+
+## Docker Deployment
+
+```bash
+# Build dan jalankan semua services
+docker compose up -d --build
+
+# Jalankan migrasi
+docker compose exec app php artisan migrate --force --seed
+
+# Cache config untuk production
+docker compose exec app php artisan config:cache
+docker compose exec app php artisan route:cache
+docker compose exec app php artisan view:cache
+```
+
+### Docker Services
+
+| Service | Deskripsi | Port |
+|---------|-----------|------|
+| `app` | Laravel PHP-FPM | 9000 |
+| `nginx` | Web server | 8000 |
+| `postgres` | Database | 5432 |
+| `redis` | Cache & queue | 6379 |
+| `reverb` | WebSocket server | 8080 |
+| `queue` | Queue worker | — |
+| `scheduler` | Task scheduler | — |
+
+### Production (Nginx Reverse Proxy)
+
+Gunakan `docker/nginx/yahoot.my.id.conf` sebagai konfigurasi nginx reverse proxy di host server. Setup SSL dengan Certbot:
+
+```bash
+sudo certbot --nginx -d yahoot.my.id
+```
+
+## Environment Variables
+
+| Variable | Deskripsi | Default |
+|----------|-----------|---------|
+| `DB_CONNECTION` | Database driver | `pgsql` |
+| `FILESYSTEM_DISK` | Storage driver | `s3` |
+| `AWS_ENDPOINT` | S3 endpoint | `https://is3.cloudhost.id` |
+| `AWS_BUCKET` | S3 bucket name | `yahoot` |
+| `MAIL_MAILER` | Mail driver | `smtp` |
+| `MAIL_HOST` | SMTP host | `smtp-relay.brevo.com` |
+| `BROADCAST_CONNECTION` | Broadcasting driver | `reverb` |
+
+Lihat `.env.example` untuk konfigurasi lengkap.
 
 ## Testing
 
@@ -72,13 +132,17 @@ php artisan test
 
 # Jalankan test spesifik
 php artisan test --filter=NamaTest
+
+# Jalankan test dengan compact output
+php artisan test --compact
 ```
 
 ## Struktur Project
 
 ```
 app/
-├── Http/Controllers/    # Controller (Quiz, Question, Game, Player)
+├── Http/Controllers/    # Controller (Quiz, Game, Admin, dll)
+├── Http/Middleware/      # Middleware (SetLocale, EnsureUserIsAdmin)
 ├── Http/Requests/       # Form Request validation
 ├── Models/              # Eloquent models
 ├── Events/              # Broadcasting events (WebSocket)
@@ -87,7 +151,7 @@ app/
 └── Policies/            # Authorization policies
 
 resources/js/
-├── Pages/               # Halaman Inertia (Landing, Dashboard, Game)
+├── Pages/               # Halaman Inertia (Landing, Dashboard, Game, Admin)
 ├── Components/          # Vue components (Avatar, Game, Quiz, UI)
 ├── Layouts/             # Layout components
 ├── composables/         # Vue composables (useGame, useTimer)
@@ -97,6 +161,10 @@ database/
 ├── migrations/          # Database migrations
 ├── factories/           # Model factories
 └── seeders/             # Database seeders
+
+docker/
+├── nginx/               # Nginx config (container + reverse proxy)
+└── php/                 # PHP config (php.ini, opcache)
 ```
 
 ## Dokumentasi
