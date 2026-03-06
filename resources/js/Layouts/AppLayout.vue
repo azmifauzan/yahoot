@@ -42,13 +42,21 @@ const logout = () => {
                             </div>
 
                             <!-- Navigation Links -->
-                            <div class="hidden sm:ms-8 sm:flex sm:items-center">
+                            <div class="hidden sm:ms-8 sm:flex sm:items-center sm:gap-1">
                                 <Link
                                     :href="route('dashboard')"
                                     class="rounded-lg px-3 py-2 text-sm font-medium transition"
                                     :class="route().current('dashboard') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'"
                                 >
                                     {{ t('nav.dashboard') }}
+                                </Link>
+                                <Link
+                                    v-if="$page.props.auth.user.is_admin"
+                                    :href="route('admin.dashboard')"
+                                    class="rounded-lg px-3 py-2 text-sm font-medium transition"
+                                    :class="route().current('admin.*') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'"
+                                >
+                                    Admin
                                 </Link>
                             </div>
                         </div>
@@ -133,6 +141,14 @@ const logout = () => {
                             :class="route().current('dashboard') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'"
                         >
                             {{ t('nav.dashboard') }}
+                        </Link>
+                        <Link
+                            v-if="$page.props.auth.user.is_admin"
+                            :href="route('admin.dashboard')"
+                            class="block rounded-lg px-3 py-2 text-sm font-medium transition"
+                            :class="route().current('admin.*') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'"
+                        >
+                            Admin
                         </Link>
                     </div>
 
