@@ -23,12 +23,15 @@ class AdminQuizController extends Controller
         }
 
         if ($request->filled('status')) {
-            match ($request->input('status')) {
-                'published' => $query->where('is_published', true)->whereNull('deleted_at'),
-                'draft' => $query->where('is_published', false)->whereNull('deleted_at'),
-                'trashed' => $query->onlyTrashed(),
-                default => null,
-            };
+            $status = $request->input('status');
+
+            if ($status === 'published') {
+                $query->where('is_published', true)->whereNull('deleted_at');
+            } elseif ($status === 'draft') {
+                $query->where('is_published', false)->whereNull('deleted_at');
+            } elseif ($status === 'trashed') {
+                $query->onlyTrashed();
+            }
         }
 
         if ($request->filled('visibility')) {

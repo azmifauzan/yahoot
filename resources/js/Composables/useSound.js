@@ -36,7 +36,7 @@ export function useSound() {
             oscillator.start(ctx.currentTime);
             oscillator.stop(ctx.currentTime + duration);
         } catch {
-            // Audio not supported — fail silently
+            // Web Audio API not available in this environment
         }
     }
 
