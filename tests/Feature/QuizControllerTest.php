@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\QuizTheme;
 use App\Models\Answer;
 use App\Models\Question;
 use App\Models\Quiz;
@@ -273,4 +274,47 @@ test('cannot publish quiz with question missing correct answer', function () {
         ->post("/quizzes/{$quiz->id}/publish")
         ->assertRedirect()
         ->assertSessionHasErrors('publish');
+});
+
+test('quiz editor page includes themes', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->for($user)->create();
+
+    $response = $this->actingAs($user)
+        ->get("/quizzes/{$quiz->id}/edit")
+        ->assertSuccessful();
+
+    $themes = $response->original->getData()['page']['props']['themes'];
+    expect($themes)->not->toBeEmpty()
+        ->and(collect($themes)->pluck('value')->toArray())->toContain('standard', 'ocean', 'sunset');
+});
+
+test('users can update quiz theme', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->for($user)->create(['theme' => 'standard']);
+
+    $this->actingAs($user)
+        ->put("/quizzes/{$quiz->id}", ['theme' => 'ocean'])
+        ->assertRedirect();
+
+    expect($quiz->fresh()->theme)->toBe(QuizTheme::Ocean);
+});
+
+test('invalid theme is rejected', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->for($user)->create();
+
+    $this->actingAs($user)
+        ->put("/quizzes/{$quiz->id}", ['theme' => 'invalid_theme'])
+        ->assertSessionHasErrors('theme');
+});
+
+test('new quiz has standard theme by default', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post('/quizzes', ['title' => 'Theme Test Quiz']);
+
+    $quiz = Quiz::where('title', 'Theme Test Quiz')->first();
+    expect($quiz->theme)->toBe(QuizTheme::Standard);
 });

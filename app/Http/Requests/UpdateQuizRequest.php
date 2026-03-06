@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\QuizTheme;
 use App\Enums\QuizVisibility;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -23,6 +24,7 @@ class UpdateQuizRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:1000'],
             'cover_image' => ['nullable', 'image', 'max:2048'],
             'visibility' => ['nullable', Rule::enum(QuizVisibility::class)],
+            'theme' => ['nullable', Rule::enum(QuizTheme::class)],
         ];
     }
 }

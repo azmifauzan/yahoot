@@ -6,6 +6,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import QuestionSidebar from '@/Components/Quiz/QuestionSidebar.vue';
 import QuestionEditor from '@/Components/Quiz/QuestionEditor.vue';
 import QuestionProperties from '@/Components/Quiz/QuestionProperties.vue';
+import ThemeSelector from '@/Components/Quiz/ThemeSelector.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
@@ -16,6 +17,7 @@ const props = defineProps({
     questionTypes: Array,
     pointTypes: Array,
     answerColors: Array,
+    themes: Array,
 });
 
 // Quiz header form
@@ -311,6 +313,17 @@ function togglePublish() {
     });
 }
 
+// Update theme
+function updateTheme(themeValue) {
+    if (isNew.value) return;
+    router.put(route('quizzes.update', props.quiz.id), {
+        theme: themeValue,
+    }, {
+        preserveScroll: true,
+        preserveState: true,
+    });
+}
+
 // Question validation indicator
 function isQuestionComplete(question) {
     if (!question.question_text) return false;
@@ -477,14 +490,25 @@ function isQuestionComplete(question) {
                 </div>
             </div>
 
-            <!-- Right Sidebar - Question Properties -->
-            <QuestionProperties
-                v-if="selectedQuestion"
-                :question="selectedQuestion"
-                :questionTypes="questionTypes"
-                :pointTypes="pointTypes"
-                @update="(data) => updateQuestion(selectedQuestion, data)"
-            />
+            <!-- Right Sidebar - Question Properties + Theme -->
+            <div class="w-64 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+                <QuestionProperties
+                    v-if="selectedQuestion"
+                    :question="selectedQuestion"
+                    :questionTypes="questionTypes"
+                    :pointTypes="pointTypes"
+                    @update="(data) => updateQuestion(selectedQuestion, data)"
+                />
+
+                <!-- Theme Selector -->
+                <div :class="selectedQuestion ? 'mt-6 pt-6 border-t border-gray-200 dark:border-gray-700' : ''">
+                    <ThemeSelector
+                        :themes="themes"
+                        :currentTheme="quiz?.theme?.value || quiz?.theme || 'standard'"
+                        @select="updateTheme"
+                    />
+                </div>
+            </div>
         </div>
 
         <!-- New Quiz Form -->

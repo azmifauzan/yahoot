@@ -97,7 +97,8 @@
         "upload_hint": "PNG, JPG up to 2MB",
         "unsaved_title": "Unsaved Changes",
         "unsaved_text": "You have unsaved changes. Are you sure you want to leave?",
-        "leave": "Leave"
+        "leave": "Leave",
+        "theme": "Theme"
     },
     "game": {
         "game_code": "Game Code",

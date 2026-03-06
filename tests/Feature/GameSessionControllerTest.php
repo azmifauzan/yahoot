@@ -1,12 +1,14 @@
 <?php
 
 use App\Enums\GameStatus;
+use App\Jobs\AutoRevealAnswer;
 use App\Models\Answer;
 use App\Models\GamePlayer;
 use App\Models\GameSession;
 use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\User;
+use Illuminate\Support\Facades\Bus;
 
 function createGameSetup(): array
 {
@@ -84,6 +86,8 @@ test('non-host cannot view game lobby', function () {
 });
 
 test('host can start a game with players', function () {
+    Bus::fake(AutoRevealAnswer::class);
+
     [$user, $quiz] = createGameSetup();
 
     $session = GameSession::factory()->create([
@@ -97,6 +101,8 @@ test('host can start a game with players', function () {
         ->assertRedirect();
 
     expect($session->fresh()->status)->toBe(GameStatus::Playing);
+
+    Bus::assertDispatched(AutoRevealAnswer::class);
 });
 
 test('host cannot start game without players', function () {

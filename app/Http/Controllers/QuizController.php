@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\AnswerColor;
 use App\Enums\PointType;
 use App\Enums\QuestionType;
+use App\Enums\QuizTheme;
 use App\Enums\QuizVisibility;
 use App\Http\Requests\StoreQuizRequest;
 use App\Http\Requests\UpdateQuizRequest;
@@ -58,6 +59,11 @@ class QuizController extends Controller
                 'hex' => $color->hex(),
                 'shape' => $color->shape(),
             ]),
+            'themes' => collect(QuizTheme::cases())->map(fn (QuizTheme $theme) => [
+                'value' => $theme->value,
+                'label' => $theme->label(),
+                'gradients' => $theme->gradients(),
+            ]),
         ]);
     }
 
@@ -94,6 +100,11 @@ class QuizController extends Controller
                 'value' => $color->value,
                 'hex' => $color->hex(),
                 'shape' => $color->shape(),
+            ]),
+            'themes' => collect(QuizTheme::cases())->map(fn (QuizTheme $theme) => [
+                'value' => $theme->value,
+                'label' => $theme->label(),
+                'gradients' => $theme->gradients(),
             ]),
         ]);
     }

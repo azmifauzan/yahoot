@@ -97,7 +97,8 @@
         "upload_hint": "PNG, JPG maksimal 2MB",
         "unsaved_title": "Perubahan Belum Disimpan",
         "unsaved_text": "Ada perubahan yang belum disimpan. Yakin ingin keluar?",
-        "leave": "Keluar"
+        "leave": "Keluar",
+        "theme": "Tema"
     },
     "game": {
         "game_code": "Kode Game",

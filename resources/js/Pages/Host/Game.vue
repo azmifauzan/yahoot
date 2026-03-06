@@ -15,11 +15,20 @@ const props = defineProps({
     quiz: Object,
     questions: Array,
     players: Array,
+    theme: Object,
+});
+
+const themeGradients = computed(() => props.theme?.gradients || {
+    lobby: 'from-indigo-600 to-purple-700',
+    question: 'bg-gray-900',
+    scoreboard: 'from-indigo-600 to-purple-700',
+    finished: 'from-yellow-400 via-pink-500 to-purple-600',
 });
 
 const countdownValue = ref(null);
 const showConfetti = ref(false);
 const isCountdownRunning = ref(false);
+const hasShownCountdown = ref(false);
 
 const joinUrl = computed(() => {
     const base = window.location.origin;
@@ -56,8 +65,12 @@ onMounted(() => {
 
 // Watch for question state to start timer
 watch(gameState, (state) => {
-    if (state === 'question' && timeLimit.value > 0 && !isCountdownRunning.value) {
+    if (state === 'question' && timeLimit.value > 0 && !isCountdownRunning.value && !hasShownCountdown.value) {
         runCountdown();
+    }
+    // Reset countdown flag if kembali ke lobby atau selesai
+    if (state === 'lobby' || state === 'finished') {
+        hasShownCountdown.value = false;
     }
 });
 
@@ -74,6 +87,7 @@ async function runCountdown() {
     await new Promise(r => setTimeout(r, 500));
 
     countdownValue.value = null;
+    hasShownCountdown.value = true;
     gameState.value = 'question';
     await nextTick();
     isCountdownRunning.value = false;
@@ -139,7 +153,7 @@ watch(gameState, (state) => {
         <ConfettiEffect v-if="showConfetti" :duration="6000" @complete="showConfetti = false" />
 
         <!-- LOBBY -->
-        <div v-if="gameState === 'lobby'" class="flex-1 flex flex-col bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
+        <div v-if="gameState === 'lobby'" class="flex-1 flex flex-col text-white bg-gradient-to-br" :class="themeGradients.lobby">
             <!-- Header with QR Code -->
             <div class="flex flex-col md:flex-row items-center justify-center gap-6 pt-8 pb-4 px-6 animate-slide-in-down">
                 <!-- QR Code -->
@@ -211,7 +225,7 @@ watch(gameState, (state) => {
         </div>
 
         <!-- QUESTION -->
-        <div v-else-if="gameState === 'question'" class="flex-1 flex flex-col bg-gray-900 text-white">
+        <div v-else-if="gameState === 'question'" class="flex-1 flex flex-col text-white" :class="themeGradients.question">
             <!-- Timer bar -->
             <div class="h-2 bg-gray-700">
                 <div
@@ -266,7 +280,7 @@ watch(gameState, (state) => {
         </div>
 
         <!-- RESULT / ANSWER REVEAL -->
-        <div v-else-if="gameState === 'result'" class="flex-1 flex flex-col bg-gray-900 text-white">
+        <div v-else-if="gameState === 'result'" class="flex-1 flex flex-col text-white" :class="themeGradients.question">
             <div class="p-6 text-center animate-slide-in-down">
                 <h2 class="text-2xl font-extrabold mb-6">{{ currentQuestion?.question_text }}</h2>
             </div>
@@ -309,7 +323,7 @@ watch(gameState, (state) => {
         </div>
 
         <!-- SCOREBOARD -->
-        <div v-else-if="gameState === 'scoreboard'" class="flex-1 flex flex-col bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
+        <div v-else-if="gameState === 'scoreboard'" class="flex-1 flex flex-col text-white bg-gradient-to-br" :class="themeGradients.scoreboard">
             <div class="p-6 text-center animate-slide-in-down">
                 <h2 class="text-3xl font-extrabold">{{ t('host.scoreboard') }}</h2>
             </div>
@@ -342,7 +356,7 @@ watch(gameState, (state) => {
         </div>
 
         <!-- FINISHED / PODIUM -->
-        <div v-else-if="gameState === 'finished'" class="flex-1 flex flex-col bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 text-white">
+        <div v-else-if="gameState === 'finished'" class="flex-1 flex flex-col text-white bg-gradient-to-br" :class="themeGradients.finished">
             <div class="p-6 text-center animate-slide-in-down">
                 <h2 class="text-4xl font-extrabold">🏆 {{ t('host.game_over') }}</h2>
             </div>

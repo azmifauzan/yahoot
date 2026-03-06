@@ -97,7 +97,7 @@ function getQuestionTypeLabel(qt) {
 </script>
 
 <template>
-    <div class="w-64 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+    <div>
         <h3 class="mb-4 text-sm font-semibold text-gray-500 uppercase tracking-wide dark:text-gray-400">
             {{ t('quiz.question_type') }}
         </h3>

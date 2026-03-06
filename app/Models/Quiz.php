@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\QuizTheme;
 use App\Enums\QuizVisibility;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,7 @@ class Quiz extends Model
         'visibility',
         'is_published',
         'settings',
+        'theme',
     ];
 
     protected function casts(): array
@@ -32,6 +34,7 @@ class Quiz extends Model
             'visibility' => QuizVisibility::class,
             'is_published' => 'boolean',
             'settings' => 'array',
+            'theme' => QuizTheme::class,
         ];
     }
 

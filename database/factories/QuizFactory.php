@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\QuizTheme;
 use App\Enums\QuizVisibility;
 use App\Models\Quiz;
 use App\Models\User;
@@ -24,6 +25,7 @@ class QuizFactory extends Factory
             'visibility' => QuizVisibility::Private,
             'is_published' => false,
             'settings' => null,
+            'theme' => QuizTheme::Standard,
         ];
     }
 

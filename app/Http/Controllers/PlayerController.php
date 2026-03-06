@@ -10,6 +10,7 @@ use App\Http\Requests\Game\SubmitAnswerRequest;
 use App\Models\GamePlayer;
 use App\Models\GameSession;
 use App\Models\PlayerAnswer;
+use App\Services\RevealService;
 use App\Services\ScoringService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,8 @@ use Inertia\Response;
 class PlayerController extends Controller
 {
     public function __construct(
-        private ScoringService $scoringService
+        private ScoringService $scoringService,
+        private RevealService $revealService
     ) {}
 
     /**
@@ -192,6 +194,11 @@ class PlayerController extends Controller
             $answeredCount,
             $totalPlayers
         ));
+
+        // Auto-reveal when all connected players have answered
+        if ($answeredCount >= $totalPlayers) {
+            $this->revealService->reveal($gameSession->fresh());
+        }
 
         return response()->json([
             'is_correct' => $isCorrect,

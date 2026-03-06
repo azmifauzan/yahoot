@@ -3,15 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Enums\GameStatus;
-use App\Events\AnswerRevealed;
 use App\Events\GameEnded;
 use App\Events\GameStarted;
 use App\Events\QuestionStarted;
-use App\Events\ScoreboardUpdated;
+use App\Jobs\AutoRevealAnswer;
 use App\Models\GameSession;
-use App\Models\PlayerAnswer;
 use App\Models\Quiz;
 use App\Services\GameCodeService;
+use App\Services\RevealService;
 use App\Services\ScoringService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,7 +21,8 @@ class GameSessionController extends Controller
 {
     public function __construct(
         private GameCodeService $gameCodeService,
-        private ScoringService $scoringService
+        private ScoringService $scoringService,
+        private RevealService $revealService
     ) {}
 
     /**
@@ -64,11 +64,17 @@ class GameSessionController extends Controller
 
         $gameSession->load(['quiz.questions.answers', 'players']);
 
+        $theme = $gameSession->quiz->theme ?? \App\Enums\QuizTheme::Standard;
+
         return Inertia::render('Host/Game', [
             'gameSession' => $gameSession,
             'quiz' => $gameSession->quiz,
             'questions' => $gameSession->quiz->questions,
             'players' => $gameSession->players,
+            'theme' => [
+                'value' => $theme->value,
+                'gradients' => $theme->gradients(),
+            ],
         ]);
     }
 
@@ -148,87 +154,7 @@ class GameSessionController extends Controller
             abort(403);
         }
 
-        $questions = $gameSession->quiz->questions()->orderBy('order')->get();
-        $currentQuestion = $questions[$gameSession->current_question_index] ?? null;
-
-        if (! $currentQuestion) {
-            return back()->withErrors(['game' => 'No current question found.']);
-        }
-
-        $currentQuestion->load('answers');
-
-        $correctAnswers = $currentQuestion->answers->where('is_correct', true);
-        $correctAnswerData = $correctAnswers->map(fn ($a) => [
-            'id' => $a->id,
-            'answer_text' => $a->answer_text,
-            'color' => $a->color->value,
-        ])->values()->toArray();
-
-        // Get answer stats
-        $answerStats = [];
-        foreach ($currentQuestion->answers as $answer) {
-            $count = PlayerAnswer::query()
-                ->whereIn('game_player_id', $gameSession->players()->pluck('id'))
-                ->where('question_id', $currentQuestion->id)
-                ->where('answer_id', $answer->id)
-                ->count();
-
-            $answerStats[] = [
-                'answer_id' => $answer->id,
-                'color' => $answer->color->value,
-                'count' => $count,
-            ];
-        }
-
-        $noAnswerCount = $gameSession->players()->count() - PlayerAnswer::query()
-            ->whereIn('game_player_id', $gameSession->players()->pluck('id'))
-            ->where('question_id', $currentQuestion->id)
-            ->whereNotNull('answer_id')
-            ->count();
-
-        // Per-player results
-        $playerResults = [];
-        foreach ($gameSession->players as $player) {
-            $playerAnswer = PlayerAnswer::query()
-                ->where('game_player_id', $player->id)
-                ->where('question_id', $currentQuestion->id)
-                ->first();
-
-            $playerResults[] = [
-                'player_id' => $player->id,
-                'is_correct' => $playerAnswer?->is_correct ?? false,
-                'points_earned' => $playerAnswer?->points_earned ?? 0,
-                'streak_bonus' => $playerAnswer?->streak_bonus ?? 0,
-                'answer_id' => $playerAnswer?->answer_id,
-            ];
-        }
-
-        $gameSession->update(['status' => GameStatus::Reviewing]);
-
-        broadcast(new AnswerRevealed(
-            $gameSession->id,
-            ['answers' => $correctAnswerData],
-            ['answer_counts' => $answerStats, 'no_answer_count' => $noAnswerCount],
-            $playerResults
-        ));
-
-        // Build and broadcast scoreboard
-        $leaderboard = $this->scoringService->getLeaderboard($gameSession->id, 5);
-        $allPositions = $this->scoringService->getLeaderboard($gameSession->id);
-
-        $playerPositions = [];
-        foreach ($allPositions as $entry) {
-            $playerPositions[$entry['player_id']] = [
-                'rank' => $entry['rank'],
-                'score' => $entry['score'],
-            ];
-        }
-
-        broadcast(new ScoreboardUpdated(
-            $gameSession->id,
-            $leaderboard,
-            $playerPositions
-        ));
+        $this->revealService->reveal($gameSession);
 
         return back();
     }
@@ -359,5 +285,9 @@ class GameSessionController extends Controller
             $questions->count(),
             $currentQuestion->time_limit
         ));
+
+        // Dispatch auto-reveal job after time limit expires (+ 3s countdown + 2s buffer)
+        AutoRevealAnswer::dispatch($gameSession->id, $gameSession->current_question_index)
+            ->delay(now()->addSeconds($currentQuestion->time_limit + 5));
     }
 }
