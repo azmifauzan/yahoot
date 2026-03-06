@@ -1202,20 +1202,20 @@ docker-compose.yml                 # Docker Compose services
 - [x] Semua animasi (lihat Section 10)
 - [x] Confetti effect
 - [x] Podium & final leaderboard
-- [ ] Sound effects (opsional)
+- [x] Sound effects (opsional)
 - [x] Motivational messages
 - [x] CSV export
-- [ ] Responsive testing
-- [ ] Performance optimization
+- [x] Responsive testing
+- [x] Performance optimization
 - [x] Accessibility (reduced motion)
 
 ### Fase 5 — Admin Panel & Launch (Sprint 10-11)
-- [ ] Admin dashboard (statistik & overview)
-- [ ] Manajemen user (CRUD, toggle admin)
-- [ ] Manajemen kuis (view, delete, restore)
-- [ ] Riwayat game session
-- [ ] Pengaturan sistem
-- [ ] Integration testing
+- [x] Admin dashboard (statistik & overview)
+- [x] Manajemen user (CRUD, toggle admin)
+- [x] Manajemen kuis (view, delete, restore)
+- [x] Riwayat game session
+- [x] Pengaturan sistem
+- [x] Integration testing
 - [ ] E2E testing semua flow
 - [ ] Bug fixing
 - [ ] Documentation

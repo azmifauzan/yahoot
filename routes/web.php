@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminGameController;
+use App\Http\Controllers\Admin\AdminQuizController;
+use App\Http\Controllers\Admin\AdminSettingController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\GameSessionController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\QuestionController;
@@ -62,3 +67,33 @@ Route::middleware([
         Route::get('/{gameSession}/export', [GameSessionController::class, 'export'])->name('export');
     });
 });
+
+// Admin routes
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('/', [AdminUserController::class, 'index'])->name('index');
+            Route::get('/{user}', [AdminUserController::class, 'show'])->name('show');
+            Route::post('/{user}/toggle-admin', [AdminUserController::class, 'toggleAdmin'])->name('toggle-admin');
+            Route::delete('/{user}', [AdminUserController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('quizzes')->name('quizzes.')->group(function () {
+            Route::get('/', [AdminQuizController::class, 'index'])->name('index');
+            Route::get('/{quiz}', [AdminQuizController::class, 'show'])->name('show');
+            Route::delete('/{quiz}', [AdminQuizController::class, 'destroy'])->name('destroy');
+            Route::post('/{quiz}/restore', [AdminQuizController::class, 'restore'])->name('restore');
+        });
+
+        Route::prefix('games')->name('games.')->group(function () {
+            Route::get('/', [AdminGameController::class, 'index'])->name('index');
+            Route::get('/{gameSession}', [AdminGameController::class, 'show'])->name('show');
+            Route::delete('/{gameSession}', [AdminGameController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::get('/settings', [AdminSettingController::class, 'index'])->name('settings');
+    });
