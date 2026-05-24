@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\GameStatus;
+use App\Enums\QuizTheme;
 use App\Events\GameEnded;
 use App\Events\GameStarted;
 use App\Events\QuestionStarted;
@@ -16,6 +17,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class GameSessionController extends Controller
 {
@@ -30,9 +32,7 @@ class GameSessionController extends Controller
      */
     public function store(Request $request, Quiz $quiz): RedirectResponse
     {
-        if ($quiz->user_id !== $request->user()->id) {
-            abort(403);
-        }
+        $this->authorize('update', $quiz);
 
         if (! $quiz->is_published) {
             return back()->withErrors(['quiz' => 'Quiz must be published before starting a game.']);
@@ -58,13 +58,11 @@ class GameSessionController extends Controller
      */
     public function host(GameSession $gameSession): Response
     {
-        if ($gameSession->host_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('view', $gameSession);
 
         $gameSession->load(['quiz.questions.answers', 'players']);
 
-        $theme = $gameSession->quiz->theme ?? \App\Enums\QuizTheme::Standard;
+        $theme = $gameSession->quiz->theme ?? QuizTheme::Standard;
 
         return Inertia::render('Host/Game', [
             'gameSession' => $gameSession,
@@ -83,9 +81,7 @@ class GameSessionController extends Controller
      */
     public function start(GameSession $gameSession): RedirectResponse
     {
-        if ($gameSession->host_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('start', $gameSession);
 
         if ($gameSession->status !== GameStatus::Waiting) {
             return back()->withErrors(['game' => 'Game has already started.']);
@@ -119,9 +115,7 @@ class GameSessionController extends Controller
      */
     public function next(GameSession $gameSession): RedirectResponse
     {
-        if ($gameSession->host_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('next', $gameSession);
 
         if ($gameSession->status !== GameStatus::Playing && $gameSession->status !== GameStatus::Reviewing) {
             return back()->withErrors(['game' => 'Game is not in progress.']);
@@ -150,9 +144,7 @@ class GameSessionController extends Controller
      */
     public function reveal(GameSession $gameSession): RedirectResponse
     {
-        if ($gameSession->host_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('reveal', $gameSession);
 
         $this->revealService->reveal($gameSession);
 
@@ -164,9 +156,7 @@ class GameSessionController extends Controller
      */
     public function end(GameSession $gameSession): RedirectResponse
     {
-        if ($gameSession->host_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('end', $gameSession);
 
         $gameSession->update([
             'status' => GameStatus::Finished,
@@ -177,11 +167,13 @@ class GameSessionController extends Controller
 
         $finalLeaderboard = $this->scoringService->getLeaderboard($gameSession->id);
         $podium = $finalLeaderboard->take(3)->values()->toArray();
+        $playerStats = $this->scoringService->getPlayerStats($gameSession->id);
 
         broadcast(new GameEnded(
             $gameSession->id,
             $finalLeaderboard,
-            $podium
+            $podium,
+            $playerStats
         ));
 
         return redirect()->route('game.results', $gameSession);
@@ -192,9 +184,7 @@ class GameSessionController extends Controller
      */
     public function results(GameSession $gameSession): Response
     {
-        if ($gameSession->host_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('results', $gameSession);
 
         $gameSession->load(['quiz', 'players.playerAnswers']);
 
@@ -227,11 +217,9 @@ class GameSessionController extends Controller
     /**
      * Export game results as CSV.
      */
-    public function export(GameSession $gameSession): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function export(GameSession $gameSession): StreamedResponse
     {
-        if ($gameSession->host_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('export', $gameSession);
 
         $gameSession->load(['quiz', 'players.playerAnswers']);
 

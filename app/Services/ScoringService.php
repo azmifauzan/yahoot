@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\GamePlayer;
+use App\Models\PlayerAnswer;
 use App\Models\Question;
+use Illuminate\Support\Collection;
 
 class ScoringService
 {
@@ -55,11 +57,12 @@ class ScoringService
     /**
      * Get the leaderboard for a game session.
      *
-     * @return \Illuminate\Support\Collection<int, array{rank: int, player_id: int, nickname: string, avatar: string, score: int}>
+     * @return Collection<int, array{rank: int, player_id: int, nickname: string, avatar: string, score: int, correct_count: int, best_streak: int}>
      */
-    public function getLeaderboard(int $gameSessionId, int $limit = 0): \Illuminate\Support\Collection
+    public function getLeaderboard(int $gameSessionId, int $limit = 0): Collection
     {
         $query = GamePlayer::query()
+            ->with('playerAnswers')
             ->where('game_session_id', $gameSessionId)
             ->orderByDesc('score')
             ->orderBy('id');
@@ -69,13 +72,65 @@ class ScoringService
         }
 
         return $query->get()->values()->map(function (GamePlayer $player, int $index) {
+            $answers = $player->playerAnswers;
+            $correctCount = $answers->where('is_correct', true)->count();
+            $bestStreak = $this->computeBestStreak($answers);
+
             return [
                 'rank' => $index + 1,
                 'player_id' => $player->id,
                 'nickname' => $player->nickname,
                 'avatar' => $player->avatar,
                 'score' => $player->score,
+                'correct_count' => $correctCount,
+                'best_streak' => $bestStreak,
+                'avg_time' => $answers->whereNotNull('answer_id')->avg('time_taken') ?? 0,
             ];
         });
+    }
+
+    /**
+     * Get per-player stats for a game session (keyed by player_id).
+     *
+     * @return Collection<int, array<string, mixed>>
+     */
+    public function getPlayerStats(int $gameSessionId): Collection
+    {
+        return GamePlayer::query()
+            ->with('playerAnswers')
+            ->where('game_session_id', $gameSessionId)
+            ->get()
+            ->map(function (GamePlayer $player) {
+                $answers = $player->playerAnswers;
+
+                return [
+                    'player_id' => $player->id,
+                    'correct_answers' => $answers->where('is_correct', true)->count(),
+                    'total_answers' => $answers->count(),
+                    'longest_streak' => $this->computeBestStreak($answers),
+                    'avg_time' => $answers->whereNotNull('answer_id')->avg('time_taken') ?? 0,
+                ];
+            })
+            ->keyBy('player_id');
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Collection<int, PlayerAnswer>  $answers
+     */
+    private function computeBestStreak(\Illuminate\Database\Eloquent\Collection $answers): int
+    {
+        $best = 0;
+        $current = 0;
+
+        foreach ($answers as $answer) {
+            if ($answer->is_correct) {
+                $current++;
+                $best = max($best, $current);
+            } else {
+                $current = 0;
+            }
+        }
+
+        return $best;
     }
 }

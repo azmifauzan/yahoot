@@ -1,4 +1,36 @@
 <laravel-boost-guidelines>
+=== project context ===
+
+# Yahoot — Project Context
+
+Real-time quiz platform (Kahoot-inspired). Laravel 12 + Vue 3 + Inertia v2 + Reverb WebSocket.
+
+> See CLAUDE.md for full project reference (commands, architecture, conventions, game flow).
+
+## Domain Model
+
+```
+User → Quiz → Question → Answer
+Quiz → GameSession → GamePlayer → PlayerAnswer
+```
+
+## Key Directories
+
+- `app/Services/` — GameService, ScoringService (core business logic)
+- `app/Events/` — Broadcasting events for Reverb WebSocket
+- `app/Enums/` — GameStatus, QuestionType, etc.
+- `routes/channels.php` — WebSocket channel authorization
+- `routes/api.php` — Stateless REST API (join/answer/status, for mobile)
+- `resources/js/Pages/` — Inertia page components
+- `resources/js/composables/` — useGame, useTimer, etc.
+- `resources/js/locales/` — i18n (id.json default, en.json fallback)
+
+## Dev Commands
+
+- `composer run dev` — all dev servers (Laravel + queue + Pail + Vite)
+- `php artisan test --compact` — run tests
+- `vendor/bin/pint --dirty --format agent` — format PHP after changes
+
 === foundation rules ===
 
 # Laravel Boost Guidelines

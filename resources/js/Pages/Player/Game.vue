@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch, nextTick } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import { useGame } from '@/Composables/useGame';
@@ -17,10 +17,11 @@ const player = ref(null);
 const selectedAnswer = ref(null);
 const hasAnswered = ref(false);
 const countdownValue = ref(null);
+const isCountdownRunning = ref(false);
+const pendingCountdown = ref(false);
 const showConfetti = ref(false);
 const rippleId = ref(null);
 const showShake = ref(false);
-const isCountdownRunning = ref(false);
 
 const { timeRemaining, progress, start: startTimer, stop: stopTimer, getElapsedMs } = useTimer();
 
@@ -40,19 +41,26 @@ onMounted(() => {
     joinChannel();
 });
 
-// Auto-start timer when question arrives
 watch(gameState, (state) => {
-    if (state === 'question' && !isCountdownRunning.value) {
+    if (state === 'countdown') {
+        // GameStarted event — mark first question needs countdown animation
+        pendingCountdown.value = true;
+    }
+    if (state === 'question') {
         selectedAnswer.value = null;
         hasAnswered.value = false;
-        runCountdown();
+        if (pendingCountdown.value) {
+            pendingCountdown.value = false;
+            runCountdown();
+        } else {
+            startTimer(timeLimit.value);
+        }
     }
 });
 
 async function runCountdown() {
     isCountdownRunning.value = true;
     countdownValue.value = 3;
-    gameState.value = 'countdown';
 
     for (let i = 3; i >= 1; i--) {
         countdownValue.value = i;
@@ -60,8 +68,6 @@ async function runCountdown() {
     }
 
     countdownValue.value = null;
-    gameState.value = 'question';
-    await nextTick();
     isCountdownRunning.value = false;
     startTimer(timeLimit.value);
 }
@@ -176,8 +182,8 @@ function goHome() {
             </div>
         </div>
 
-        <!-- Countdown -->
-        <div v-else-if="gameState === 'countdown'" class="flex-1 flex items-center justify-center" :class="{
+        <!-- Countdown (first question only) -->
+        <div v-else-if="isCountdownRunning" class="flex-1 flex items-center justify-center" :class="{
             'bg-red-500': countdownValue === 3,
             'bg-yellow-500': countdownValue === 2,
             'bg-green-500': countdownValue === 1,

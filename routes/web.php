@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin;
 use App\Http\Controllers\GameSessionController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\QuestionController;
@@ -22,6 +23,39 @@ Route::get('/images/{path}', [QuestionImageController::class, 'show'])
 // Player routes (no auth required — guests can play)
 Route::get('/play', [PlayerController::class, 'join'])->name('play');
 Route::get('/play/{code}', [PlayerController::class, 'play'])->name('play.game');
+
+// Admin routes
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+    'admin',
+])->prefix('admin')->name('admin.')->group(function (): void {
+    Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
+
+    Route::prefix('users')->name('users.')->group(function (): void {
+        Route::get('/', [Admin\UserController::class, 'index'])->name('index');
+        Route::get('/{user}', [Admin\UserController::class, 'show'])->name('show');
+        Route::put('/{user}', [Admin\UserController::class, 'update'])->name('update');
+        Route::delete('/{user}', [Admin\UserController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('quizzes')->name('quizzes.')->group(function (): void {
+        Route::get('/', [Admin\QuizController::class, 'index'])->name('index');
+        Route::get('/{quiz}', [Admin\QuizController::class, 'show'])->name('show');
+        Route::delete('/{id}', [Admin\QuizController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/restore', [Admin\QuizController::class, 'restore'])->name('restore');
+    });
+
+    Route::prefix('games')->name('games.')->group(function (): void {
+        Route::get('/', [Admin\GameController::class, 'index'])->name('index');
+        Route::get('/{gameSession}', [Admin\GameController::class, 'show'])->name('show');
+        Route::delete('/{gameSession}', [Admin\GameController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::get('/settings', [Admin\SettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [Admin\SettingController::class, 'update'])->name('settings.update');
+});
 
 Route::middleware([
     'auth:sanctum',

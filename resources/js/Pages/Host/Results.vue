@@ -107,7 +107,13 @@ const rest = computed(() => props.leaderboard.slice(3));
 
         <!-- Actions -->
         <div class="sticky bottom-0 bg-black/30 backdrop-blur p-4">
-            <div class="max-w-3xl mx-auto flex justify-center gap-4">
+            <div class="max-w-3xl mx-auto flex justify-center gap-4 flex-wrap">
+                <button
+                    @click="router.post(route('game.store', quiz.id))"
+                    class="px-6 py-3 bg-green-500 hover:bg-green-400 text-white font-bold rounded-xl transition-colors"
+                >
+                    🔄 {{ t('game.play_again') }}
+                </button>
                 <a
                     :href="route('game.export', gameSession.id)"
                     class="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl transition-colors"
