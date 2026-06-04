@@ -46,7 +46,7 @@ const logout = () => {
                                 <Link
                                     :href="route('dashboard')"
                                     class="rounded-lg px-3 py-2 text-sm font-medium transition"
-                                    :class="route().current('dashboard') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'"
+                                    :class="route().current('dashboard') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'text-gray-600 hover:bg-gray-50 hover:text-primary-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-primary-400'"
                                 >
                                     {{ t('nav.dashboard') }}
                                 </Link>

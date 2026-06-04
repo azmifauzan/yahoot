@@ -45,7 +45,7 @@ const themePreviewGradients = {
                 :class="[
                     'relative rounded-xl overflow-hidden border-2 transition-all hover:scale-105',
                     currentTheme === theme.value
-                        ? 'border-gray-900 ring-2 ring-gray-900/20 dark:border-white dark:ring-white/20'
+                        ? 'border-primary-500 ring-2 ring-primary-500/30 dark:border-primary-400 dark:ring-primary-400/30'
                         : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500',
                 ]"
             >
@@ -60,7 +60,7 @@ const themePreviewGradients = {
                 <!-- Checkmark for selected -->
                 <div
                     v-if="currentTheme === theme.value"
-                    class="absolute top-1 right-1 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full w-5 h-5 flex items-center justify-center"
+                    class="absolute top-1 right-1 bg-primary-600 text-white rounded-full w-5 h-5 flex items-center justify-center"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />

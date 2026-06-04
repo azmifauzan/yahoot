@@ -67,7 +67,7 @@ function getTypeIcon(type) {
         <div class="sticky top-0 z-10 border-b border-gray-100 bg-white p-3 dark:border-gray-800 dark:bg-gray-950">
             <button
                 @click="emit('add')"
-                class="flex w-full items-center justify-center gap-2 rounded-lg bg-gray-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+                class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -91,7 +91,7 @@ function getTypeIcon(type) {
                 :class="[
                     'group relative cursor-pointer rounded-lg border-2 p-2 transition',
                     selectedIndex === index
-                        ? 'border-gray-900 bg-gray-100 dark:border-white dark:bg-gray-800'
+                        ? 'border-primary-500 bg-primary-50 dark:border-primary-400 dark:bg-primary-900/30'
                         : 'border-transparent hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-600 dark:hover:bg-gray-700',
                     dragOverIndex === index ? 'border-gray-400 bg-gray-50 dark:bg-gray-800/50' : '',
                     draggedIndex === index ? 'opacity-50' : '',
