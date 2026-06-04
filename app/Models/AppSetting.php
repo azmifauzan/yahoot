@@ -18,7 +18,13 @@ class AppSetting extends Model
         static::updateOrCreate(['key' => $key], ['value' => $value]);
     }
 
-    public static function all(array $keys = []): array
+    /**
+     * Fetch multiple settings as a key/value map.
+     *
+     * @param  array<int, string>  $keys
+     * @return array<string, mixed>
+     */
+    public static function getMany(array $keys = []): array
     {
         $query = static::query();
         if ($keys) {

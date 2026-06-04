@@ -84,7 +84,7 @@ class ScoringService
                 'score' => $player->score,
                 'correct_count' => $correctCount,
                 'best_streak' => $bestStreak,
-                'avg_time' => $answers->whereNotNull('answer_id')->avg('time_taken') ?? 0,
+                'avg_time' => (float) ($answers->whereNotNull('answer_id')->avg('time_taken') ?? 0),
             ];
         });
     }
@@ -108,7 +108,7 @@ class ScoringService
                     'correct_answers' => $answers->where('is_correct', true)->count(),
                     'total_answers' => $answers->count(),
                     'longest_streak' => $this->computeBestStreak($answers),
-                    'avg_time' => $answers->whereNotNull('answer_id')->avg('time_taken') ?? 0,
+                    'avg_time' => (float) ($answers->whereNotNull('answer_id')->avg('time_taken') ?? 0),
                 ];
             })
             ->keyBy('player_id');

@@ -4,11 +4,16 @@ import { Head, router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import { useGame } from '@/Composables/useGame';
 import { useTimer } from '@/Composables/useTimer';
+import { useSound } from '@/Composables/useSound';
 import AvatarDisplay from '@/Components/Avatar/AvatarDisplay.vue';
 import ConfettiEffect from '@/Components/Game/ConfettiEffect.vue';
 import QRCodeDisplay from '@/Components/Game/QRCodeDisplay.vue';
+import GameLayout from '@/Components/Game/GameLayout.vue';
+import CountdownOverlay from '@/Components/Game/CountdownOverlay.vue';
+import TimerBar from '@/Components/Game/TimerBar.vue';
 
 const { t } = useI18n();
+const sound = useSound();
 
 const props = defineProps({
     gameSession: Object,
@@ -81,9 +86,11 @@ async function runCountdown() {
 
     for (let i = 3; i >= 1; i--) {
         countdownValue.value = i;
+        sound.tick();
         await new Promise(r => setTimeout(r, 1000));
     }
     countdownValue.value = 'START!';
+    sound.go();
     await new Promise(r => setTimeout(r, 500));
 
     countdownValue.value = null;
@@ -111,12 +118,6 @@ function endGame() {
     router.post(route('game.end', props.gameSession.id), {}, { preserveState: true });
 }
 
-const timerColor = computed(() => {
-    if (progress.value > 50) return 'bg-green-500';
-    if (progress.value > 25) return 'bg-yellow-500';
-    return 'bg-red-500';
-});
-
 const answerColorMap = {
     red: { bg: 'bg-red-500', text: 'text-white', shape: '▲' },
     blue: { bg: 'bg-blue-500', text: 'text-white', shape: '◆' },
@@ -140,17 +141,30 @@ function getAnswerPercentage(answerId) {
 
 // Trigger confetti when game finishes
 watch(gameState, (state) => {
+    if (state === 'scoreboard') {
+        sound.whoosh();
+    }
     if (state === 'finished') {
         setTimeout(() => { showConfetti.value = true; }, 1200);
+        setTimeout(() => { sound.fanfare(); }, 1200);
     }
 });
 </script>
 
 <template>
     <Head :title="`${quiz.title} - Host`" />
-    <div class="min-h-screen flex flex-col">
+    <GameLayout>
         <!-- Confetti overlay -->
         <ConfettiEffect v-if="showConfetti" :duration="6000" @complete="showConfetti = false" />
+
+        <!-- Mute toggle -->
+        <button
+            @click="sound.toggleMute()"
+            class="fixed top-3 right-3 z-50 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 text-white text-lg flex items-center justify-center transition-all"
+            :title="sound.muted.value ? t('host.unmute') : t('host.mute')"
+        >
+            {{ sound.muted.value ? '🔇' : '🔊' }}
+        </button>
 
         <!-- LOBBY -->
         <div v-if="gameState === 'lobby'" class="flex-1 flex flex-col text-white bg-gradient-to-br" :class="themeGradients.lobby">
@@ -209,31 +223,12 @@ watch(gameState, (state) => {
         </div>
 
         <!-- COUNTDOWN -->
-        <div v-else-if="gameState === 'countdown'" class="flex-1 flex items-center justify-center" :class="{
-            'bg-red-500': countdownValue === 3,
-            'bg-yellow-500': countdownValue === 2,
-            'bg-green-500': countdownValue === 1,
-            'bg-indigo-600': countdownValue === 'START!',
-        }">
-            <div
-                :key="countdownValue"
-                :class="countdownValue === 'START!' ? 'text-[80px] animate-pop-bounce' : 'text-[140px] animate-zoom-countdown'"
-                class="font-extrabold text-white"
-            >
-                {{ countdownValue }}
-            </div>
-        </div>
+        <CountdownOverlay v-else-if="gameState === 'countdown'" :value="countdownValue" size="text-[140px]" />
 
         <!-- QUESTION -->
         <div v-else-if="gameState === 'question'" class="flex-1 flex flex-col text-white" :class="themeGradients.question">
             <!-- Timer bar -->
-            <div class="h-2 bg-gray-700">
-                <div
-                    :class="timerColor"
-                    class="h-full transition-all duration-100 ease-linear"
-                    :style="{ width: progress + '%' }"
-                ></div>
-            </div>
+            <TimerBar :progress="progress" />
 
             <!-- Question header -->
             <div class="flex items-center justify-between px-6 py-3 bg-gray-800 animate-slide-in-down">
@@ -428,7 +423,7 @@ watch(gameState, (state) => {
                 </button>
             </div>
         </div>
-    </div>
+    </GameLayout>
 </template>
 
 <style scoped>

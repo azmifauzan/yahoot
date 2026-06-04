@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import AvatarGrid from '@/Components/Avatar/AvatarGrid.vue';
 import AvatarDisplay from '@/Components/Avatar/AvatarDisplay.vue';
+import GameCodeInput from '@/Components/Game/GameCodeInput.vue';
 
 const { t } = useI18n();
 
@@ -18,35 +19,6 @@ const nickname = ref('');
 const avatar = ref('fox');
 const error = ref('');
 const loading = ref(false);
-const codeInputs = ref(['', '', '', '', '', '']);
-
-function onCodeInput(index, event) {
-    const value = event.target.value.replace(/\D/g, '');
-    codeInputs.value[index] = value.slice(0, 1);
-
-    if (value && index < 5) {
-        const nextInput = document.querySelector(`#code-${index + 1}`);
-        if (nextInput) nextInput.focus();
-    }
-
-    gameCode.value = codeInputs.value.join('');
-}
-
-function onCodeKeydown(index, event) {
-    if (event.key === 'Backspace' && !codeInputs.value[index] && index > 0) {
-        const prevInput = document.querySelector(`#code-${index - 1}`);
-        if (prevInput) prevInput.focus();
-    }
-}
-
-function onCodePaste(event) {
-    const pasted = event.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-    for (let i = 0; i < 6; i++) {
-        codeInputs.value[i] = pasted[i] || '';
-    }
-    gameCode.value = codeInputs.value.join('');
-    event.preventDefault();
-}
 
 function submitCode() {
     if (gameCode.value.length !== 6) {
@@ -103,20 +75,7 @@ async function joinGame() {
                     {{ t('play.game_code') }}
                 </h2>
 
-                <div class="flex justify-center gap-2 mb-6" @paste="onCodePaste">
-                    <input
-                        v-for="(_, index) in 6"
-                        :key="index"
-                        :id="`code-${index}`"
-                        type="text"
-                        inputmode="numeric"
-                        maxlength="1"
-                        :value="codeInputs[index]"
-                        @input="onCodeInput(index, $event)"
-                        @keydown="onCodeKeydown(index, $event)"
-                        class="w-12 h-14 text-center text-2xl font-bold rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 outline-none transition-all"
-                    />
-                </div>
+                <GameCodeInput v-model="gameCode" class="mb-6" @complete="submitCode" />
 
                 <p v-if="error" class="text-red-500 text-sm text-center mb-4">{{ error }}</p>
 

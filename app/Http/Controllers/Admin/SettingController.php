@@ -22,7 +22,7 @@ class SettingController extends Controller
 
     public function index(): Response
     {
-        $settings = AppSetting::all(array_keys(self::DEFAULTS));
+        $settings = AppSetting::getMany(array_keys(self::DEFAULTS));
 
         foreach (self::DEFAULTS as $key => $default) {
             if (! isset($settings[$key])) {

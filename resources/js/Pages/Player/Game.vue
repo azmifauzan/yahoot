@@ -4,10 +4,17 @@ import { Head, router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import { useGame } from '@/Composables/useGame';
 import { useTimer } from '@/Composables/useTimer';
+import { useSound } from '@/Composables/useSound';
 import AvatarDisplay from '@/Components/Avatar/AvatarDisplay.vue';
 import ConfettiEffect from '@/Components/Game/ConfettiEffect.vue';
+import GameLayout from '@/Components/Game/GameLayout.vue';
+import CountdownOverlay from '@/Components/Game/CountdownOverlay.vue';
+import TimerBar from '@/Components/Game/TimerBar.vue';
+import ScoreAnimation from '@/Components/Game/ScoreAnimation.vue';
+import StreakBadge from '@/Components/Game/StreakBadge.vue';
 
 const { t } = useI18n();
+const sound = useSound();
 
 const props = defineProps({
     gameSession: Object,
@@ -64,9 +71,11 @@ async function runCountdown() {
 
     for (let i = 3; i >= 1; i--) {
         countdownValue.value = i;
+        sound.tick();
         await new Promise(r => setTimeout(r, 1000));
     }
 
+    sound.go();
     countdownValue.value = null;
     isCountdownRunning.value = false;
     startTimer(timeLimit.value);
@@ -108,12 +117,6 @@ const myPlayerResult = computed(() => {
     return playerResults.value.find(r => r.player_id === player.value.id);
 });
 
-const timerColor = computed(() => {
-    if (progress.value > 50) return 'bg-green-500';
-    if (progress.value > 25) return 'bg-yellow-500';
-    return 'bg-red-500';
-});
-
 const answerColors = {
     red: { bg: 'bg-red-500 hover:bg-red-600', shape: '▲' },
     blue: { bg: 'bg-blue-500 hover:bg-blue-600', shape: '◆' },
@@ -138,14 +141,22 @@ const motivationalMessage = computed(() => {
 watch(gameState, (state) => {
     if (state === 'result' && myPlayerResult.value?.is_correct) {
         showConfetti.value = true;
+        sound.correct();
         setTimeout(() => { showConfetti.value = false; }, 3000);
     }
     if (state === 'result' && !myPlayerResult.value?.is_correct) {
         showShake.value = true;
+        sound.wrong();
         setTimeout(() => { showShake.value = false; }, 600);
     }
-    if (state === 'finished' && myFinalRank.value?.rank <= 3) {
-        showConfetti.value = true;
+    if (state === 'scoreboard') {
+        sound.whoosh();
+    }
+    if (state === 'finished') {
+        if (myFinalRank.value?.rank <= 3) {
+            showConfetti.value = true;
+        }
+        sound.fanfare();
     }
 });
 
@@ -158,9 +169,18 @@ function goHome() {
 
 <template>
     <Head :title="t('play.playing')" />
-    <div class="min-h-screen flex flex-col" :class="{ 'animate-shake': showShake }">
+    <GameLayout :shake="showShake">
         <!-- Confetti overlay -->
         <ConfettiEffect v-if="showConfetti" :duration="4000" @complete="showConfetti = false" />
+
+        <!-- Mute toggle -->
+        <button
+            @click="sound.toggleMute()"
+            class="fixed top-3 right-3 z-50 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 text-white text-lg flex items-center justify-center transition-all"
+            :title="sound.muted.value ? t('play.unmute') : t('play.mute')"
+        >
+            {{ sound.muted.value ? '🔇' : '🔊' }}
+        </button>
 
         <!-- Lobby: Waiting for host -->
         <div v-if="gameState === 'lobby'" class="flex-1 flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
@@ -183,32 +203,13 @@ function goHome() {
         </div>
 
         <!-- Countdown (first question only) -->
-        <div v-else-if="isCountdownRunning" class="flex-1 flex items-center justify-center" :class="{
-            'bg-red-500': countdownValue === 3,
-            'bg-yellow-500': countdownValue === 2,
-            'bg-green-500': countdownValue === 1,
-        }">
-            <div class="text-center">
-                <div :key="countdownValue" class="text-[120px] font-extrabold text-white animate-zoom-countdown">
-                    {{ countdownValue }}
-                </div>
-            </div>
-        </div>
+        <CountdownOverlay v-else-if="isCountdownRunning" :value="countdownValue" />
 
         <!-- Question: Show answer buttons -->
         <div v-else-if="gameState === 'question' && !hasAnswered" class="flex-1 flex flex-col bg-gray-900">
             <!-- Timer -->
             <div class="p-4 text-center animate-slide-in-down">
-                <div class="text-5xl font-extrabold text-white mb-3">
-                    {{ Math.ceil(timeRemaining) }}
-                </div>
-                <div class="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
-                    <div
-                        :class="timerColor"
-                        class="h-full transition-all duration-100 ease-linear rounded-full"
-                        :style="{ width: progress + '%' }"
-                    ></div>
-                </div>
+                <TimerBar :progress="progress" :time-remaining="timeRemaining" show-number rounded />
             </div>
 
             <!-- Answer buttons -->
@@ -245,12 +246,12 @@ function goHome() {
                 <template v-if="myPlayerResult?.is_correct">
                     <div class="text-6xl mb-4 animate-pop-bounce">🎉</div>
                     <h2 class="text-3xl font-extrabold mb-2 animate-slide-in-up">{{ t('play.correct') }}</h2>
-                    <p class="text-2xl font-bold animate-score-reveal" style="animation-delay: 0.3s">
-                        +{{ (myPlayerResult?.points_earned || 0) + (myPlayerResult?.streak_bonus || 0) }}
-                    </p>
-                    <p v-if="myResult?.streak > 1" class="mt-2 text-lg animate-slide-in-up" style="animation-delay: 0.5s">
-                        🔥 {{ myResult.streak }} {{ t('play.streak') }}
-                    </p>
+                    <ScoreAnimation
+                        :value="(myPlayerResult?.points_earned || 0) + (myPlayerResult?.streak_bonus || 0)"
+                        prefix="+"
+                        delay="0.3s"
+                    />
+                    <StreakBadge :streak="myResult?.streak || 0" />
                 </template>
                 <template v-else>
                     <div class="text-6xl mb-4">😢</div>
@@ -290,7 +291,7 @@ function goHome() {
                 </button>
             </div>
         </div>
-    </div>
+    </GameLayout>
 </template>
 
 <style scoped>

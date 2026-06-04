@@ -189,7 +189,9 @@
         "streak": "berturut-turut!",
         "your_position": "Posisi kamu",
         "points": "poin",
-        "back_home": "Kembali ke Beranda"
+        "back_home": "Kembali ke Beranda",
+        "mute": "Matikan suara",
+        "unmute": "Nyalakan suara"
     },
     "host": {
         "join_at": "Gabung di",
@@ -214,7 +216,9 @@
         "score": "Skor",
         "back_dashboard": "Kembali ke Dashboard",
         "scan_to_join": "Scan untuk gabung",
-        "or_scan_qr": "atau scan QR code di atas"
+        "or_scan_qr": "atau scan QR code di atas",
+        "mute": "Matikan suara",
+        "unmute": "Nyalakan suara"
     },
     "admin": {
         "dashboard": "Panel Admin",

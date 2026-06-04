@@ -1,6 +1,6 @@
 # Yahoot — Current Status
 
-**Date:** 2026-05-24  
+**Date:** 2026-06-04  
 **Branch:** main  
 **Production:** https://yahoot.my.id
 
@@ -82,8 +82,8 @@ All done:
 - Quiz themes: `QuizTheme` enum + `ThemeSelector.vue` + applied in Host/Game.vue
 - **Play Again** button on `Host/Results.vue` (restart same quiz)
 
-Deferred (optional):
-- Sound effects — `useSound.js` not implemented (marked optional in PRD)
+Also done:
+- Sound effects — `useSound.js` (WebAudio-generated tones, no asset files): tick/go/correct/wrong/whoosh/fanfare, wired into Host + Player game pages with persisted mute toggle
 
 ## Phase 5 — Admin Panel & Launch ✅
 
@@ -113,17 +113,17 @@ All done:
 - `app/Policies/`: QuizPolicy ✅, GameSessionPolicy ✅
 - `app/Enums/`: GameStatus, QuestionType, PointType, QuizVisibility, AnswerColor, QuizTheme ✅
 
-### Frontend (partial deviation from PRD)
-PRD specifies many shared components as separate files; most are implemented inline in pages:
+### Frontend (matches PRD)
+All PRD shared game components now exist as separate files:
 
 | PRD Component | Actual Status |
 |---------------|---------------|
-| `GameLayout.vue` | ❌ Missing — pages use inline full-screen divs |
-| `TimerBar.vue` | ❌ Missing — inline in Host/Game.vue + Player/Game.vue |
-| `CountdownOverlay.vue` | ❌ Missing — inline in both game pages |
-| `ScoreAnimation.vue` | ❌ Missing — CSS `animate-score-reveal` only |
-| `StreakBadge.vue` | ❌ Missing — inline text in Player/Game.vue |
-| `GameCodeInput.vue` | ❌ Missing — inline in Player/Join.vue |
+| `GameLayout.vue` | ✅ Exists — used by Host/Game.vue + Player/Game.vue |
+| `TimerBar.vue` | ✅ Exists — used by Host/Game.vue + Player/Game.vue |
+| `CountdownOverlay.vue` | ✅ Exists — used by both game pages |
+| `ScoreAnimation.vue` | ✅ Exists — used in Player/Game.vue result |
+| `StreakBadge.vue` | ✅ Exists — used in Player/Game.vue result |
+| `GameCodeInput.vue` | ✅ Exists — used in Player/Join.vue |
 | `ConfettiEffect.vue` | ✅ Exists |
 | `QRCodeDisplay.vue` | ✅ Exists |
 | `AvatarGrid.vue` + `AvatarDisplay.vue` | ✅ Exists |

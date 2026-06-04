@@ -189,7 +189,9 @@
         "streak": "in a row!",
         "your_position": "Your position",
         "points": "points",
-        "back_home": "Back to Home"
+        "back_home": "Back to Home",
+        "mute": "Mute sound",
+        "unmute": "Unmute sound"
     },
     "host": {
         "join_at": "Join at",
@@ -214,7 +216,9 @@
         "score": "Score",
         "back_dashboard": "Back to Dashboard",
         "scan_to_join": "Scan to join",
-        "or_scan_qr": "or scan the QR code above"
+        "or_scan_qr": "or scan the QR code above",
+        "mute": "Mute sound",
+        "unmute": "Unmute sound"
     },
     "admin": {
         "dashboard": "Admin Panel",

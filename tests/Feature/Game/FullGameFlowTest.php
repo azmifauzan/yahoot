@@ -114,6 +114,7 @@ test('player can answer question', function () {
         'player_id' => $player->id,
         'question_id' => $question->id,
         'answer_id' => $correctAnswer->id,
+        'time_taken' => 5000,
     ])->assertSuccessful();
 
     $this->assertDatabaseHas('player_answers', [
