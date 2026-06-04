@@ -36,7 +36,7 @@ function toggleAdmin() {
                         </div>
                         <button
                             @click="toggleAdmin"
-                            :class="['px-4 py-2 rounded-lg text-sm font-medium transition', user.is_admin ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200']"
+                            :class="['px-4 py-2 rounded-lg text-sm font-medium transition', user.is_admin ? 'bg-primary-600 text-white hover:bg-primary-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200']"
                         >
                             {{ user.is_admin ? t('admin.revoke_admin') : t('admin.grant_admin') }}
                         </button>
@@ -76,7 +76,7 @@ function toggleAdmin() {
                                 <p class="text-xs text-gray-500">{{ t('admin.nickname') }}: {{ entry.nickname }}</p>
                             </div>
                             <div class="text-right">
-                                <p class="font-bold text-indigo-600 dark:text-indigo-400">{{ entry.score }} pts</p>
+                                <p class="font-bold text-primary-600 dark:text-primary-400">{{ entry.score }} pts</p>
                                 <p class="text-xs text-gray-400">{{ new Date(entry.played_at).toLocaleDateString() }}</p>
                             </div>
                         </div>

@@ -19,6 +19,7 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Inter', ...defaultTheme.fontFamily.sans],
+                display: ['Gabarito', 'Inter', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 primary: {

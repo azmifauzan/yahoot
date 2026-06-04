@@ -95,7 +95,7 @@ function statusBadge(s) {
                                 :key="game.id"
                                 class="border-b border-gray-50 dark:border-gray-800/50 hover:bg-gray-50 dark:hover:bg-gray-800/30"
                             >
-                                <td class="px-6 py-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                                <td class="px-6 py-3 font-mono font-bold text-primary-600 dark:text-primary-400">
                                     <Link :href="route('admin.games.show', game.id)">{{ game.game_code }}</Link>
                                 </td>
                                 <td class="px-6 py-3 truncate max-w-[160px]">{{ game.quiz?.title }}</td>
@@ -122,7 +122,7 @@ function statusBadge(s) {
                         :key="link.label"
                         :href="link.url || '#'"
                         v-html="link.label"
-                        :class="['px-3 py-1 rounded text-sm', link.active ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 dark:bg-gray-800 dark:text-gray-300', !link.url && 'opacity-50 cursor-not-allowed']"
+                        :class="['px-3 py-1 rounded text-sm', link.active ? 'bg-primary-600 text-white' : 'bg-white text-gray-600 dark:bg-gray-800 dark:text-gray-300', !link.url && 'opacity-50 cursor-not-allowed']"
                     />
                 </div>
             </div>

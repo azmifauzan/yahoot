@@ -65,7 +65,7 @@ function onPaste(event) {
             :value="digits[index]"
             @input="onInput(index, $event)"
             @keydown="onKeydown(index, $event)"
-            class="w-12 h-14 text-center text-2xl font-bold rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 outline-none transition-all"
+            class="w-12 h-14 text-center text-2xl font-bold rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 outline-none transition-all"
         />
     </div>
 </template>

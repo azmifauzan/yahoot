@@ -61,11 +61,11 @@ async function joinGame() {
 
 <template>
     <Head :title="t('play.join_game')" />
-    <div class="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-4">
+    <div class="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-accent-red flex items-center justify-center p-4">
         <div class="w-full max-w-md">
             <!-- Logo -->
             <div class="text-center mb-8">
-                <h1 class="text-5xl font-extrabold text-white tracking-tight">Yahoot!</h1>
+                <h1 class="font-display text-6xl font-extrabold text-white tracking-tight drop-shadow-sm">Yahoot!</h1>
                 <p class="text-white/80 mt-2 text-lg">{{ t('play.enter_code') }}</p>
             </div>
 
@@ -82,7 +82,7 @@ async function joinGame() {
                 <button
                     @click="submitCode"
                     :disabled="gameCode.length !== 6"
-                    class="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 text-white font-bold rounded-xl text-lg transition-all shadow-lg shadow-indigo-500/30 disabled:shadow-none"
+                    class="w-full py-3 px-6 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 text-white font-bold rounded-xl text-lg transition-all shadow-lg shadow-primary-500/30 disabled:shadow-none"
                 >
                     {{ t('play.enter') }}
                 </button>
@@ -94,7 +94,7 @@ async function joinGame() {
                     {{ t('play.choose_nickname') }}
                 </h2>
                 <p class="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
-                    {{ t('play.game_code') }}: <span class="font-mono font-bold text-indigo-600">{{ gameCode }}</span>
+                    {{ t('play.game_code') }}: <span class="font-mono font-bold text-primary-600">{{ gameCode }}</span>
                 </p>
 
                 <div class="mb-4">
@@ -103,14 +103,14 @@ async function joinGame() {
                         type="text"
                         :placeholder="t('play.nickname_placeholder')"
                         maxlength="20"
-                        class="w-full px-4 py-3 text-lg rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 outline-none transition-all"
+                        class="w-full px-4 py-3 text-lg rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 outline-none transition-all"
                         @keyup.enter="joinGame"
                     />
                 </div>
 
                 <!-- Selected avatar preview -->
                 <div class="flex justify-center mb-4">
-                    <div class="p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl">
+                    <div class="p-3 bg-primary-50 dark:bg-primary-900/20 rounded-2xl">
                         <AvatarDisplay :name="avatar" :size="80" />
                     </div>
                 </div>

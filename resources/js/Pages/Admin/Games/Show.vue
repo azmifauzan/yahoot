@@ -88,7 +88,7 @@ function statusBadge(s) {
                                 </td>
                                 <td class="px-6 py-3 text-center">{{ player.correct_answers }}</td>
                                 <td class="px-6 py-3 text-center">{{ player.total_answers }}</td>
-                                <td class="px-6 py-3 text-right font-bold text-indigo-600 dark:text-indigo-400">{{ player.score }}</td>
+                                <td class="px-6 py-3 text-right font-bold text-primary-600 dark:text-primary-400">{{ player.score }}</td>
                             </tr>
                         </tbody>
                     </table>

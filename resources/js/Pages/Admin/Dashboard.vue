@@ -63,7 +63,7 @@ function statusBadge(status) {
                 <div class="rounded-xl bg-white shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800 overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
                         <h3 class="font-semibold text-gray-900 dark:text-white">{{ t('admin.recent_games') }}</h3>
-                        <Link :href="route('admin.games.index')" class="text-sm text-indigo-600 dark:text-indigo-400">{{ t('admin.view_all') }}</Link>
+                        <Link :href="route('admin.games.index')" class="text-sm text-primary-600 dark:text-primary-400">{{ t('admin.view_all') }}</Link>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
@@ -83,7 +83,7 @@ function statusBadge(status) {
                                     :key="game.id"
                                     class="border-b border-gray-50 dark:border-gray-800/50 hover:bg-gray-50 dark:hover:bg-gray-800/30"
                                 >
-                                    <td class="px-6 py-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                                    <td class="px-6 py-3 font-mono font-bold text-primary-600 dark:text-primary-400">
                                         <Link :href="route('admin.games.show', game.id)">{{ game.game_code }}</Link>
                                     </td>
                                     <td class="px-6 py-3 truncate max-w-[160px]">{{ game.quiz_title }}</td>

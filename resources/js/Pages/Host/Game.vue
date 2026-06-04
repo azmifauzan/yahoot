@@ -24,9 +24,9 @@ const props = defineProps({
 });
 
 const themeGradients = computed(() => props.theme?.gradients || {
-    lobby: 'from-indigo-600 to-purple-700',
+    lobby: 'from-primary-600 to-purple-700',
     question: 'bg-gray-900',
-    scoreboard: 'from-indigo-600 to-purple-700',
+    scoreboard: 'from-primary-600 to-purple-700',
     finished: 'from-yellow-400 via-pink-500 to-purple-600',
 });
 
@@ -215,7 +215,7 @@ watch(gameState, (state) => {
                 <button
                     @click="startGame"
                     :disabled="livePlayers.length === 0"
-                    class="px-12 py-4 bg-white text-indigo-600 font-extrabold text-xl rounded-2xl hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xl hover:scale-105 active:scale-95"
+                    class="px-12 py-4 bg-white text-primary-600 font-extrabold text-xl rounded-2xl hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xl hover:scale-105 active:scale-95"
                 >
                     {{ t('host.start_game') }}
                 </button>
@@ -268,7 +268,7 @@ watch(gameState, (state) => {
 
             <!-- Reveal button -->
             <div class="p-4 text-center bg-gray-800">
-                <button @click="revealAnswer" class="px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition-all hover:scale-105 active:scale-95">
+                <button @click="revealAnswer" class="px-8 py-3 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl transition-all hover:scale-105 active:scale-95">
                     {{ t('host.reveal_answer') }}
                 </button>
             </div>
@@ -311,7 +311,7 @@ watch(gameState, (state) => {
             </div>
 
             <div class="p-6 text-center">
-                <button @click="nextQuestion" class="px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition-all hover:scale-105 active:scale-95 text-lg">
+                <button @click="nextQuestion" class="px-8 py-3 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl transition-all hover:scale-105 active:scale-95 text-lg">
                     {{ t('host.next') }} →
                 </button>
             </div>
@@ -344,7 +344,7 @@ watch(gameState, (state) => {
             </div>
 
             <div class="p-6 text-center">
-                <button @click="nextQuestion" class="px-8 py-3 bg-white text-indigo-600 font-bold rounded-xl hover:bg-gray-100 transition-all hover:scale-105 active:scale-95 text-lg">
+                <button @click="nextQuestion" class="px-8 py-3 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 transition-all hover:scale-105 active:scale-95 text-lg">
                     {{ t('host.next') }} →
                 </button>
             </div>
@@ -417,7 +417,7 @@ watch(gameState, (state) => {
                 </a>
                 <button
                     @click="router.visit(route('dashboard'))"
-                    class="px-6 py-3 bg-white text-indigo-600 font-bold rounded-xl hover:bg-gray-100 transition-all hover:scale-105 active:scale-95"
+                    class="px-6 py-3 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 transition-all hover:scale-105 active:scale-95"
                 >
                     {{ t('host.finish') }}
                 </button>

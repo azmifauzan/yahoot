@@ -21,10 +21,10 @@ const gameCode = ref('');
 const showcaseAvatars = ['fox', 'robot_blue', 'monster_1', 'star', 'panda', 'robot_pink'];
 
 const features = [
-    { key: 'free', icon: 'M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7' },
-    { key: 'realtime', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
-    { key: 'easy', icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z' },
-    { key: 'multilang', icon: 'M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9' },
+    { key: 'free', color: '#A8E6CF', icon: 'M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7' },
+    { key: 'realtime', color: '#FFE66D', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+    { key: 'easy', color: '#FF6B6B', icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z' },
+    { key: 'multilang', color: '#4ECDC4', icon: 'M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9' },
 ];
 
 const steps = [
@@ -48,12 +48,12 @@ function joinFromLanding() {
         <nav class="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-950/80">
             <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
                 <!-- Logo -->
-                <Link href="/" class="flex items-center gap-0.5">
-                    <svg viewBox="0 0 32 32" class="h-8 w-8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="32" height="32" rx="8" class="fill-gray-900 dark:fill-white"/>
-                        <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" class="fill-white dark:fill-gray-900" font-size="18" font-weight="bold" font-family="Inter, sans-serif">Y</text>
+                <Link href="/" class="group flex items-center gap-0.5">
+                    <svg viewBox="0 0 32 32" class="h-8 w-8 transition group-hover:-rotate-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="8" class="fill-primary-600"/>
+                        <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" class="fill-white" font-size="18" font-weight="800" font-family="Gabarito, Inter, sans-serif">Y</text>
                     </svg>
-                    <span class="text-xl font-bold text-gray-900 dark:text-white">ahoot</span>
+                    <span class="font-display text-xl font-extrabold text-gray-900 dark:text-white">ahoot</span>
                 </Link>
 
                 <!-- Right side -->
@@ -76,7 +76,7 @@ function joinFromLanding() {
                         <Link
                             v-if="$page.props.auth.user"
                             :href="route('dashboard')"
-                            class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+                            class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
                         >
                             {{ t('nav.dashboard') }}
                         </Link>
@@ -90,7 +90,7 @@ function joinFromLanding() {
                             <Link
                                 v-if="canRegister"
                                 :href="route('register')"
-                                class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+                                class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
                             >
                                 {{ t('nav.register') }}
                             </Link>
@@ -102,6 +102,13 @@ function joinFromLanding() {
 
         <!-- Hero Section -->
         <section class="relative overflow-hidden py-20 sm:py-32">
+            <!-- Decorative gradient blobs -->
+            <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+                <div class="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-primary-400/30 blur-3xl dark:bg-primary-600/20"></div>
+                <div class="absolute -right-16 top-12 h-80 w-80 rounded-full bg-accent-blue/20 blur-3xl"></div>
+                <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-accent-yellow/20 blur-3xl"></div>
+            </div>
+
             <div class="relative mx-auto max-w-6xl px-4 sm:px-6">
                 <div class="text-center">
                     <!-- Floating avatars -->
@@ -116,7 +123,7 @@ function joinFromLanding() {
                         </div>
                     </div>
 
-                    <h1 class="mb-6 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl dark:text-white">
+                    <h1 class="mb-6 font-display text-5xl font-extrabold tracking-tight text-gray-900 sm:text-7xl dark:text-white">
                         {{ t('landing.hero_title') }}
                     </h1>
                     <p class="mx-auto mb-10 max-w-2xl text-lg text-gray-500 dark:text-gray-400">
@@ -125,19 +132,19 @@ function joinFromLanding() {
 
                     <!-- CTA -->
                     <div class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                        <!-- Join Game Input -->
-                        <form @submit.prevent="joinFromLanding" class="flex overflow-hidden rounded-xl border-2 border-gray-200 bg-white shadow-sm transition focus-within:border-gray-400 dark:border-gray-700 dark:bg-gray-900">
+                        <!-- Join Game Input (glass) -->
+                        <form @submit.prevent="joinFromLanding" class="flex overflow-hidden rounded-2xl border-2 border-primary-200 bg-white/70 shadow-lg shadow-primary-500/10 backdrop-blur transition focus-within:border-primary-400 dark:border-primary-900/60 dark:bg-gray-900/70">
                             <input
                                 v-model="gameCode"
                                 type="text"
                                 inputmode="numeric"
                                 :placeholder="t('landing.enter_code')"
                                 maxlength="6"
-                                class="w-40 border-0 bg-transparent px-4 py-3 text-center text-lg font-mono tracking-widest placeholder-gray-400 focus:outline-none focus:ring-0 dark:text-white sm:w-48"
+                                class="w-40 border-0 bg-transparent px-4 py-3.5 text-center font-mono text-lg tracking-widest placeholder-gray-400 focus:outline-none focus:ring-0 dark:text-white sm:w-48"
                             />
                             <button
                                 type="submit"
-                                class="bg-gray-900 px-6 py-3 font-semibold text-white transition hover:bg-gray-800 disabled:opacity-50 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+                                class="bg-primary-600 px-6 py-3.5 font-semibold text-white transition hover:bg-primary-700 disabled:opacity-50"
                                 :disabled="gameCode.length < 6"
                             >
                                 {{ t('landing.join_game') }}
@@ -149,7 +156,7 @@ function joinFromLanding() {
                         <Link
                             v-if="canLogin"
                             :href="$page.props.auth.user ? '#' : route('register')"
-                            class="rounded-xl border-2 border-gray-300 px-8 py-3 font-semibold text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                            class="rounded-2xl border-2 border-primary-200 px-8 py-3.5 font-semibold text-primary-700 transition hover:bg-primary-50 dark:border-primary-900/60 dark:text-primary-300 dark:hover:bg-primary-950/40"
                         >
                             {{ t('landing.create_quiz') }}
                         </Link>
@@ -159,9 +166,9 @@ function joinFromLanding() {
         </section>
 
         <!-- Features Section -->
-        <!-- <section class="border-t border-gray-100 py-20 dark:border-gray-800">
+        <section class="border-t border-gray-100 py-20 dark:border-gray-800">
             <div class="mx-auto max-w-6xl px-4 sm:px-6">
-                <h2 class="mb-12 text-center text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
+                <h2 class="mb-12 text-center font-display text-3xl font-extrabold text-gray-900 sm:text-4xl dark:text-white">
                     {{ t('landing.features_title') }}
                 </h2>
 
@@ -169,14 +176,17 @@ function joinFromLanding() {
                     <div
                         v-for="feature in features"
                         :key="feature.key"
-                        class="group rounded-2xl border border-gray-200 bg-white p-6 transition hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
+                        class="group rounded-2xl border border-gray-200 bg-white p-6 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-500/10 dark:border-gray-800 dark:bg-gray-900"
                     >
-                        <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                            <svg class="h-5 w-5 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <div
+                            class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl shadow-sm transition group-hover:scale-110"
+                            :style="{ backgroundColor: feature.color }"
+                        >
+                            <svg class="h-5 w-5 text-gray-900/80" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" :d="feature.icon" />
                             </svg>
                         </div>
-                        <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 class="mb-2 font-display text-lg font-bold text-gray-900 dark:text-white">
                             {{ t(`landing.feature_${feature.key}`) }}
                         </h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -185,12 +195,12 @@ function joinFromLanding() {
                     </div>
                 </div>
             </div>
-        </section> -->
+        </section>
 
         <!-- How to Play -->
         <section class="border-t border-gray-100 bg-gray-50 py-20 dark:border-gray-800 dark:bg-gray-900">
             <div class="mx-auto max-w-6xl px-4 sm:px-6">
-                <h2 class="mb-12 text-center text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
+                <h2 class="mb-12 text-center font-display text-3xl font-extrabold text-gray-900 sm:text-4xl dark:text-white">
                     {{ t('landing.how_title') }}
                 </h2>
 
@@ -201,12 +211,13 @@ function joinFromLanding() {
                         class="relative text-center"
                     >
                         <!-- Step number -->
-                        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-sm dark:bg-gray-800">
-                            <svg class="h-7 w-7 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <div class="relative mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 shadow-lg shadow-primary-500/30">
+                            <svg class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" :d="step.icon" />
                             </svg>
+                            <span class="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-accent-yellow font-display text-sm font-extrabold text-gray-900 shadow">{{ index + 1 }}</span>
                         </div>
-                        <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 class="mb-2 font-display text-lg font-bold text-gray-900 dark:text-white">
                             {{ t(`landing.how_${step.key}_title`) }}
                         </h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -228,9 +239,12 @@ function joinFromLanding() {
         </section>
 
         <!-- CTA Section -->
-        <section class="border-t border-gray-100 py-20 dark:border-gray-800">
+        <section class="relative overflow-hidden border-t border-gray-100 py-20 dark:border-gray-800">
+            <div class="pointer-events-none absolute inset-0 -z-10">
+                <div class="absolute left-1/2 top-1/2 h-64 w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-400/20 blur-3xl dark:bg-primary-600/15"></div>
+            </div>
             <div class="mx-auto max-w-3xl px-4 text-center sm:px-6">
-                <h2 class="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
+                <h2 class="mb-4 font-display text-3xl font-extrabold text-gray-900 sm:text-4xl dark:text-white">
                     {{ t('landing.cta_title') }}
                 </h2>
                 <p class="mb-8 text-lg text-gray-500 dark:text-gray-400">
@@ -239,7 +253,7 @@ function joinFromLanding() {
                 <Link
                     v-if="canLogin && canRegister"
                     :href="$page.props.auth.user ? '#' : route('register')"
-                    class="inline-block rounded-xl bg-gray-900 px-10 py-4 text-lg font-semibold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+                    class="inline-block rounded-2xl bg-primary-600 px-10 py-4 text-lg font-semibold text-white shadow-lg shadow-primary-500/30 transition hover:-translate-y-0.5 hover:bg-primary-700"
                 >
                     {{ t('landing.create_quiz') }} →
                 </Link>

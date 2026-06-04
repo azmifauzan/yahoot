@@ -76,12 +76,12 @@ function playQuiz(quiz) {
 }
 
 const placeholderColors = [
-    'from-gray-400 to-gray-600',
-    'from-gray-500 to-gray-700',
-    'from-gray-300 to-gray-500',
-    'from-gray-600 to-gray-800',
-    'from-gray-400 to-gray-600',
-    'from-gray-500 to-gray-700',
+    'from-primary-400 to-primary-600',
+    'from-accent-blue to-primary-500',
+    'from-accent-red to-primary-500',
+    'from-primary-500 to-accent-blue',
+    'from-accent-green to-primary-500',
+    'from-primary-600 to-accent-red',
 ];
 
 function getPlaceholderColor(index) {
@@ -93,12 +93,12 @@ function getPlaceholderColor(index) {
     <AppLayout :title="t('dashboard.title')">
         <template #header>
             <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-100">
+                <h2 class="font-display text-xl font-bold leading-tight text-gray-800 dark:text-gray-100">
                     {{ t('dashboard.title') }}
                 </h2>
                 <Link
                     :href="route('quizzes.create')"
-                    class="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+                    class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -132,7 +132,7 @@ function getPlaceholderColor(index) {
                             :class="[
                                 'rounded-lg px-4 py-2 text-sm font-medium transition',
                                 activeFilter === option.value
-                                    ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                                    ? 'bg-primary-600 text-white shadow-sm shadow-primary-500/30'
                                     : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800',
                             ]"
                         >
@@ -149,7 +149,7 @@ function getPlaceholderColor(index) {
                                 @input="onSearchInput"
                                 type="text"
                                 :placeholder="t('dashboard.search_placeholder')"
-                                class="rounded-lg border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-gray-900 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-500 dark:focus:border-gray-400 dark:focus:ring-gray-400"
+                                class="rounded-lg border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-500 dark:focus:border-primary-400 dark:focus:ring-primary-400"
                             />
                         </div>
                         <!-- View toggle -->
@@ -172,15 +172,15 @@ function getPlaceholderColor(index) {
 
                 <!-- Empty State -->
                 <div v-if="quizzes.length === 0" class="flex flex-col items-center justify-center rounded-xl bg-white py-16 shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
-                    <div class="mb-4 rounded-full bg-gray-100 dark:bg-gray-800 p-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <div class="mb-4 rounded-full bg-primary-100 dark:bg-primary-900/30 p-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-500 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                     </div>
                     <p class="mb-4 text-gray-500 dark:text-gray-400">{{ t('dashboard.empty') }}</p>
                     <Link
                         :href="route('quizzes.create')"
-                        class="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+                        class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -194,7 +194,7 @@ function getPlaceholderColor(index) {
                     <div
                         v-for="(quiz, index) in quizzes"
                         :key="quiz.id"
-                        class="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100 transition hover:shadow-md dark:bg-gray-900 dark:border-gray-800"
+                        class="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-500/10 dark:bg-gray-900 dark:border-gray-800"
                         @click="$inertia.visit(route('quizzes.edit', quiz.id))"
                     >
                         <!-- Cover -->
@@ -225,7 +225,7 @@ function getPlaceholderColor(index) {
                                 <button
                                     v-if="quiz.is_published"
                                     @click="playQuiz(quiz)"
-                                    class="flex-1 rounded-lg bg-indigo-50 py-1.5 text-center text-xs font-medium text-indigo-600 transition hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50"
+                                    class="flex-1 rounded-lg bg-primary-50 py-1.5 text-center text-xs font-medium text-primary-600 transition hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-400 dark:hover:bg-primary-900/50"
                                 >
                                     ▶ {{ t('dashboard.play') }}
                                 </button>
@@ -282,7 +282,7 @@ function getPlaceholderColor(index) {
                             <button
                                 v-if="quiz.is_published"
                                 @click="playQuiz(quiz)"
-                                class="rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-600 transition hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50"
+                                class="rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-600 transition hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-400 dark:hover:bg-primary-900/50"
                             >
                                 ▶ {{ t('dashboard.play') }}
                             </button>

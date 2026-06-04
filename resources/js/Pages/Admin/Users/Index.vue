@@ -102,7 +102,7 @@ function confirmDelete(user) {
                                 class="border-b border-gray-50 dark:border-gray-800/50 hover:bg-gray-50 dark:hover:bg-gray-800/30"
                             >
                                 <td class="px-6 py-3">
-                                    <Link :href="route('admin.users.show', user.id)" class="font-medium text-indigo-600 dark:text-indigo-400 hover:underline">
+                                    <Link :href="route('admin.users.show', user.id)" class="font-medium text-primary-600 dark:text-primary-400 hover:underline">
                                         {{ user.name }}
                                     </Link>
                                 </td>
@@ -112,7 +112,7 @@ function confirmDelete(user) {
                                 <td class="px-6 py-3 text-center">
                                     <button
                                         @click="toggleAdmin(user)"
-                                        :class="['rounded-full px-2 py-0.5 text-xs font-medium transition', user.is_admin ? 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300']"
+                                        :class="['rounded-full px-2 py-0.5 text-xs font-medium transition', user.is_admin ? 'bg-primary-100 text-primary-700 hover:bg-primary-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300']"
                                     >
                                         {{ user.is_admin ? t('admin.is_admin') : t('admin.not_admin') }}
                                     </button>
@@ -133,7 +133,7 @@ function confirmDelete(user) {
                         :key="link.label"
                         :href="link.url || '#'"
                         v-html="link.label"
-                        :class="['px-3 py-1 rounded text-sm', link.active ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 dark:bg-gray-800 dark:text-gray-300', !link.url && 'opacity-50 cursor-not-allowed']"
+                        :class="['px-3 py-1 rounded text-sm', link.active ? 'bg-primary-600 text-white' : 'bg-white text-gray-600 dark:bg-gray-800 dark:text-gray-300', !link.url && 'opacity-50 cursor-not-allowed']"
                     />
                 </div>
             </div>

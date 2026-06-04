@@ -67,7 +67,7 @@ function save() {
                                 <button
                                     type="button"
                                     @click="form[key] = !form[key]"
-                                    :class="['relative inline-flex h-6 w-11 rounded-full transition', form[key] ? 'bg-indigo-600' : 'bg-gray-200 dark:bg-gray-700']"
+                                    :class="['relative inline-flex h-6 w-11 rounded-full transition', form[key] ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700']"
                                 >
                                     <span :class="['absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform', form[key] ? 'translate-x-5' : 'translate-x-0']" />
                                 </button>
@@ -79,7 +79,7 @@ function save() {
                         <button
                             type="submit"
                             :disabled="form.processing"
-                            class="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition"
+                            class="px-6 py-2 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 disabled:opacity-50 transition"
                         >
                             {{ t('common.save') }}
                         </button>

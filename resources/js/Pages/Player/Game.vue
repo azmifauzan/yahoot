@@ -183,7 +183,7 @@ function goHome() {
         </button>
 
         <!-- Lobby: Waiting for host -->
-        <div v-if="gameState === 'lobby'" class="flex-1 flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+        <div v-if="gameState === 'lobby'" class="flex-1 flex items-center justify-center bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500">
             <div class="text-center text-white p-8 animate-slide-in-up">
                 <div v-if="player" class="mb-6">
                     <div class="animate-float">
@@ -261,7 +261,7 @@ function goHome() {
         </div>
 
         <!-- Scoreboard -->
-        <div v-else-if="gameState === 'scoreboard'" class="flex-1 flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-700">
+        <div v-else-if="gameState === 'scoreboard'" class="flex-1 flex items-center justify-center bg-gradient-to-br from-primary-600 to-purple-700">
             <div class="text-center text-white p-8">
                 <h2 class="text-lg text-white/70 mb-2 animate-slide-in-down">{{ t('play.your_position') }}</h2>
                 <div class="text-7xl font-extrabold mb-2 animate-score-reveal">#{{ myPosition?.rank || '?' }}</div>
@@ -274,7 +274,7 @@ function goHome() {
         </div>
 
         <!-- Finished -->
-        <div v-else-if="gameState === 'finished'" class="flex-1 flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+        <div v-else-if="gameState === 'finished'" class="flex-1 flex items-center justify-center bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500">
             <div class="text-center text-white p-8 max-w-sm">
                 <template v-if="myFinalRank && myFinalRank.rank <= 3">
                     <div class="text-6xl mb-4 animate-pop-bounce">
@@ -286,7 +286,7 @@ function goHome() {
                 <h2 class="text-3xl font-extrabold mb-1 animate-slide-in-up">#{{ myFinalRank?.rank || '?' }}</h2>
                 <p class="text-xl mb-4 animate-score-reveal" style="animation-delay: 0.3s">{{ myFinalRank?.score || 0 }} {{ t('play.points') }}</p>
 
-                <button @click="goHome" class="px-8 py-3 bg-white text-indigo-600 font-bold rounded-xl hover:bg-gray-100 transition-all hover:scale-105 active:scale-95 animate-slide-in-up" style="animation-delay: 0.5s">
+                <button @click="goHome" class="px-8 py-3 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 transition-all hover:scale-105 active:scale-95 animate-slide-in-up" style="animation-delay: 0.5s">
                     {{ t('play.back_home') }}
                 </button>
             </div>

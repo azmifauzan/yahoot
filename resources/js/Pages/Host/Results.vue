@@ -21,7 +21,7 @@ const rest = computed(() => props.leaderboard.slice(3));
 <template>
     <Head :title="`${quiz.title} - ${t('host.results')}`" />
 
-    <div class="min-h-screen bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
+    <div class="min-h-screen bg-gradient-to-br from-primary-600 to-purple-700 text-white">
         <!-- Header -->
         <div class="text-center pt-8 pb-4 px-4">
             <h1 class="text-3xl md:text-4xl font-extrabold mb-1">{{ quiz.title }}</h1>
@@ -122,7 +122,7 @@ const rest = computed(() => props.leaderboard.slice(3));
                 </a>
                 <Link
                     :href="route('dashboard')"
-                    class="px-6 py-3 bg-white text-indigo-600 font-bold rounded-xl hover:bg-gray-100 transition-colors"
+                    class="px-6 py-3 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 transition-colors"
                 >
                     {{ t('host.back_dashboard') }}
                 </Link>

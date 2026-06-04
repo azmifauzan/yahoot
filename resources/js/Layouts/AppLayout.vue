@@ -46,7 +46,7 @@ const logout = () => {
                                 <Link
                                     :href="route('dashboard')"
                                     class="rounded-lg px-3 py-2 text-sm font-medium transition"
-                                    :class="route().current('dashboard') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'"
+                                    :class="route().current('dashboard') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'"
                                 >
                                     {{ t('nav.dashboard') }}
                                 </Link>
@@ -130,7 +130,7 @@ const logout = () => {
                         <Link
                             :href="route('dashboard')"
                             class="block rounded-lg px-3 py-2 text-sm font-medium transition"
-                            :class="route().current('dashboard') ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'"
+                            :class="route().current('dashboard') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'"
                         >
                             {{ t('nav.dashboard') }}
                         </Link>

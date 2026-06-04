@@ -10,7 +10,7 @@ const bgClass = computed(() => ({
     'bg-red-500': props.value === 3,
     'bg-yellow-500': props.value === 2,
     'bg-green-500': props.value === 1,
-    'bg-indigo-600': props.value === 'START!',
+    'bg-primary-600': props.value === 'START!',
 }));
 
 const isStart = computed(() => props.value === 'START!');
