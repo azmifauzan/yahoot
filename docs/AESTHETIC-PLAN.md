@@ -141,10 +141,13 @@ Branch `feat/aesthetic-revamp`.
 - **P4 Dead code** — re-enabled Features section (translations existed) with colored accent icons.
 - **P5 (partial)** — card hover lift (`hover:-translate-y-1`) on Dashboard + feature cards; icon `group-hover:scale-110`.
 
+**Done (round 2):**
+- **P5** — page-transition feel via `animate-page-enter` keyframe on AppLayout `<main>` (re-fires each Inertia nav, reduced-motion guarded); stagger entrance on Dashboard grid (`animate-slide-in-up` + index delay). `ripple-effect` confirmed already wired on Player answer buttons; `animate-bounce-in` on lobby player list.
+- **P6** — admin page headers (8 files) → `font-display`; indigo→primary already unified; categorical stat-card colors + quiz-theme palettes kept intentionally.
+- **P7** — verified no deferred Inertia props exist → skeletons N/A; empty-state branded (primary-tinted icon).
+
 **Pending:**
-- P5 remainder — wire `ripple-effect` to buttons, Inertia page transitions, stagger entrance on grids/lobby.
-- P6 — deeper per-surface consistency audit (Admin tables, Quiz Editor internals, game-page theme coexistence).
-- P7 — branded empty-state illustration, deferred-prop skeletons.
-- P8 — dark-mode QA pass on new gradients/glassmorphism.
+- P8 — dark-mode QA pass on new gradients/glassmorphism (needs live render; tokens already carry `dark:` variants).
+- Optional: branded empty-state illustration (vs current icon), auth-card heading display font.
 
 Build verified clean (`npm run build`). No PHP changed (no Pint/test impact — changes are presentational Tailwind classes only).

@@ -159,6 +159,15 @@
     opacity: 0.3;
 }
 
+/* Page Enter — subtle transition between Inertia routes */
+@keyframes pageEnter {
+    0% { transform: translateY(8px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+.animate-page-enter {
+    animation: pageEnter 0.35s ease-out both;
+}
+
 /* Stagger classes for sequential animation delays */
 .stagger-1 { animation-delay: 0.1s; }
 .stagger-2 { animation-delay: 0.2s; }
@@ -182,7 +191,8 @@
     .animate-score-reveal,
     .animate-bar-grow,
     .animate-podium-rise,
-    .animate-crown-drop {
+    .animate-crown-drop,
+    .animate-page-enter {
         animation: none !important;
         opacity: 1 !important;
         transform: none !important;

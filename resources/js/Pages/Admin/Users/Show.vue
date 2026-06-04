@@ -20,7 +20,7 @@ function toggleAdmin() {
         <template #header>
             <div class="flex items-center gap-4">
                 <Link :href="route('admin.users.index')" class="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400">← {{ t('admin.users') }}</Link>
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">{{ user.name }}</h2>
+                <h2 class="font-display text-xl font-bold text-gray-800 dark:text-gray-100">{{ user.name }}</h2>
             </div>
         </template>
 

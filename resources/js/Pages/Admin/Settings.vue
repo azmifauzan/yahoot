@@ -32,7 +32,7 @@ function save() {
     <AppLayout :title="t('admin.settings')">
         <template #header>
             <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">{{ t('admin.settings') }}</h2>
+                <h2 class="font-display text-xl font-bold text-gray-800 dark:text-gray-100">{{ t('admin.settings') }}</h2>
                 <Link :href="route('admin.dashboard')" class="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400">← {{ t('admin.dashboard') }}</Link>
             </div>
         </template>

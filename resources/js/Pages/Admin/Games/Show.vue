@@ -28,7 +28,7 @@ function statusBadge(s) {
         <template #header>
             <div class="flex items-center gap-4">
                 <Link :href="route('admin.games.index')" class="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400">← {{ t('admin.games') }}</Link>
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 font-mono">{{ gameSession.game_code }}</h2>
+                <h2 class="font-display text-xl font-bold text-gray-800 dark:text-gray-100 font-mono">{{ gameSession.game_code }}</h2>
             </div>
         </template>
 

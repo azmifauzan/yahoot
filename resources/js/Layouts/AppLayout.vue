@@ -176,7 +176,7 @@ const logout = () => {
             </header>
 
             <!-- Page Content -->
-            <main>
+            <main class="animate-page-enter">
                 <slot />
             </main>
         </div>

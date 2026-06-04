@@ -35,7 +35,7 @@ function statusBadge(status) {
     <AppLayout :title="t('admin.dashboard')">
         <template #header>
             <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">{{ t('admin.dashboard') }}</h2>
+                <h2 class="font-display text-xl font-bold text-gray-800 dark:text-gray-100">{{ t('admin.dashboard') }}</h2>
                 <nav class="flex items-center gap-4 text-sm">
                     <Link :href="route('admin.users.index')" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">{{ t('admin.users') }}</Link>
                     <Link :href="route('admin.quizzes.index')" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">{{ t('admin.quizzes') }}</Link>

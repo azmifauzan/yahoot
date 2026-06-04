@@ -194,7 +194,8 @@ function getPlaceholderColor(index) {
                     <div
                         v-for="(quiz, index) in quizzes"
                         :key="quiz.id"
-                        class="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-500/10 dark:bg-gray-900 dark:border-gray-800"
+                        class="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-500/10 dark:bg-gray-900 dark:border-gray-800 animate-slide-in-up"
+                        :style="{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }"
                         @click="$inertia.visit(route('quizzes.edit', quiz.id))"
                     >
                         <!-- Cover -->
