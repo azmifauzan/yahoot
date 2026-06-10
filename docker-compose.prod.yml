@@ -1,0 +1,30 @@
+services:
+  yahoot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: yahoot-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8000}:80"
+      - "${REVERB_PORT:-8080}:8080"
+    volumes:
+      - storage_data:/var/www/html/storage/app
+    env_file:
+      - .env
+    # Option 1: To allow the container to access Postgres/Redis running on the host's 127.0.0.1:
+    # (Uncomment the line below if you want the container to run directly on the host network,
+    # which makes 127.0.0.1 in the container point to the host server. Note that if you use
+    # network_mode: "host", the ports mapping section above is ignored since the container 
+    # will bind directly to host ports 80 and 8080.)
+    #
+    # network_mode: "host"
+
+    # Option 2: If using default bridge network, allow resolving 'host.docker.internal'
+    # to access host-level services:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  storage_data:

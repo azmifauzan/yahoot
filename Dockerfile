@@ -63,6 +63,17 @@ RUN npm run build
 # ---------------------
 FROM base AS production
 
+# Install nginx and supervisor
+RUN apk add --no-cache nginx supervisor
+
+# Copy Nginx and Supervisor configurations
+COPY docker/nginx/container.conf /etc/nginx/http.d/default.conf
+COPY docker/supervisor/supervisord.conf /etc/supervisord.conf
+
+# Setup directories for logs, run files, and nginx pid
+RUN mkdir -p /var/log/supervisor /var/run/supervisor /var/run/nginx \
+    && chown -R www-data:www-data /var/log/supervisor /var/run/supervisor /var/lib/nginx /var/log/nginx
+
 # Copy application code
 COPY --chown=www-data:www-data . /var/www/html
 
@@ -76,8 +87,9 @@ RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoload
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-USER www-data
+# Expose Nginx (80) and Reverb (8080)
+EXPOSE 80 8080
 
-EXPOSE 9000
+# Run supervisor as root (it will drop privileges to www-data for worker/scheduler/reverb)
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
 
-CMD ["php-fpm"]

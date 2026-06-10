@@ -177,7 +177,7 @@ watch(gameState, (state) => {
                 </div>
                 <!-- Game Code -->
                 <div class="text-center">
-                    <p class="text-lg opacity-80 mb-2">{{ t('host.join_at') }} <span class="font-bold">yahoot.my.id</span></p>
+                    <p class="text-lg opacity-80 mb-2">{{ t('host.join_at') }} <span class="font-bold">yahoot.web.id</span></p>
                     <div class="text-7xl font-extrabold tracking-[0.3em] bg-white/10 inline-block px-8 py-4 rounded-2xl backdrop-blur">
                         {{ gameSession.game_code }}
                     </div>

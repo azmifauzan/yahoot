@@ -1,6 +1,6 @@
 # Yahoot
 
-Real-time quiz platform (Kahoot-inspired). Laravel 12 + Vue 3 + Inertia v2 + Reverb WebSocket. Production: https://yahoot.my.id
+Real-time quiz platform (Kahoot-inspired). Laravel 12 + Vue 3 + Inertia v2 + Reverb WebSocket. Production: https://yahoot.web.id
 
 ## Commands
 

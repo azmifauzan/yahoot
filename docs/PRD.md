@@ -6,7 +6,7 @@
 **Tanggal:** 5 Maret 2026  
 **Lisensi:** MIT (Free & Open Source)  
 **Stack:** Laravel 12, Inertia.js v2, Vue 3, Tailwind CSS, Laravel Reverb (WebSocket)  
-**Domain:** yahoot.my.id
+**Domain:** yahoot.web.id
 
 ---
 
@@ -52,7 +52,7 @@ Yahoot bersifat **free & open source** tanpa batasan fitur, jumlah pemain, atau 
 | Routing (JS) | Ziggy v2 |
 | Containerization | Docker + Docker Compose |
 | Reverse Proxy | Nginx |
-| Domain | yahoot.my.id |
+| Domain | yahoot.web.id |
 
 ---
 
@@ -866,7 +866,7 @@ Gradients:
 ## 13. Infrastructure & Deployment
 
 ### 13.1 Production Environment
-- **Domain:** yahoot.my.id
+- **Domain:** yahoot.web.id
 - **Container Runtime:** Docker + Docker Compose
 - **Reverse Proxy:** Nginx (host-level) → Docker containers
 - **SSL:** Let's Encrypt (Certbot) auto-renewal
@@ -893,7 +893,7 @@ Gradients:
 ### 13.4 Email Service
 - **Provider:** Brevo (Sendinblue)
 - **Protokol:** SMTP relay (`smtp-relay.brevo.com:587`)
-- **From Address:** `noreply@yahoot.my.id`
+- **From Address:** `noreply@yahoot.web.id`
 - **Digunakan untuk:** Verifikasi email, reset password, notifikasi
 
 ### 13.5 Database
@@ -1143,7 +1143,7 @@ tests/
 docker/
 ├── nginx/
 │   ├── default.conf              # Container nginx config
-│   └── yahoot.my.id.conf         # Production reverse proxy
+│   └── yahoot.web.id.conf         # Production reverse proxy
 └── php/
     ├── php.ini                    # PHP configuration
     └── opcache.ini                # OPcache configuration

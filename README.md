@@ -2,7 +2,7 @@
 
 Platform kuis interaktif real-time yang terinspirasi dari Kahoot. Gratis, open source, tanpa batasan.
 
-**Production:** [https://yahoot.my.id](https://yahoot.my.id)
+**Production:** [https://yahoot.web.id](https://yahoot.web.id)
 
 ## Tentang
 
@@ -104,10 +104,10 @@ docker compose exec app php artisan view:cache
 
 ### Production (Nginx Reverse Proxy)
 
-Gunakan `docker/nginx/yahoot.my.id.conf` sebagai konfigurasi nginx reverse proxy di host server. Setup SSL dengan Certbot:
+Gunakan `docker/nginx/yahoot.web.id.conf` sebagai konfigurasi nginx reverse proxy di host server. Setup SSL dengan Certbot:
 
 ```bash
-sudo certbot --nginx -d yahoot.my.id
+sudo certbot --nginx -d yahoot.web.id
 ```
 
 ## Environment Variables

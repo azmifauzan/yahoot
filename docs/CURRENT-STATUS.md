@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-04  
 **Branch:** main  
-**Production:** https://yahoot.my.id
+**Production:** https://yahoot.web.id
 
 ---
 
