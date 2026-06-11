@@ -342,7 +342,7 @@ function isQuestionComplete(question) {
 </script>
 
 <template>
-    <AppLayout :title="isNew ? t('dashboard.create_quiz') : quizForm.title || t('quiz.untitled')">
+    <AppLayout :title="isNew ? t('dashboard.create_quiz') : quizForm.title || t('quiz.untitled')" :fullscreen="true">
         <!-- Custom header -->
         <template #header>
             <div class="flex items-center justify-between">
