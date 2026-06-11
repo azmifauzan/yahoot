@@ -1,0 +1,24 @@
+services:
+  yahoot:
+    image: azmifauzan/yahoot:latest
+    container_name: yahoot-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - storage_data:/var/www/html/storage/app
+    networks:
+      - yahoot      # shared with nginx-certbot proxy
+      - postgres    # reach Postgres container by name
+      - redis       # reach Redis container by name
+
+volumes:
+  storage_data:
+
+networks:
+  yahoot:
+    external: true
+  postgres:
+    external: true
+  redis:
+    external: true

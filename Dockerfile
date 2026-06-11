@@ -46,16 +46,37 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # ---------------------
+# Vendor stage (composer deps needed by the asset build, e.g. tightenco/ziggy)
+# ---------------------
+FROM base AS vendor-builder
+
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --prefer-dist --no-scripts --no-autoloader
+
+# ---------------------
 # Build stage (assets)
 # ---------------------
 FROM node:22-alpine AS node-builder
 
 WORKDIR /var/www/html
 
+# Vite bakes VITE_* vars at build time; .env is not in the build context, so pass them explicitly
+ARG VITE_APP_NAME
+ARG VITE_REVERB_APP_KEY
+ARG VITE_REVERB_HOST
+ARG VITE_REVERB_PORT
+ARG VITE_REVERB_SCHEME
+ENV VITE_APP_NAME=$VITE_APP_NAME \
+    VITE_REVERB_APP_KEY=$VITE_REVERB_APP_KEY \
+    VITE_REVERB_HOST=$VITE_REVERB_HOST \
+    VITE_REVERB_PORT=$VITE_REVERB_PORT \
+    VITE_REVERB_SCHEME=$VITE_REVERB_SCHEME
+
 COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
+COPY --from=vendor-builder /var/www/html/vendor ./vendor
 RUN npm run build
 
 # ---------------------

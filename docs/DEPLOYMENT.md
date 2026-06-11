@@ -11,10 +11,9 @@ Single all-in-one Docker image (`supervisord` runs nginx + PHP-FPM + Reverb + qu
 | Item | Value / Source |
 |------|----------------|
 | Local: Docker + buildx | `docker login` to Docker Hub as `azmifauzan` |
-| Local: `sshpass` | `sudo apt-get install -y sshpass` (password auth used) |
 | Deploy host | `.env` → `DEPLOYMENT_SERVER_HOST` |
 | Deploy user | `.env` → `DEPLOYMENT_SERVER_USERNAME` (`ubuntu`) |
-| Deploy password | `.env` → `DEPLOYMENT_SERVER_PASSWORD` |
+| Deploy SSH key | `.env` → `DEPLOYMENT_SERVER_SSH_KEY` (ed25519, key-based auth, `authorized_keys` already set up) |
 | Server: Docker + compose plugin | already installed |
 | Server: Postgres 17 | **container** on the `postgres` network |
 | Server: Redis 7 | **container** on the `redis` network |
@@ -30,8 +29,8 @@ Load deploy vars into the local shell (used by every step below):
 
 ```bash
 set -a; source .env; set +a
-SSH="sshpass -p $DEPLOYMENT_SERVER_PASSWORD ssh -o StrictHostKeyChecking=accept-new $DEPLOYMENT_SERVER_USERNAME@$DEPLOYMENT_SERVER_HOST"
-SCP="sshpass -p $DEPLOYMENT_SERVER_PASSWORD scp -o StrictHostKeyChecking=accept-new"
+SSH="ssh -i $DEPLOYMENT_SERVER_SSH_KEY -o StrictHostKeyChecking=accept-new -o BatchMode=yes $DEPLOYMENT_SERVER_USERNAME@$DEPLOYMENT_SERVER_HOST"
+SCP="scp -i $DEPLOYMENT_SERVER_SSH_KEY -o StrictHostKeyChecking=accept-new"
 ```
 
 ---
@@ -49,11 +48,19 @@ TAG="${DATE}-${COUNTER}"
 IMAGE="azmifauzan/yahoot:${TAG}"
 echo "Building ${IMAGE}"
 
-docker build --target production -t "$IMAGE" -t azmifauzan/yahoot:latest .
+set -a; source .env.production; set +a
+docker build --target production \
+  --build-arg VITE_APP_NAME="$VITE_APP_NAME" \
+  --build-arg VITE_REVERB_APP_KEY="$VITE_REVERB_APP_KEY" \
+  --build-arg VITE_REVERB_HOST="$VITE_REVERB_HOST" \
+  --build-arg VITE_REVERB_PORT="$VITE_REVERB_PORT" \
+  --build-arg VITE_REVERB_SCHEME="$VITE_REVERB_SCHEME" \
+  -t "$IMAGE" -t azmifauzan/yahoot:latest .
 ```
 
-> Build runs `npm run build` + `composer install --no-dev` inside the image. Building for the server's arch: if local is arm64 and server is amd64, use
-> `docker buildx build --platform linux/amd64 --target production -t "$IMAGE" --load .`
+> Build runs `npm run build` + `composer install --no-dev` inside the image. `.env` is excluded from the build context (`.dockerignore`), so `VITE_*` vars **must** be passed as `--build-arg` from `.env.production` — otherwise Echo/Reverb config bakes in empty and WebSocket breaks in prod.
+>
+> Building for the server's arch: if local is arm64 and server is amd64, add `docker buildx build --platform linux/amd64 ... --load`.
 
 ---
 
@@ -85,20 +92,14 @@ Files needed on server: `docker-compose.yml` + `.env` (production values).
 
 ### 4a. Make dir + copy env
 
+A separate `.env.production` (gitignored, local only) holds the production values — `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://yahoot.web.id`, `DB_HOST=postgres`/`DB_PASSWORD=<inspect>`, `REDIS_HOST=redis`/`REDIS_PASSWORD=<inspect>`, `SESSION_DOMAIN=yahoot.web.id`, `REVERB_HOST=yahoot.web.id`/`REVERB_SCHEME=https`/`REVERB_PORT=443`, real `AWS_*` (S3) and `MAIL_*` (Brevo) creds, and generated `REVERB_APP_ID/KEY/SECRET`.
+
 ```bash
 $SSH 'mkdir -p /home/ubuntu/yahoot'
-$SCP .env $DEPLOYMENT_SERVER_USERNAME@$DEPLOYMENT_SERVER_HOST:/home/ubuntu/yahoot/.env
+$SCP .env.production $DEPLOYMENT_SERVER_USERNAME@$DEPLOYMENT_SERVER_HOST:/home/ubuntu/yahoot/.env
 ```
 
-> Ensure the copied `.env` has **production** values:
-> `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://yahoot.web.id`,
-> `DB_HOST=<postgres-container-name>`, `DB_DATABASE=yahoot`, `DB_PASSWORD=<from step 4c inspect>`,
-> `REDIS_HOST=<redis-container-name>`, `REDIS_PASSWORD=<from step 4c inspect>`,
-> `SESSION_DOMAIN=.yahoot.web.id`,
-> `REVERB_HOST=yahoot.web.id`, `REVERB_SCHEME=https`, `REVERB_PORT=443`,
-> `VITE_REVERB_HOST=yahoot.web.id`, `VITE_REVERB_SCHEME=wss`, `VITE_REVERB_PORT=443`.
-> (VITE_* are baked at build time — if changed, rebuild image in step 1.)
-> Strip the `DEPLOYMENT_SERVER_*` lines from the server copy — not needed there.
+> `VITE_*` vars are baked at build time (step 1, via `--build-arg` from this same `.env.production`) — if any change, rebuild the image.
 
 ### 4b. Compose file
 
