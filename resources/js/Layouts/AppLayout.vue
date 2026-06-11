@@ -7,6 +7,8 @@ import Banner from '@/Components/Banner.vue';
 import LanguageSwitcher from '@/Components/UI/LanguageSwitcher.vue';
 import ThemeSwitcher from '@/Components/UI/ThemeSwitcher.vue';
 import SidebarNav from '@/Components/Navigation/SidebarNav.vue';
+import Dropdown from '@/Components/Dropdown.vue';
+import DropdownLink from '@/Components/DropdownLink.vue';
 import { useSidebar } from '@/Composables/useSidebar';
 
 const { t } = useI18n();
@@ -19,7 +21,6 @@ defineProps({
 
 const { collapsed, mobileOpen, toggleCollapsed, toggleMobile, closeMobile } = useSidebar();
 
-// The mobile drawer always shows full labels regardless of the desktop collapse preference.
 const desktopQuery = window.matchMedia('(min-width: 1024px)');
 const isDesktop = ref(desktopQuery.matches);
 const updateIsDesktop = (event) => { isDesktop.value = event.matches; };
@@ -66,22 +67,49 @@ const logout = () => {
 
         <Banner />
 
-        <div class="min-h-screen bg-white dark:bg-gray-950">
+        <div class="h-screen bg-white dark:bg-gray-950 flex flex-col">
+            <!-- Global Top Navbar -->
+            <div class="sticky top-0 z-50 flex h-16 shrink-0 items-center justify-between border-b border-gray-200 bg-white/80 px-4 sm:px-6 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-950/80">
+                <!-- Left side -->
+                <div class="flex items-center gap-3">
+                    <button
+                        v-if="!fullscreen"
+                        @click="toggleMobile"
+                        :aria-label="t('nav.menu')"
+                        class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 lg:hidden dark:text-gray-400 dark:hover:bg-gray-800"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <!-- Logo -->
+                    <Link :href="route('dashboard')" class="flex items-center overflow-hidden" @click="closeMobile">
+                        <ApplicationMark />
+                    </Link>
+                </div>
+
+                <!-- Right side (Switchers) -->
+                <div class="flex items-center gap-2">
+                    <LanguageSwitcher />
+                    <ThemeSwitcher />
+                </div>
+            </div>
+
             <!-- Fullscreen mode: header only, no sidebar -->
             <template v-if="fullscreen">
-                <header v-if="$slots.header" class="bg-white shadow-sm dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+                <header v-if="$slots.header" class="bg-white shadow-sm dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shrink-0">
                     <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
                         <slot name="header" />
                     </div>
                 </header>
 
-                <main class="animate-page-enter">
+                <main class="animate-page-enter flex-1 overflow-hidden flex flex-col relative">
                     <slot />
                 </main>
             </template>
 
             <!-- Sidebar layout -->
-            <div v-else class="flex">
+            <div v-else class="flex flex-1 overflow-hidden">
                 <!-- Mobile backdrop -->
                 <div
                     v-if="mobileOpen"
@@ -92,17 +120,14 @@ const logout = () => {
                 <!-- Sidebar -->
                 <aside
                     :class="[
-                        'fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-gray-200 bg-white transition-transform duration-200 dark:border-gray-800 dark:bg-gray-900',
-                        'lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:transition-[width]',
+                        'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-gray-200 bg-white transition-transform duration-200 dark:border-gray-800 dark:bg-gray-900',
+                        'lg:sticky lg:top-0 lg:h-[calc(100vh-4rem)] lg:translate-x-0 lg:transition-[width]',
                         collapsed ? 'lg:w-20' : 'lg:w-64',
                         mobileOpen ? 'translate-x-0' : '-translate-x-full',
                     ]"
                 >
-                    <!-- Logo + collapse toggle -->
-                    <div class="flex h-16 shrink-0 items-center justify-between border-b border-gray-100 px-4 dark:border-gray-800">
-                        <Link :href="route('dashboard')" class="flex items-center overflow-hidden" @click="closeMobile">
-                            <ApplicationMark :icon-only="effectiveCollapsed" />
-                        </Link>
+                    <!-- Sidebar collapse toggle -->
+                    <div class="flex h-12 shrink-0 items-center justify-end border-b border-gray-100 px-4 dark:border-gray-800">
                         <button
                             @click="toggleCollapsed"
                             class="hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 lg:flex dark:hover:bg-gray-800 dark:hover:text-gray-300"
@@ -125,65 +150,51 @@ const logout = () => {
                         </div>
                     </nav>
 
-                    <!-- User card + switchers + logout -->
+                    <!-- User Dropdown (Profile & Logout) -->
                     <div class="shrink-0 border-t border-gray-100 p-3 dark:border-gray-800">
-                        <div :class="['flex items-center gap-3 rounded-lg px-2 py-2', effectiveCollapsed ? 'justify-center' : '']">
-                            <img
-                                v-if="page.props.jetstream.managesProfilePhotos"
-                                class="h-9 w-9 shrink-0 rounded-full object-cover"
-                                :src="page.props.auth.user.profile_photo_url"
-                                :alt="page.props.auth.user.name"
-                            />
-                            <div v-else class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-bold text-primary-600 dark:bg-primary-900/30 dark:text-primary-400">
-                                {{ page.props.auth.user.name.charAt(0).toUpperCase() }}
-                            </div>
-                            <div v-if="!effectiveCollapsed" class="min-w-0 flex-1">
-                                <p class="truncate text-sm font-medium text-gray-800 dark:text-gray-200">{{ page.props.auth.user.name }}</p>
-                                <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ page.props.auth.user.email }}</p>
-                            </div>
-                        </div>
-
-                        <div :class="['mt-2 flex items-center gap-2', effectiveCollapsed ? 'flex-col px-0' : 'px-2']">
-                            <LanguageSwitcher v-if="!effectiveCollapsed" />
-                            <ThemeSwitcher />
-                        </div>
-
-                        <form @submit.prevent="logout" class="mt-2">
-                            <button
-                                type="submit"
-                                :title="t('nav.logout')"
-                                :class="[
-                                    'flex w-full items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 hover:text-red-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-red-400',
-                                    effectiveCollapsed ? 'justify-center' : '',
-                                ]"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
-                                <span v-if="!effectiveCollapsed">{{ t('nav.logout') }}</span>
-                            </button>
-                        </form>
+                        <Dropdown align="top-left" width="48" :contentClasses="['py-1', 'bg-white', 'dark:bg-gray-900']">
+                            <template #trigger>
+                                <button :class="['flex w-full items-center gap-3 rounded-lg px-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-left', effectiveCollapsed ? 'justify-center' : '']">
+                                    <img
+                                        v-if="page.props.jetstream.managesProfilePhotos"
+                                        class="h-9 w-9 shrink-0 rounded-full object-cover"
+                                        :src="page.props.auth.user.profile_photo_url"
+                                        :alt="page.props.auth.user.name"
+                                    />
+                                    <div v-else class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-bold text-primary-600 dark:bg-primary-900/30 dark:text-primary-400">
+                                        {{ page.props.auth.user.name.charAt(0).toUpperCase() }}
+                                    </div>
+                                    <div v-if="!effectiveCollapsed" class="min-w-0 flex-1">
+                                        <p class="truncate text-sm font-medium text-gray-800 dark:text-gray-200">{{ page.props.auth.user.name }}</p>
+                                        <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ page.props.auth.user.email }}</p>
+                                    </div>
+                                    <svg v-if="!effectiveCollapsed" class="h-4 w-4 shrink-0 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </template>
+                            <template #content>
+                                <div class="block px-4 py-2 text-xs text-gray-400">
+                                    {{ t('nav.profile') }}
+                                </div>
+                                <DropdownLink :href="route('profile.show')">
+                                    {{ t('nav.profile') }}
+                                </DropdownLink>
+                                <div class="border-t border-gray-200 dark:border-gray-600"></div>
+                                <form @submit.prevent="logout">
+                                    <DropdownLink as="button">
+                                        {{ t('nav.logout') }}
+                                    </DropdownLink>
+                                </form>
+                            </template>
+                        </Dropdown>
                     </div>
                 </aside>
 
                 <!-- Main column -->
-                <div class="flex min-w-0 flex-1 flex-col">
-                    <!-- Mobile topbar -->
-                    <div class="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-gray-200 bg-white/80 px-4 backdrop-blur-lg lg:hidden dark:border-gray-800 dark:bg-gray-950/80">
-                        <button
-                            @click="toggleMobile"
-                            :aria-label="t('nav.menu')"
-                            class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                        </button>
-                        <ApplicationMark />
-                    </div>
-
+                <div class="flex min-w-0 flex-1 flex-col overflow-y-auto">
                     <!-- Page Heading -->
-                    <header v-if="$slots.header" class="bg-white shadow-sm dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+                    <header v-if="$slots.header" class="bg-white shadow-sm dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shrink-0">
                         <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
                             <slot name="header" />
                         </div>

@@ -447,7 +447,7 @@ function isQuestionComplete(question) {
         </template>
 
         <!-- Editor Layout -->
-        <div v-if="!isNew" class="flex h-[calc(100vh-4rem)] overflow-hidden">
+        <div v-if="!isNew" class="flex h-full overflow-hidden">
             <!-- Left Sidebar - Question List -->
             <QuestionSidebar
                 :questions="questions"
