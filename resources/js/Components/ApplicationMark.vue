@@ -6,6 +6,6 @@ defineProps({
 
 <template>
     <div class="flex items-center">
-        <img src="/images/logo.png?v=2" alt="Yahoot Logo" class="w-32 sm:w-40 h-auto" />
+        <img src="/images/logo.png?v=3" alt="Yahoot Logo" class="h-8 sm:h-10 w-auto object-contain" />
     </div>
 </template>
