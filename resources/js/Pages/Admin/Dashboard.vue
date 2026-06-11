@@ -34,15 +34,7 @@ function statusBadge(status) {
 <template>
     <AppLayout :title="t('admin.dashboard')">
         <template #header>
-            <div class="flex items-center justify-between">
-                <h2 class="font-display text-xl font-bold text-gray-800 dark:text-gray-100">{{ t('admin.dashboard') }}</h2>
-                <nav class="flex items-center gap-4 text-sm">
-                    <Link :href="route('admin.users.index')" class="text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400">{{ t('admin.users') }}</Link>
-                    <Link :href="route('admin.quizzes.index')" class="text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400">{{ t('admin.quizzes') }}</Link>
-                    <Link :href="route('admin.games.index')" class="text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400">{{ t('admin.games') }}</Link>
-                    <Link :href="route('admin.settings.index')" class="text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400">{{ t('admin.settings') }}</Link>
-                </nav>
-            </div>
+            <h2 class="font-display text-xl font-bold text-gray-800 dark:text-gray-100">{{ t('admin.dashboard') }}</h2>
         </template>
 
         <div class="py-8">
