@@ -11,7 +11,13 @@
         "register": "Daftar",
         "logout": "Keluar",
         "profile": "Profil",
-        "language": "Bahasa"
+        "language": "Bahasa",
+        "my_quizzes": "Kuis Saya",
+        "api_tokens": "Token API",
+        "menu": "Menu",
+        "admin_panel": "Panel Admin",
+        "collapse": "Ciutkan",
+        "expand": "Perluas"
     },
     "landing": {
         "hero_title": "Buat Kuis, Main Bareng!",

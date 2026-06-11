@@ -11,7 +11,13 @@
         "register": "Register",
         "logout": "Logout",
         "profile": "Profile",
-        "language": "Language"
+        "language": "Language",
+        "my_quizzes": "My Quizzes",
+        "api_tokens": "API Tokens",
+        "menu": "Menu",
+        "admin_panel": "Admin Panel",
+        "collapse": "Collapse",
+        "expand": "Expand"
     },
     "landing": {
         "hero_title": "Create Quizzes, Play Together!",
