@@ -20,10 +20,7 @@ defineProps({
             <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
                 <!-- Logo -->
                 <Link href="/" class="group flex items-center gap-0.5">
-                    <svg viewBox="0 0 32 32" class="h-8 w-8 transition group-hover:-rotate-6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="32" height="32" rx="8" class="fill-primary-600"/>
-                        <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" class="fill-white" font-size="18" font-weight="800" font-family="Gabarito, Inter, sans-serif">Y</text>
-                    </svg>
+                    <img src="/images/logo.png" alt="Yahoot Logo" class="h-8 w-8 transition group-hover:-rotate-6 object-contain rounded-lg shadow-sm" />
                     <span class="font-display text-xl font-extrabold text-gray-900 dark:text-white">ahoot</span>
                 </Link>
 
@@ -78,10 +75,7 @@ defineProps({
         <footer class="border-t border-gray-200 bg-white py-12 dark:border-gray-800 dark:bg-gray-950">
             <div class="mx-auto max-w-6xl px-4 text-center sm:px-6">
                 <div class="mb-4 flex items-center justify-center gap-1 opacity-50 grayscale transition hover:grayscale-0">
-                    <svg viewBox="0 0 32 32" class="h-6 w-6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="32" height="32" rx="8" class="fill-primary-600"/>
-                        <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" class="fill-white" font-size="18" font-weight="800" font-family="Gabarito, Inter, sans-serif">Y</text>
-                    </svg>
+                    <img src="/images/logo.png" alt="Yahoot Logo" class="h-6 w-6 object-contain rounded-md" />
                     <span class="font-display text-lg font-extrabold text-gray-900 dark:text-white">ahoot</span>
                 </div>
                 <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
