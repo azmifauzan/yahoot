@@ -5,6 +5,7 @@ import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
+import GoogleAuthButton from '@/Components/UI/GoogleAuthButton.vue';
 import LanguageSwitcher from '@/Components/UI/LanguageSwitcher.vue';
 import ThemeSwitcher from '@/Components/UI/ThemeSwitcher.vue';
 
@@ -106,5 +107,13 @@ const submit = () => {
                 </Link>
             </p>
         </form>
+
+        <div class="my-6 flex items-center gap-3">
+            <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+            <span class="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">{{ t('auth.or') }}</span>
+            <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+        </div>
+
+        <GoogleAuthButton />
     </AuthenticationCard>
 </template>

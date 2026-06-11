@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -14,7 +15,7 @@ class User extends Authenticatable
 {
     use HasApiTokens;
 
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory;
 
     use HasProfilePhoto;
@@ -30,6 +31,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'google_id',
         'avatar',
         'locale',
         'is_admin',
@@ -71,7 +73,7 @@ class User extends Authenticatable
     }
 
     /**
-     * @return HasMany<\App\Models\Quiz, $this>
+     * @return HasMany<Quiz, $this>
      */
     public function quizzes(): HasMany
     {
@@ -79,7 +81,7 @@ class User extends Authenticatable
     }
 
     /**
-     * @return HasMany<\App\Models\GameSession, $this>
+     * @return HasMany<GameSession, $this>
      */
     public function hostedGameSessions(): HasMany
     {
@@ -87,7 +89,7 @@ class User extends Authenticatable
     }
 
     /**
-     * @return HasMany<\App\Models\GamePlayer, $this>
+     * @return HasMany<GamePlayer, $this>
      */
     public function gamePlayers(): HasMany
     {

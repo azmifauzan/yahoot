@@ -170,6 +170,8 @@
         "name_placeholder": "Full name",
         "confirm_password": "Confirm Password",
         "agree_to": "I agree to the",
+        "or": "or",
+        "continue_with_google": "Continue with Google",
         "terms": "Terms of Service",
         "privacy": "Privacy Policy"
     },

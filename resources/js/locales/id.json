@@ -170,6 +170,8 @@
         "name_placeholder": "Nama lengkap",
         "confirm_password": "Konfirmasi Password",
         "agree_to": "Saya menyetujui",
+        "or": "atau",
+        "continue_with_google": "Lanjutkan dengan Google",
         "terms": "Ketentuan Layanan",
         "privacy": "Kebijakan Privasi"
     },

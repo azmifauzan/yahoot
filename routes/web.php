@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\GameSessionController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\QuestionController;
@@ -19,6 +20,12 @@ Route::get('/', function () {
 Route::get('/images/{path}', [QuestionImageController::class, 'show'])
     ->where('path', '.*')
     ->name('question-images.show');
+
+// Google OAuth routes (guests only)
+Route::middleware('guest')->prefix('auth/google')->name('auth.google.')->group(function () {
+    Route::get('/redirect', [GoogleAuthController::class, 'redirect'])->name('redirect');
+    Route::get('/callback', [GoogleAuthController::class, 'callback'])->name('callback');
+});
 
 // Player routes (no auth required — guests can play)
 Route::get('/play', [PlayerController::class, 'join'])->name('play');
