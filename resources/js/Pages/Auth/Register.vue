@@ -42,6 +42,14 @@ const submit = () => {
             </div>
         </div>
 
+        <GoogleAuthButton />
+
+        <div class="my-6 flex items-center gap-3">
+            <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+            <span class="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">{{ t('auth.or') }}</span>
+            <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+        </div>
+
         <form @submit.prevent="submit">
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">{{ t('auth.name') }}</label>
@@ -129,12 +137,6 @@ const submit = () => {
             </p>
         </form>
 
-        <div class="my-6 flex items-center gap-3">
-            <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
-            <span class="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">{{ t('auth.or') }}</span>
-            <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
-        </div>
 
-        <GoogleAuthButton />
     </AuthenticationCard>
 </template>

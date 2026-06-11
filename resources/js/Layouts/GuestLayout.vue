@@ -20,8 +20,7 @@ defineProps({
             <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
                 <!-- Logo -->
                 <Link href="/" class="group flex items-center gap-0.5">
-                    <img src="/images/logo.png" alt="Yahoot Logo" class="h-8 w-8 transition group-hover:-rotate-6 object-contain rounded-lg shadow-sm" />
-                    <span class="font-display text-xl font-extrabold text-gray-900 dark:text-white">ahoot</span>
+                    <img src="/images/logo.png" alt="Yahoot Logo" class="h-8 w-auto transition group-hover:-rotate-3 object-contain" />
                 </Link>
 
                 <!-- Right side -->
@@ -74,9 +73,8 @@ defineProps({
         <!-- Footer -->
         <footer class="border-t border-gray-200 bg-white py-12 dark:border-gray-800 dark:bg-gray-950">
             <div class="mx-auto max-w-6xl px-4 text-center sm:px-6">
-                <div class="mb-4 flex items-center justify-center gap-1 opacity-50 grayscale transition hover:grayscale-0">
-                    <img src="/images/logo.png" alt="Yahoot Logo" class="h-6 w-6 object-contain rounded-md" />
-                    <span class="font-display text-lg font-extrabold text-gray-900 dark:text-white">ahoot</span>
+                <div class="mb-4 flex items-center justify-center opacity-70 grayscale transition hover:grayscale-0">
+                    <img src="/images/logo.png" alt="Yahoot Logo" class="h-8 w-auto object-contain" />
                 </div>
                 <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
                     {{ t('landing.footer') }} &copy; {{ new Date().getFullYear() }} Yahoot.
