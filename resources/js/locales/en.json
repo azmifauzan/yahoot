@@ -42,7 +42,8 @@
         "how_step3_title": "Play Together!",
         "how_step3_desc": "Players join, answer questions, and see who's the champion!",
         "cta_title": "Ready to Play?",
-        "cta_subtitle": "Create your first quiz now — it's free!"
+        "cta_subtitle": "Create your first quiz now — it's free!",
+        "footer": "Free & Open Source."
     },
     "dashboard": {
         "title": "My Quizzes",
