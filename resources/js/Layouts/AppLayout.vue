@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import ApplicationMark from '@/Components/ApplicationMark.vue';
@@ -18,6 +18,15 @@ defineProps({
 });
 
 const { collapsed, mobileOpen, toggleCollapsed, toggleMobile, closeMobile } = useSidebar();
+
+// The mobile drawer always shows full labels regardless of the desktop collapse preference.
+const desktopQuery = window.matchMedia('(min-width: 1024px)');
+const isDesktop = ref(desktopQuery.matches);
+const updateIsDesktop = (event) => { isDesktop.value = event.matches; };
+onMounted(() => desktopQuery.addEventListener('change', updateIsDesktop));
+onUnmounted(() => desktopQuery.removeEventListener('change', updateIsDesktop));
+
+const effectiveCollapsed = computed(() => isDesktop.value && collapsed.value);
 
 const menuLinks = computed(() => {
     const links = [
@@ -91,8 +100,8 @@ const logout = () => {
                 >
                     <!-- Logo + collapse toggle -->
                     <div class="flex h-16 shrink-0 items-center justify-between border-b border-gray-100 px-4 dark:border-gray-800">
-                        <Link :href="route('dashboard')" class="flex items-center overflow-hidden">
-                            <ApplicationMark :icon-only="collapsed" />
+                        <Link :href="route('dashboard')" class="flex items-center overflow-hidden" @click="closeMobile">
+                            <ApplicationMark :icon-only="effectiveCollapsed" />
                         </Link>
                         <button
                             @click="toggleCollapsed"
@@ -108,17 +117,17 @@ const logout = () => {
 
                     <!-- Nav -->
                     <nav class="flex-1 space-y-6 overflow-y-auto px-3 py-4">
-                        <SidebarNav :links="menuLinks" :collapsed="collapsed" :label="t('nav.menu')" @navigate="closeMobile" />
+                        <SidebarNav :links="menuLinks" :collapsed="effectiveCollapsed" :label="t('nav.menu')" @navigate="closeMobile" />
 
                         <div v-if="adminLinks.length">
                             <div class="my-3 border-t border-gray-100 dark:border-gray-800" />
-                            <SidebarNav :links="adminLinks" :collapsed="collapsed" :label="t('nav.admin_panel')" @navigate="closeMobile" />
+                            <SidebarNav :links="adminLinks" :collapsed="effectiveCollapsed" :label="t('nav.admin_panel')" @navigate="closeMobile" />
                         </div>
                     </nav>
 
                     <!-- User card + switchers + logout -->
                     <div class="shrink-0 border-t border-gray-100 p-3 dark:border-gray-800">
-                        <div :class="['flex items-center gap-3 rounded-lg px-2 py-2', collapsed ? 'justify-center' : '']">
+                        <div :class="['flex items-center gap-3 rounded-lg px-2 py-2', effectiveCollapsed ? 'justify-center' : '']">
                             <img
                                 v-if="page.props.jetstream.managesProfilePhotos"
                                 class="h-9 w-9 shrink-0 rounded-full object-cover"
@@ -128,14 +137,14 @@ const logout = () => {
                             <div v-else class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-bold text-primary-600 dark:bg-primary-900/30 dark:text-primary-400">
                                 {{ page.props.auth.user.name.charAt(0).toUpperCase() }}
                             </div>
-                            <div v-if="!collapsed" class="min-w-0 flex-1">
+                            <div v-if="!effectiveCollapsed" class="min-w-0 flex-1">
                                 <p class="truncate text-sm font-medium text-gray-800 dark:text-gray-200">{{ page.props.auth.user.name }}</p>
                                 <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ page.props.auth.user.email }}</p>
                             </div>
                         </div>
 
-                        <div :class="['mt-2 flex items-center gap-2', collapsed ? 'flex-col px-0' : 'px-2']">
-                            <LanguageSwitcher v-if="!collapsed" />
+                        <div :class="['mt-2 flex items-center gap-2', effectiveCollapsed ? 'flex-col px-0' : 'px-2']">
+                            <LanguageSwitcher v-if="!effectiveCollapsed" />
                             <ThemeSwitcher />
                         </div>
 
@@ -145,13 +154,13 @@ const logout = () => {
                                 :title="t('nav.logout')"
                                 :class="[
                                     'flex w-full items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 hover:text-red-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-red-400',
-                                    collapsed ? 'justify-center' : '',
+                                    effectiveCollapsed ? 'justify-center' : '',
                                 ]"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                 </svg>
-                                <span v-if="!collapsed">{{ t('nav.logout') }}</span>
+                                <span v-if="!effectiveCollapsed">{{ t('nav.logout') }}</span>
                             </button>
                         </form>
                     </div>
@@ -163,6 +172,7 @@ const logout = () => {
                     <div class="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-gray-200 bg-white/80 px-4 backdrop-blur-lg lg:hidden dark:border-gray-800 dark:bg-gray-950/80">
                         <button
                             @click="toggleMobile"
+                            :aria-label="t('nav.menu')"
                             class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
