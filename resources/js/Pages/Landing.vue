@@ -262,10 +262,18 @@ function joinFromLanding() {
 
         <!-- Footer -->
         <footer class="border-t border-gray-200 py-8 dark:border-gray-800">
-            <div class="mx-auto max-w-6xl px-4 text-center sm:px-6">
+            <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6">
                 <p class="text-sm text-gray-500 dark:text-gray-400">
                     © {{ new Date().getFullYear() }} Yahoot. Free & Open Source.
                 </p>
+                <div class="flex gap-4 text-sm">
+                    <a :href="route('terms.show')" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                        {{ t('auth.terms') }}
+                    </a>
+                    <a :href="route('policy.show')" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                        {{ t('auth.privacy') }}
+                    </a>
+                </div>
             </div>
         </footer>
     </div>
