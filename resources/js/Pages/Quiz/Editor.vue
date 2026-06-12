@@ -345,16 +345,16 @@ function isQuestionComplete(question) {
     <AppLayout :title="isNew ? t('dashboard.create_quiz') : quizForm.title || t('quiz.untitled')" :fullscreen="true">
         <!-- Custom header -->
         <template #header>
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
                     <button
                         @click="goBack"
-                        class="flex items-center gap-1 text-sm text-gray-500 transition hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        class="flex flex-shrink-0 items-center gap-1 text-sm text-gray-500 transition hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
-                        {{ t('quiz.back') }}
+                        <span class="hidden sm:inline">{{ t('quiz.back') }}</span>
                     </button>
 
                     <!-- Inline title edit -->
@@ -363,14 +363,14 @@ function isQuestionComplete(question) {
                         v-model="quizForm.title"
                         type="text"
                         :placeholder="t('quiz.untitled')"
-                        class="border-none bg-transparent text-lg font-semibold text-gray-800 focus:outline-none focus:ring-0 p-0 dark:text-gray-100"
+                        class="w-full min-w-0 border-none bg-transparent text-base sm:text-lg font-semibold text-gray-800 focus:outline-none focus:ring-0 p-0 dark:text-gray-100 truncate"
                     />
                     <input
                         v-else
                         v-model="quizForm.title"
                         type="text"
                         :placeholder="t('quiz.untitled')"
-                        class="border-none bg-transparent text-lg font-semibold text-gray-800 focus:outline-none focus:ring-0 p-0 dark:text-gray-100"
+                        class="w-full min-w-0 border-none bg-transparent text-base sm:text-lg font-semibold text-gray-800 focus:outline-none focus:ring-0 p-0 dark:text-gray-100 truncate"
                     />
                 </div>
 
