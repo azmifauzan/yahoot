@@ -279,6 +279,52 @@ class GameSessionController extends Controller
     }
 
     /**
+     * Show game session detailed statistics inside the user panel (with AppLayout).
+     */
+    public function stats(GameSession $gameSession): Response
+    {
+        $this->authorize('results', $gameSession);
+
+        $gameSession->load(['quiz.questions.answers', 'players.playerAnswers']);
+
+        $leaderboard = $this->scoringService->getLeaderboard($gameSession->id);
+        $totalQuestions = $gameSession->quiz->questions()->count();
+
+        // Calculate stats per player
+        $questions = $gameSession->quiz->questions->map(function ($question) use ($gameSession) {
+            $answers = PlayerAnswer::query()
+                ->where('question_id', $question->id)
+                ->whereIn('game_player_id', $gameSession->players->pluck('id'))
+                ->get();
+
+            $correctCount = $answers->where('is_correct', true)->count();
+            $incorrectCount = $answers->where('is_correct', false)->whereNotNull('answer_id')->count();
+            $noAnswerCount = $gameSession->players->count() - $answers->whereNotNull('answer_id')->count();
+
+            return [
+                'id' => $question->id,
+                'question_text' => $question->question_text,
+                'type' => $question->type->value,
+                'correct_count' => $correctCount,
+                'incorrect_count' => $incorrectCount,
+                'no_answer_count' => $noAnswerCount,
+            ];
+        });
+
+        return Inertia::render('Host/Stats', [
+            'gameSession' => [
+                'id' => $gameSession->id,
+                'game_code' => $gameSession->game_code,
+                'finished_at' => $gameSession->finished_at,
+            ],
+            'quiz' => $gameSession->quiz,
+            'leaderboard' => $leaderboard,
+            'totalQuestions' => $totalQuestions,
+            'questions' => $questions,
+        ]);
+    }
+
+    /**
      * Show the game session history for a quiz, including resumable sessions.
      */
     public function history(Quiz $quiz): Response

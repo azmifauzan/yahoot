@@ -293,6 +293,33 @@ test('host can view results page', function () {
         ->assertSuccessful();
 });
 
+test('host can view stats page', function () {
+    [$user, $quiz] = createGameSetup();
+
+    $session = GameSession::factory()->finished()->create([
+        'quiz_id' => $quiz->id,
+        'host_id' => $user->id,
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('game.stats', $session))
+        ->assertSuccessful();
+});
+
+test('non-host cannot view stats page', function () {
+    [$user, $quiz] = createGameSetup();
+    $nonHost = User::factory()->create();
+
+    $session = GameSession::factory()->finished()->create([
+        'quiz_id' => $quiz->id,
+        'host_id' => $user->id,
+    ]);
+
+    $this->actingAs($nonHost)
+        ->get(route('game.stats', $session))
+        ->assertForbidden();
+});
+
 test('host can export CSV results', function () {
     [$user, $quiz] = createGameSetup();
 

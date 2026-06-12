@@ -110,6 +110,7 @@ All done:
 - **Quiz Game History**: Added quiz history page (`Host/History.vue`) accessible from the dashboard via a clock icon button, listing past finished and active game sessions.
 - **Podium & Leaderboard Animations**: Added `podium-rise` and `slide-in-up` stagger animations on host results page.
 - **Game Cancellation**: Added a Cancel button for hosts to abort in-progress games. This deletes the session from the database, broadcasts a `GameCancelled` event to immediately redirect players to the home page, and redirects the host to the dashboard.
+- **Detailed Game Statistics View**: Added a statistics view (`Host/Stats.vue`) using `AppLayout` within the user panel to view past game results. It shows a summary card, player standings table, and a detailed question-by-question performance analysis with correct rates and answer breakdowns, replacing redirects to the fullscreen Kahoot-style leaderboard for past games.
 
 ---
 

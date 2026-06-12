@@ -51,7 +51,7 @@ function formatDate(value) {
                     <Link
                         v-for="(session, index) in sessions"
                         :key="session.id"
-                        :href="session.status === 'finished' ? route('game.results', session.id) : route('game.host', session.id)"
+                        :href="session.status === 'finished' ? route('game.stats', session.id) : route('game.host', session.id)"
                         class="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm border border-gray-100 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-500/10 dark:bg-gray-900 dark:border-gray-800 animate-slide-in-up"
                         :style="{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }"
                     >

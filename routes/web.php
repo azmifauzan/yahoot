@@ -102,6 +102,7 @@ Route::middleware([
         Route::post('/{gameSession}/end', [GameSessionController::class, 'end'])->name('end');
         Route::post('/{gameSession}/cancel', [GameSessionController::class, 'cancel'])->name('cancel');
         Route::get('/{gameSession}/results', [GameSessionController::class, 'results'])->name('results');
+        Route::get('/{gameSession}/stats', [GameSessionController::class, 'stats'])->name('stats');
         Route::get('/{gameSession}/export', [GameSessionController::class, 'export'])->name('export');
     });
 });

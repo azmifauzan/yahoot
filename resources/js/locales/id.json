@@ -241,7 +241,12 @@
         "players_played": "{count} pemain",
         "resume_game": "Lanjutkan",
         "in_progress": "Sedang berlangsung",
-        "started_on": "Dimulai pada"
+        "started_on": "Dimulai pada",
+        "stats_title": "Statistik Permainan",
+        "player_rankings": "Klasemen Pemain",
+        "question_analysis": "Analisis Pertanyaan",
+        "correct_pct": "Tingkat Kebenaran",
+        "no_answer": "Tidak Menjawab"
     },
     "admin": {
         "dashboard": "Panel Admin",

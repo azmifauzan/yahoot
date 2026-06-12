@@ -241,7 +241,12 @@
         "players_played": "{count} players",
         "resume_game": "Resume",
         "in_progress": "In progress",
-        "started_on": "Started on"
+        "started_on": "Started on",
+        "stats_title": "Game Statistics",
+        "player_rankings": "Player Standings",
+        "question_analysis": "Question Analysis",
+        "correct_pct": "Correct Rate",
+        "no_answer": "No Answer"
     },
     "admin": {
         "dashboard": "Admin Panel",
