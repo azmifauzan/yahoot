@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch, nextTick } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import { useGame } from '@/Composables/useGame';
@@ -96,15 +96,32 @@ onMounted(async () => {
 
 // Watch for question state to start timer
 watch(gameState, (state) => {
-    if (state === 'question' && timeLimit.value > 0 && !isCountdownRunning.value && !hasShownCountdown.value) {
-        runCountdown();
+    if (state === 'question' && timeLimit.value > 0 && !isCountdownRunning.value) {
+        if (!hasShownCountdown.value) {
+            runCountdown();
+        } else {
+            startTimer(timeLimit.value);
+        }
     }
-    // Reset countdown flag setelah scoreboard, agar pertanyaan berikutnya
-    // memunculkan countdown + timer lagi (juga reset saat lobby/selesai)
-    if (state === 'lobby' || state === 'finished' || state === 'scoreboard') {
+    // Reset countdown flag saat kembali ke lobby atau selesai
+    if (state === 'lobby' || state === 'finished') {
         hasShownCountdown.value = false;
     }
 });
+
+// Background music — lobby ambience while waiting, livelier loop during play
+let musicMode = null;
+watch(gameState, (state) => {
+    const mode = state === 'lobby' ? 'lobby' : state === 'finished' ? null : 'game';
+    if (mode === musicMode) return;
+    musicMode = mode;
+
+    if (mode === 'lobby') sound.startLobbyMusic();
+    else if (mode === 'game') sound.startGameMusic();
+    else sound.stopMusic();
+}, { immediate: true });
+
+onUnmounted(() => sound.stopMusic());
 
 async function runCountdown() {
     isCountdownRunning.value = true;

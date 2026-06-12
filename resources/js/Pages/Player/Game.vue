@@ -59,6 +59,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     window.removeEventListener('pagehide', notifyLeave);
+    sound.stopMusic();
 });
 
 watch(gameState, (state) => {
@@ -77,6 +78,18 @@ watch(gameState, (state) => {
         }
     }
 });
+
+// Background music — lobby ambience while waiting, livelier loop during play
+let musicMode = null;
+watch(gameState, (state) => {
+    const mode = state === 'lobby' ? 'lobby' : state === 'finished' ? null : 'game';
+    if (mode === musicMode) return;
+    musicMode = mode;
+
+    if (mode === 'lobby') sound.startLobbyMusic();
+    else if (mode === 'game') sound.startGameMusic();
+    else sound.stopMusic();
+}, { immediate: true });
 
 async function runCountdown() {
     isCountdownRunning.value = true;
