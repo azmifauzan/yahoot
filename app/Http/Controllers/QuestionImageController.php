@@ -19,6 +19,7 @@ class QuestionImageController extends Controller
             echo $disk->get($path);
         }, 200, [
             'Content-Type' => $mimeType,
+            'X-Content-Type-Options' => 'nosniff',
             'Cache-Control' => 'public, max-age=31536000',
         ]);
     }

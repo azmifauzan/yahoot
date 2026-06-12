@@ -18,7 +18,7 @@ Route::get('/', function () {
 })->name('landing');
 
 Route::get('/images/{path}', [QuestionImageController::class, 'show'])
-    ->where('path', '.*')
+    ->where('path', 'question-images/[A-Za-z0-9]+\.(jpg|jpeg|png|gif|bmp|webp)')
     ->name('question-images.show');
 
 // Google OAuth routes (guests only)
