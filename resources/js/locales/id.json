@@ -154,7 +154,14 @@
         "tab_profile": "Profil",
         "tab_security": "Keamanan",
         "tab_sessions": "Sesi",
-        "tab_account": "Akun"
+        "tab_account": "Akun",
+        "update_password": "Ubah Password",
+        "update_password_description": "Pastikan akun Anda menggunakan password yang panjang dan acak agar tetap aman.",
+        "set_password": "Atur Password",
+        "set_password_description": "Akun Anda menggunakan login Google dan belum memiliki password. Atur password agar Anda juga bisa login dengan email dan password.",
+        "current_password": "Password Saat Ini",
+        "new_password": "Password Baru",
+        "confirm_new_password": "Konfirmasi Password"
     },
     "avatar_categories": {
         "animals": "Hewan",

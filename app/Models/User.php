@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -56,6 +57,7 @@ class User extends Authenticatable
      */
     protected $appends = [
         'profile_photo_url',
+        'has_password',
     ];
 
     /**
@@ -70,6 +72,16 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_admin' => 'boolean',
         ];
+    }
+
+    /**
+     * Whether the user has a password set (false for Google-only accounts).
+     */
+    protected function hasPassword(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => ! is_null($this->password),
+        );
     }
 
     /**

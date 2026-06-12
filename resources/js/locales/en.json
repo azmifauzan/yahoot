@@ -154,7 +154,14 @@
         "tab_profile": "Profile",
         "tab_security": "Security",
         "tab_sessions": "Sessions",
-        "tab_account": "Account"
+        "tab_account": "Account",
+        "update_password": "Update Password",
+        "update_password_description": "Ensure your account is using a long, random password to stay secure.",
+        "set_password": "Set Password",
+        "set_password_description": "Your account uses Google sign-in and has no password yet. Set one to also be able to log in with your email and password.",
+        "current_password": "Current Password",
+        "new_password": "New Password",
+        "confirm_new_password": "Confirm Password"
     },
     "avatar_categories": {
         "animals": "Animals",

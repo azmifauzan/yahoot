@@ -1,12 +1,18 @@
 <script setup>
-import { ref } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import ActionMessage from '@/Components/ActionMessage.vue';
 import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+
+const { t } = useI18n();
+const page = usePage();
+
+const hasPassword = computed(() => page.props.auth.user?.has_password ?? true);
 
 const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
@@ -40,16 +46,16 @@ const updatePassword = () => {
 <template>
     <FormSection @submitted="updatePassword">
         <template #title>
-            Update Password
+            {{ hasPassword ? t('profile.update_password') : t('profile.set_password') }}
         </template>
 
         <template #description>
-            Ensure your account is using a long, random password to stay secure.
+            {{ hasPassword ? t('profile.update_password_description') : t('profile.set_password_description') }}
         </template>
 
         <template #form>
-            <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="current_password" value="Current Password" />
+            <div v-if="hasPassword" class="col-span-6 sm:col-span-4">
+                <InputLabel for="current_password" :value="t('profile.current_password')" />
                 <TextInput
                     id="current_password"
                     ref="currentPasswordInput"
@@ -62,7 +68,7 @@ const updatePassword = () => {
             </div>
 
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="password" value="New Password" />
+                <InputLabel for="password" :value="t('profile.new_password')" />
                 <TextInput
                     id="password"
                     ref="passwordInput"
@@ -75,7 +81,7 @@ const updatePassword = () => {
             </div>
 
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
+                <InputLabel for="password_confirmation" :value="t('profile.confirm_new_password')" />
                 <TextInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"

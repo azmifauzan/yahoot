@@ -42,3 +42,16 @@ test('new passwords must match', function () {
 
     expect(Hash::check('password', $user->fresh()->password))->toBeTrue();
 });
+
+test('google-only user without a password can set one without current_password', function () {
+    $this->actingAs($user = User::factory()->create(['password' => null]));
+
+    $response = $this->put('/user/password', [
+        'password' => 'new-password',
+        'password_confirmation' => 'new-password',
+    ]);
+
+    $response->assertSessionDoesntHaveErrors();
+
+    expect(Hash::check('new-password', $user->fresh()->password))->toBeTrue();
+});
