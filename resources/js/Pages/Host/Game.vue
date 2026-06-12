@@ -129,6 +129,7 @@ async function runCountdown() {
 }
 
 function startGame() {
+    sound.unlock();
     router.post(route('game.start', props.gameSession.id), {}, { preserveState: true });
 }
 

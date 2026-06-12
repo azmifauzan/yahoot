@@ -3,11 +3,13 @@ import { ref } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import axios from 'axios';
+import { useSound } from '@/Composables/useSound';
 import AvatarGrid from '@/Components/Avatar/AvatarGrid.vue';
 import AvatarDisplay from '@/Components/Avatar/AvatarDisplay.vue';
 import GameCodeInput from '@/Components/Game/GameCodeInput.vue';
 
 const { t } = useI18n();
+const sound = useSound();
 
 const props = defineProps({
     gameCode: { type: String, default: '' },
@@ -35,6 +37,7 @@ async function joinGame() {
         return;
     }
 
+    sound.unlock();
     loading.value = true;
     error.value = '';
 

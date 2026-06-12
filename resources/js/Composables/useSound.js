@@ -60,9 +60,19 @@ export function useSound() {
         localStorage.setItem(STORAGE_KEY, muted.value ? '1' : '0');
     }
 
+    /**
+     * Create/resume the AudioContext inside a user-gesture handler so later,
+     * programmatically-triggered sounds (e.g. from WebSocket events) aren't
+     * silenced by the browser's autoplay policy.
+     */
+    function unlock() {
+        ctx();
+    }
+
     return {
         muted,
         toggleMute,
+        unlock,
         // Countdown tick (3, 2, 1)
         tick: () => tone(660, 0.12, 'square', 0, 0.15),
         // "START!" / go
