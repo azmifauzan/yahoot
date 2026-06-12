@@ -21,6 +21,7 @@ const props = defineProps({
     questions: Array,
     players: Array,
     theme: Object,
+    resumeState: Object,
 });
 
 const themeGradients = computed(() => props.theme?.gradients || {
@@ -49,7 +50,7 @@ const {
 } = useGame(props.gameSession.id);
 
 // Initialize from props
-onMounted(() => {
+onMounted(async () => {
     livePlayers.value = props.players.map(p => ({
         id: p.id,
         nickname: p.nickname,
@@ -59,10 +60,33 @@ onMounted(() => {
 
     if (props.gameSession.status === 'waiting') {
         gameState.value = 'lobby';
-    } else if (props.gameSession.status === 'playing') {
-        gameState.value = 'question';
     } else if (props.gameSession.status === 'finished') {
         gameState.value = 'finished';
+    } else if (props.resumeState) {
+        // Host reopened an in-progress session — rebuild state without WS replay
+        const resume = props.resumeState;
+        currentQuestion.value = resume.question;
+        questionNumber.value = resume.questionNumber;
+        totalQuestions.value = resume.totalQuestions;
+        timeLimit.value = resume.timeLimit;
+        answeredCount.value = resume.answeredCount;
+        totalPlayers.value = resume.totalPlayers;
+        hasShownCountdown.value = true;
+
+        if (resume.reveal) {
+            correctAnswer.value = resume.reveal.correctAnswer;
+            answerStats.value = resume.reveal.stats;
+            playerResults.value = resume.reveal.playerResults;
+            leaderboard.value = resume.reveal.leaderboard;
+            playerPositions.value = resume.reveal.playerPositions;
+            gameState.value = 'scoreboard';
+        } else {
+            gameState.value = 'question';
+            await nextTick();
+            startTimer(Math.max(resume.timeLimit - resume.elapsedSeconds, 0));
+        }
+    } else if (props.gameSession.status === 'playing') {
+        gameState.value = 'question';
     }
 
     joinChannel();
@@ -73,8 +97,9 @@ watch(gameState, (state) => {
     if (state === 'question' && timeLimit.value > 0 && !isCountdownRunning.value && !hasShownCountdown.value) {
         runCountdown();
     }
-    // Reset countdown flag if kembali ke lobby atau selesai
-    if (state === 'lobby' || state === 'finished') {
+    // Reset countdown flag setelah scoreboard, agar pertanyaan berikutnya
+    // memunculkan countdown + timer lagi (juga reset saat lobby/selesai)
+    if (state === 'lobby' || state === 'finished' || state === 'scoreboard') {
         hasShownCountdown.value = false;
     }
 });

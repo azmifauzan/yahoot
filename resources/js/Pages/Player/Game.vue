@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import { useGame } from '@/Composables/useGame';
@@ -39,6 +39,14 @@ const {
     joinChannel, submitAnswer,
 } = useGame(props.gameSession.id);
 
+// Notify the host when this player leaves (tab close, refresh, navigation away)
+function notifyLeave() {
+    if (!player.value) return;
+    const url = `/api/games/${props.gameSession.id}/leave`;
+    const data = new Blob([JSON.stringify({ player_id: player.value.id, player_token: player.value.player_token })], { type: 'application/json' });
+    navigator.sendBeacon(url, data);
+}
+
 // Load player from sessionStorage
 onMounted(() => {
     const stored = sessionStorage.getItem('yahoot_player');
@@ -46,6 +54,11 @@ onMounted(() => {
         player.value = JSON.parse(stored);
     }
     joinChannel();
+    window.addEventListener('pagehide', notifyLeave);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('pagehide', notifyLeave);
 });
 
 watch(gameState, (state) => {
@@ -90,7 +103,7 @@ async function selectAnswer(answer) {
     stopTimer();
 
     const elapsed = getElapsedMs();
-    await submitAnswer(player.value.id, answer.id, elapsed);
+    await submitAnswer(player.value.id, answer.id, elapsed, player.value.player_token);
     setTimeout(() => { rippleId.value = null; }, 500);
 }
 
@@ -98,7 +111,7 @@ async function selectAnswer(answer) {
 watch(timeRemaining, (val) => {
     if (val <= 0 && gameState.value === 'question' && !hasAnswered.value) {
         hasAnswered.value = true;
-        submitAnswer(player.value.id, null, timeLimit.value * 1000);
+        submitAnswer(player.value.id, null, timeLimit.value * 1000, player.value.player_token);
     }
 });
 
@@ -161,6 +174,7 @@ watch(gameState, (state) => {
 });
 
 function goHome() {
+    notifyLeave();
     sessionStorage.removeItem('yahoot_player');
     sessionStorage.removeItem('yahoot_game');
     router.visit('/');

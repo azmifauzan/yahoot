@@ -7,6 +7,8 @@ use App\Events\AnswerRevealed;
 use App\Events\ScoreboardUpdated;
 use App\Models\GameSession;
 use App\Models\PlayerAnswer;
+use App\Models\Question;
+use Illuminate\Support\Collection;
 
 class RevealService
 {
@@ -34,6 +36,34 @@ class RevealService
 
         $currentQuestion->load('answers');
 
+        $data = $this->getRevealData($gameSession, $currentQuestion);
+
+        $gameSession->update(['status' => GameStatus::Reviewing]);
+
+        broadcast(new AnswerRevealed(
+            $gameSession->id,
+            $data['correctAnswer'],
+            $data['stats'],
+            $data['playerResults']
+        ));
+
+        broadcast(new ScoreboardUpdated(
+            $gameSession->id,
+            $data['leaderboard'],
+            $data['playerPositions']
+        ));
+
+        return true;
+    }
+
+    /**
+     * Compute the reveal data (correct answer, stats, player results, leaderboard)
+     * for the given question without broadcasting or mutating state.
+     *
+     * @return array{correctAnswer: array, stats: array, playerResults: array, leaderboard: Collection, playerPositions: array}
+     */
+    public function getRevealData(GameSession $gameSession, Question $currentQuestion): array
+    {
         $correctAnswers = $currentQuestion->answers->where('is_correct', true);
         $correctAnswerData = $correctAnswers->map(fn ($a) => [
             'id' => $a->id,
@@ -80,16 +110,7 @@ class RevealService
             ];
         }
 
-        $gameSession->update(['status' => GameStatus::Reviewing]);
-
-        broadcast(new AnswerRevealed(
-            $gameSession->id,
-            ['answers' => $correctAnswerData],
-            ['answer_counts' => $answerStats, 'no_answer_count' => $noAnswerCount],
-            $playerResults
-        ));
-
-        // Build and broadcast scoreboard
+        // Build scoreboard
         $leaderboard = $this->scoringService->getLeaderboard($gameSession->id, 5);
         $allPositions = $this->scoringService->getLeaderboard($gameSession->id);
 
@@ -101,12 +122,12 @@ class RevealService
             ];
         }
 
-        broadcast(new ScoreboardUpdated(
-            $gameSession->id,
-            $leaderboard,
-            $playerPositions
-        ));
-
-        return true;
+        return [
+            'correctAnswer' => ['answers' => $correctAnswerData],
+            'stats' => ['answer_counts' => $answerStats, 'no_answer_count' => $noAnswerCount],
+            'playerResults' => $playerResults,
+            'leaderboard' => $leaderboard,
+            'playerPositions' => $playerPositions,
+        ];
     }
 }

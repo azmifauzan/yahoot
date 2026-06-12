@@ -1,6 +1,6 @@
 # Yahoot — Current Status
 
-**Date:** 2026-06-04  
+**Date:** 2026-06-12  
 **Branch:** main  
 **Production:** https://yahoot.web.id
 
@@ -15,6 +15,7 @@
 | Phase 3 | Game Engine | ✅ Complete |
 | Phase 4 | Polish & Animation | ✅ Complete |
 | Phase 5 | Admin Panel & Launch | ✅ Complete |
+| Phase 6 | Security, History & Resuming | ✅ Complete |
 
 ---
 
@@ -99,6 +100,15 @@ All done:
 - Vue pages: `Admin/Dashboard.vue`, `Admin/Users/Index.vue`, `Admin/Users/Show.vue`, `Admin/Quizzes/Index.vue`, `Admin/Quizzes/Show.vue`, `Admin/Games/Index.vue`, `Admin/Games/Show.vue`, `Admin/Settings.vue`
 - i18n: admin keys added to both `id.json` and `en.json`
 - Test coverage: `AdminDashboardTest`, `AdminUserManagementTest`, `AdminQuizManagementTest`, `AdminGameManagementTest`, `AdminSettingsTest`
+
+## Phase 6 — Security, History & Resuming ✅
+
+All done:
+- **Session Resuming**: Host can close and reopen an in-progress game session. The system reconstructs the current question state, answered count, total players, elapsed time, and scoreboard/reveal states without losing progress.
+- **Secure Player Tokens**: Added `player_token` attribute to `game_players` to verify authenticity. When joining, players get a secure token stored in `sessionStorage` which is validated on subsequent API requests (submitting answers, leaving the game).
+- **Graceful Player Leaving**: Implemented `apiLeave` endpoint and JS lifecycle hook (`pagehide` / `sendBeacon`) to notify the host and broadcast `PlayerLeft` immediately when a player closes the tab or navigates away.
+- **Quiz Game History**: Added quiz history page (`Host/History.vue`) accessible from the dashboard via a clock icon button, listing past finished and active game sessions.
+- **Podium & Leaderboard Animations**: Added `podium-rise` and `slide-in-up` stagger animations on host results page.
 
 ---
 

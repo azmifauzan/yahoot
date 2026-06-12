@@ -227,7 +227,17 @@
         "scan_to_join": "Scan untuk gabung",
         "or_scan_qr": "atau scan QR code di atas",
         "mute": "Matikan suara",
-        "unmute": "Nyalakan suara"
+        "unmute": "Nyalakan suara",
+        "history": "Riwayat",
+        "history_title": "Riwayat Permainan",
+        "no_games_yet": "Belum ada permainan.",
+        "played_on": "Dimainkan pada",
+        "winner": "Pemenang",
+        "view_results": "Lihat Hasil",
+        "players_played": "{count} pemain",
+        "resume_game": "Lanjutkan",
+        "in_progress": "Sedang berlangsung",
+        "started_on": "Dimulai pada"
     },
     "admin": {
         "dashboard": "Panel Admin",

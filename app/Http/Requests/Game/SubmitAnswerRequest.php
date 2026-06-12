@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Game;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SubmitAnswerRequest extends FormRequest
@@ -12,12 +13,13 @@ class SubmitAnswerRequest extends FormRequest
     }
 
     /**
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'player_id' => ['required', 'integer', 'exists:game_players,id'],
+            'player_token' => ['required', 'string'],
             'answer_id' => ['nullable', 'integer', 'exists:answers,id'],
             'time_taken' => ['required', 'integer', 'min:0'],
         ];

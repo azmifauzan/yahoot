@@ -31,7 +31,7 @@ const rest = computed(() => props.leaderboard.slice(3));
         <!-- Podium -->
         <div class="flex items-end justify-center gap-6 px-8 py-6" v-if="podium.length > 0">
             <!-- 2nd -->
-            <div v-if="podium[1]" class="text-center w-28">
+            <div v-if="podium[1]" class="text-center w-28 animate-podium-rise" style="animation-delay: 0.5s">
                 <AvatarDisplay :name="podium[1].avatar" :size="64" class="mx-auto mb-2" />
                 <p class="font-bold text-sm truncate">{{ podium[1].nickname }}</p>
                 <p class="text-xs opacity-80">{{ podium[1].score }} pts</p>
@@ -40,7 +40,7 @@ const rest = computed(() => props.leaderboard.slice(3));
                 </div>
             </div>
             <!-- 1st -->
-            <div v-if="podium[0]" class="text-center w-32">
+            <div v-if="podium[0]" class="text-center w-32 animate-podium-rise" style="animation-delay: 1.2s">
                 <AvatarDisplay :name="podium[0].avatar" :size="80" class="mx-auto mb-2" />
                 <p class="font-bold truncate">{{ podium[0].nickname }}</p>
                 <p class="text-sm opacity-80">{{ podium[0].score }} pts</p>
@@ -49,7 +49,7 @@ const rest = computed(() => props.leaderboard.slice(3));
                 </div>
             </div>
             <!-- 3rd -->
-            <div v-if="podium[2]" class="text-center w-24">
+            <div v-if="podium[2]" class="text-center w-24 animate-podium-rise" style="animation-delay: 0.2s">
                 <AvatarDisplay :name="podium[2].avatar" :size="56" class="mx-auto mb-2" />
                 <p class="font-bold text-sm truncate">{{ podium[2].nickname }}</p>
                 <p class="text-xs opacity-80">{{ podium[2].score }} pts</p>
@@ -74,9 +74,10 @@ const rest = computed(() => props.leaderboard.slice(3));
                     </thead>
                     <tbody>
                         <tr
-                            v-for="entry in leaderboard"
+                            v-for="(entry, index) in leaderboard"
                             :key="entry.player_id"
-                            class="border-b border-white/5 hover:bg-white/5"
+                            class="border-b border-white/5 hover:bg-white/5 animate-slide-in-up"
+                            :style="{ animationDelay: `${1.5 + index * 0.08}s` }"
                         >
                             <td class="p-3 font-extrabold">
                                 <template v-if="entry.rank <= 3">

@@ -10,6 +10,7 @@ use App\Models\GameSession;
 use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\User;
+use App\Services\RevealService;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 
@@ -53,6 +54,7 @@ test('auto-reveal triggers when all players have answered', function () {
     // Player 1 answers - should NOT trigger reveal yet
     $this->postJson("/api/games/{$session->id}/answer", [
         'player_id' => $player1->id,
+        'player_token' => $player1->player_token,
         'answer_id' => $correctAnswer->id,
         'time_taken' => 5000,
     ])->assertSuccessful();
@@ -63,6 +65,7 @@ test('auto-reveal triggers when all players have answered', function () {
     // Player 2 answers - should trigger auto-reveal
     $this->postJson("/api/games/{$session->id}/answer", [
         'player_id' => $player2->id,
+        'player_token' => $player2->player_token,
         'answer_id' => $correctAnswer->id,
         'time_taken' => 3000,
     ])->assertSuccessful();
@@ -93,6 +96,7 @@ test('auto-reveal does not trigger when some players have not answered', functio
 
     $this->postJson("/api/games/{$session->id}/answer", [
         'player_id' => $player1->id,
+        'player_token' => $player1->player_token,
         'answer_id' => $correctAnswer->id,
         'time_taken' => 5000,
     ])->assertSuccessful();
@@ -112,7 +116,7 @@ test('AutoRevealAnswer job reveals answer for active question', function () {
     Event::fake([AnswerRevealed::class, ScoreboardUpdated::class]);
 
     $job = new AutoRevealAnswer($session->id, 0);
-    $job->handle(app(\App\Services\RevealService::class));
+    $job->handle(app(RevealService::class));
 
     expect($session->fresh()->status)->toBe(GameStatus::Reviewing);
     Event::assertDispatched(AnswerRevealed::class);
@@ -125,7 +129,7 @@ test('AutoRevealAnswer job skips if question already revealed', function () {
     Event::fake([AnswerRevealed::class]);
 
     $job = new AutoRevealAnswer($session->id, 0);
-    $job->handle(app(\App\Services\RevealService::class));
+    $job->handle(app(RevealService::class));
 
     expect($session->fresh()->status)->toBe(GameStatus::Reviewing);
     Event::assertNotDispatched(AnswerRevealed::class);
@@ -138,7 +142,7 @@ test('AutoRevealAnswer job skips if question index changed', function () {
 
     // Job dispatched for question 0, but game moved to question 1
     $job = new AutoRevealAnswer($session->id, 1);
-    $job->handle(app(\App\Services\RevealService::class));
+    $job->handle(app(RevealService::class));
 
     expect($session->fresh()->status)->toBe(GameStatus::Playing);
     Event::assertNotDispatched(AnswerRevealed::class);

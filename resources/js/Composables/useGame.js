@@ -74,12 +74,13 @@ export function useGame(gameSessionId) {
         }
     }
 
-    async function submitAnswer(playerId, answerId, timeTaken) {
+    async function submitAnswer(playerId, answerId, timeTaken, playerToken) {
         try {
             const response = await axios.post(`/api/games/${gameSessionId}/answer`, {
                 player_id: playerId,
                 answer_id: answerId,
                 time_taken: timeTaken,
+                player_token: playerToken,
             });
             myResult.value = response.data;
             gameState.value = 'answering';

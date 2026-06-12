@@ -60,7 +60,7 @@ resources/js/
 
 routes/
 ├── web.php             # Inertia routes — public: landing/play; auth: dashboard/quiz CRUD; admin: /admin/*
-├── api.php             # REST API — stateless: join/answer/status (for mobile)
+├── api.php             # REST API — stateless: join/answer/leave/status (for mobile)
 └── channels.php        # WebSocket channel authorization (Reverb)
 
 tests/
@@ -106,6 +106,8 @@ tests/
 3. Reverb WebSocket syncs: question reveal, countdown timer, answer collection, scores
 4. Scoring: speed-based points + streak bonus
 5. Per-question leaderboard → final podium with confetti
+6. Session Resuming: Host can close and resume in-progress sessions at any time; status, timer, answered count, and leaderboard are restored.
+7. Secure Presence: Join tokens secure player endpoints, and player disconnections are handled gracefully via `pagehide` beaconing.
 
 ## 2 Question Types
 

@@ -41,7 +41,7 @@ test('player can join a waiting game via API', function () {
         'avatar' => 'cat',
     ])->assertCreated()
         ->assertJsonStructure([
-            'player' => ['id', 'nickname', 'avatar'],
+            'player' => ['id', 'nickname', 'avatar', 'player_token'],
             'gameSession' => ['id', 'game_code', 'status'],
         ]);
 
@@ -104,6 +104,7 @@ test('player can submit a correct answer', function () {
 
     $response = $this->postJson("/api/games/{$session->id}/answer", [
         'player_id' => $player->id,
+        'player_token' => $player->player_token,
         'answer_id' => $correctAnswer->id,
         'time_taken' => 5000,
     ])->assertSuccessful();
@@ -131,6 +132,7 @@ test('player can submit a wrong answer', function () {
 
     $response = $this->postJson("/api/games/{$session->id}/answer", [
         'player_id' => $player->id,
+        'player_token' => $player->player_token,
         'answer_id' => $wrongAnswer->id,
         'time_taken' => 5000,
     ])->assertSuccessful();
@@ -156,12 +158,14 @@ test('player cannot answer the same question twice', function () {
 
     $this->postJson("/api/games/{$session->id}/answer", [
         'player_id' => $player->id,
+        'player_token' => $player->player_token,
         'answer_id' => $correctAnswer->id,
         'time_taken' => 5000,
     ])->assertSuccessful();
 
     $this->postJson("/api/games/{$session->id}/answer", [
         'player_id' => $player->id,
+        'player_token' => $player->player_token,
         'answer_id' => $correctAnswer->id,
         'time_taken' => 3000,
     ])->assertUnprocessable();
@@ -180,4 +184,74 @@ test('player can view game page with valid code', function () {
 
     $this->get("/play/{$session->game_code}")
         ->assertSuccessful();
+});
+
+test('player can leave a game', function () {
+    [,,,, , $session] = createPlayerGameSetup();
+
+    $player = GamePlayer::factory()->create([
+        'game_session_id' => $session->id,
+        'is_connected' => true,
+    ]);
+
+    $this->postJson("/api/games/{$session->id}/leave", [
+        'player_id' => $player->id,
+        'player_token' => $player->player_token,
+    ])->assertSuccessful();
+
+    expect($player->fresh()->is_connected)->toBeFalse();
+});
+
+test('leaving twice does not error', function () {
+    [,,,, , $session] = createPlayerGameSetup();
+
+    $player = GamePlayer::factory()->disconnected()->create([
+        'game_session_id' => $session->id,
+    ]);
+
+    $this->postJson("/api/games/{$session->id}/leave", [
+        'player_id' => $player->id,
+        'player_token' => $player->player_token,
+    ])->assertNotFound();
+});
+
+test('player cannot leave game with wrong token', function () {
+    [,,,, , $session] = createPlayerGameSetup();
+
+    $player = GamePlayer::factory()->create([
+        'game_session_id' => $session->id,
+        'is_connected' => true,
+    ]);
+
+    $this->postJson("/api/games/{$session->id}/leave", [
+        'player_id' => $player->id,
+        'player_token' => 'wrong-token',
+    ])->assertForbidden();
+
+    expect($player->fresh()->is_connected)->toBeTrue();
+});
+
+test('player cannot submit answer with wrong token', function () {
+    [$user, $quiz, $question, $correctAnswer, , $session] = createPlayerGameSetup();
+
+    $session->update([
+        'status' => GameStatus::Playing,
+        'started_at' => now(),
+        'current_question_index' => 0,
+    ]);
+
+    $player = GamePlayer::factory()->create([
+        'game_session_id' => $session->id,
+        'score' => 0,
+        'streak' => 0,
+    ]);
+
+    $this->postJson("/api/games/{$session->id}/answer", [
+        'player_id' => $player->id,
+        'player_token' => 'wrong-token',
+        'answer_id' => $correctAnswer->id,
+        'time_taken' => 5000,
+    ])->assertForbidden();
+
+    expect($player->fresh()->score)->toBe(0);
 });

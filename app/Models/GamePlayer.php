@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\GamePlayerFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GamePlayer extends Model
 {
-    /** @use HasFactory<\Database\Factories\GamePlayerFactory> */
+    /** @use HasFactory<GamePlayerFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -20,7 +21,12 @@ class GamePlayer extends Model
         'score',
         'streak',
         'is_connected',
+        'player_token',
         'finished_at',
+    ];
+
+    protected $hidden = [
+        'player_token',
     ];
 
     protected function casts(): array
@@ -34,7 +40,7 @@ class GamePlayer extends Model
     }
 
     /**
-     * @return BelongsTo<\App\Models\GameSession, $this>
+     * @return BelongsTo<GameSession, $this>
      */
     public function gameSession(): BelongsTo
     {
@@ -42,7 +48,7 @@ class GamePlayer extends Model
     }
 
     /**
-     * @return BelongsTo<\App\Models\User, $this>
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -50,7 +56,7 @@ class GamePlayer extends Model
     }
 
     /**
-     * @return HasMany<\App\Models\PlayerAnswer, $this>
+     * @return HasMany<PlayerAnswer, $this>
      */
     public function playerAnswers(): HasMany
     {

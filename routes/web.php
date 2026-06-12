@@ -79,6 +79,7 @@ Route::middleware([
         Route::delete('/{quiz}', [QuizController::class, 'destroy'])->name('destroy');
         Route::post('/{quiz}/duplicate', [QuizController::class, 'duplicate'])->name('duplicate');
         Route::post('/{quiz}/publish', [QuizController::class, 'publish'])->name('publish');
+        Route::get('/{quiz}/history', [GameSessionController::class, 'history'])->name('history');
 
         Route::post('/{quiz}/questions', [QuestionController::class, 'store'])->name('questions.store');
     });

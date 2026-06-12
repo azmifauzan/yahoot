@@ -9,6 +9,7 @@ use App\Events\GameStarted;
 use App\Events\QuestionStarted;
 use App\Jobs\AutoRevealAnswer;
 use App\Models\GameSession;
+use App\Models\PlayerAnswer;
 use App\Models\Quiz;
 use App\Services\GameCodeService;
 use App\Services\RevealService;
@@ -60,7 +61,9 @@ class GameSessionController extends Controller
     {
         $this->authorize('view', $gameSession);
 
-        $gameSession->load(['quiz.questions.answers', 'players']);
+        $gameSession->load(['quiz.questions.answers', 'players' => function ($query) {
+            $query->where('is_connected', true);
+        }]);
 
         $theme = $gameSession->quiz->theme ?? QuizTheme::Standard;
 
@@ -73,7 +76,53 @@ class GameSessionController extends Controller
                 'value' => $theme->value,
                 'gradients' => $theme->gradients(),
             ],
+            'resumeState' => $this->buildResumeState($gameSession),
         ]);
+    }
+
+    /**
+     * Build the current question/reveal state for a host re-opening an in-progress session.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function buildResumeState(GameSession $gameSession): ?array
+    {
+        if (! in_array($gameSession->status, [GameStatus::Playing, GameStatus::Reviewing], true)) {
+            return null;
+        }
+
+        $questions = $gameSession->quiz->questions()->orderBy('order')->get();
+        $currentQuestion = $questions[$gameSession->current_question_index] ?? null;
+
+        if (! $currentQuestion) {
+            return null;
+        }
+
+        $currentQuestion->load('answers');
+
+        $answeredCount = PlayerAnswer::query()
+            ->whereIn('game_player_id', $gameSession->players()->pluck('id'))
+            ->where('question_id', $currentQuestion->id)
+            ->count();
+
+        $state = [
+            'status' => $gameSession->status->value,
+            'question' => $currentQuestion,
+            'questionNumber' => $gameSession->current_question_index + 1,
+            'totalQuestions' => $questions->count(),
+            'timeLimit' => $currentQuestion->time_limit,
+            'answeredCount' => $answeredCount,
+            'totalPlayers' => $gameSession->players()->where('is_connected', true)->count(),
+            'elapsedSeconds' => $gameSession->question_started_at
+                ? now()->diffInSeconds($gameSession->question_started_at)
+                : 0,
+        ];
+
+        if ($gameSession->status === GameStatus::Reviewing) {
+            $state['reveal'] = $this->revealService->getRevealData($gameSession, $currentQuestion);
+        }
+
+        return $state;
     }
 
     /**
@@ -87,7 +136,7 @@ class GameSessionController extends Controller
             return back()->withErrors(['game' => 'Game has already started.']);
         }
 
-        if ($gameSession->players()->count() === 0) {
+        if ($gameSession->players()->where('is_connected', true)->count() === 0) {
             return back()->withErrors(['game' => 'At least one player is required to start.']);
         }
 
@@ -211,6 +260,41 @@ class GameSessionController extends Controller
             'quiz' => $gameSession->quiz,
             'leaderboard' => $leaderboard,
             'playerStats' => $playerStats,
+        ]);
+    }
+
+    /**
+     * Show the game session history for a quiz, including resumable sessions.
+     */
+    public function history(Quiz $quiz): Response
+    {
+        $this->authorize('view', $quiz);
+
+        $sessions = $quiz->gameSessions()
+            ->with('players')
+            ->withCount('players')
+            ->latest('id')
+            ->get()
+            ->map(function (GameSession $session) {
+                $winner = $session->players->sortByDesc('score')->first();
+
+                return [
+                    'id' => $session->id,
+                    'game_code' => $session->game_code,
+                    'status' => $session->status->value,
+                    'players_count' => $session->players_count,
+                    'finished_at' => $session->finished_at,
+                    'winner' => $winner ? [
+                        'nickname' => $winner->nickname,
+                        'avatar' => $winner->avatar,
+                        'score' => $winner->score,
+                    ] : null,
+                ];
+            });
+
+        return Inertia::render('Host/History', [
+            'quiz' => $quiz,
+            'sessions' => $sessions,
         ]);
     }
 

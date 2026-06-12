@@ -112,6 +112,7 @@ test('player can answer question', function () {
 
     $this->postJson("/api/games/{$session->id}/answer", [
         'player_id' => $player->id,
+        'player_token' => $player->player_token,
         'question_id' => $question->id,
         'answer_id' => $correctAnswer->id,
         'time_taken' => 5000,

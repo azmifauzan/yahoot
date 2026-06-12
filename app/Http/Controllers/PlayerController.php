@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Enums\GameStatus;
 use App\Events\AnswerSubmitted;
 use App\Events\PlayerJoined;
+use App\Events\PlayerLeft;
 use App\Http\Requests\Game\JoinGameRequest;
+use App\Http\Requests\Game\LeaveGameRequest;
 use App\Http\Requests\Game\SubmitAnswerRequest;
 use App\Models\GamePlayer;
 use App\Models\GameSession;
@@ -14,6 +16,7 @@ use App\Services\RevealService;
 use App\Services\ScoringService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -92,6 +95,7 @@ class PlayerController extends Controller
             'score' => 0,
             'streak' => 0,
             'is_connected' => true,
+            'player_token' => Str::random(40),
         ]);
 
         $totalPlayers = $session->players()->where('is_connected', true)->count();
@@ -107,6 +111,7 @@ class PlayerController extends Controller
                 'id' => $player->id,
                 'nickname' => $player->nickname,
                 'avatar' => $player->avatar,
+                'player_token' => $player->player_token,
             ],
             'gameSession' => [
                 'id' => $session->id,
@@ -114,6 +119,40 @@ class PlayerController extends Controller
                 'status' => $session->status->value,
             ],
         ], 201);
+    }
+
+    /**
+     * API: Mark a player as disconnected (left the game).
+     */
+    public function apiLeave(LeaveGameRequest $request, GameSession $gameSession): JsonResponse
+    {
+        $validated = $request->validated();
+
+        $player = GamePlayer::query()
+            ->where('id', $validated['player_id'])
+            ->where('game_session_id', $gameSession->id)
+            ->where('is_connected', true)
+            ->first();
+
+        if (! $player) {
+            return response()->json(['message' => 'Player not found.'], 404);
+        }
+
+        if (! hash_equals((string) $player->player_token, (string) $validated['player_token'])) {
+            return response()->json(['message' => 'Invalid player token.'], 403);
+        }
+
+        $player->update(['is_connected' => false]);
+
+        $totalPlayers = $gameSession->players()->where('is_connected', true)->count();
+
+        broadcast(new PlayerLeft(
+            $gameSession->id,
+            $player,
+            $totalPlayers
+        ));
+
+        return response()->json(['message' => 'Left game.']);
     }
 
     /**
@@ -131,6 +170,10 @@ class PlayerController extends Controller
             ->where('id', $validated['player_id'])
             ->where('game_session_id', $gameSession->id)
             ->firstOrFail();
+
+        if (! hash_equals((string) $player->player_token, (string) $validated['player_token'])) {
+            return response()->json(['message' => 'Invalid player token.'], 403);
+        }
 
         $questions = $gameSession->quiz->questions()->orderBy('order')->get();
         $currentQuestion = $questions[$gameSession->current_question_index] ?? null;

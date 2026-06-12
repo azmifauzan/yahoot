@@ -6,6 +6,7 @@ use App\Models\GamePlayer;
 use App\Models\GameSession;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<GamePlayer>
@@ -31,6 +32,7 @@ class GamePlayerFactory extends Factory
             'score' => 0,
             'streak' => 0,
             'is_connected' => true,
+            'player_token' => Str::random(40),
             'finished_at' => null,
         ];
     }

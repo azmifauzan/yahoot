@@ -72,7 +72,23 @@ function playQuiz(quiz) {
         toast(t('dashboard.publish_first'), 'warning');
         return;
     }
-    router.post(route('game.store', quiz.id));
+
+    // Open the host session in a new tab so the dashboard stays usable
+    const token = document.querySelector('meta[name="csrf-token"]')?.content;
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = route('game.store', quiz.id);
+    form.target = '_blank';
+
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = '_token';
+    csrfInput.value = token;
+    form.appendChild(csrfInput);
+
+    document.body.appendChild(form);
+    form.submit();
+    form.remove();
 }
 
 const placeholderColors = [
@@ -236,6 +252,13 @@ function getPlaceholderColor(index) {
                                 >
                                     {{ t('dashboard.duplicate') }}
                                 </button>
+                                <Link
+                                    :href="route('quizzes.history', quiz.id)"
+                                    class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                                    :title="t('host.history')"
+                                >
+                                    🕒
+                                </Link>
                                 <button
                                     @click="confirmDelete(quiz)"
                                     class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
@@ -293,6 +316,13 @@ function getPlaceholderColor(index) {
                             >
                                 {{ t('dashboard.duplicate') }}
                             </button>
+                            <Link
+                                :href="route('quizzes.history', quiz.id)"
+                                class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                                :title="t('host.history')"
+                            >
+                                🕒
+                            </Link>
                             <button
                                 @click="confirmDelete(quiz)"
                                 class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"

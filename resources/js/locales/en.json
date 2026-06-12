@@ -227,7 +227,17 @@
         "scan_to_join": "Scan to join",
         "or_scan_qr": "or scan the QR code above",
         "mute": "Mute sound",
-        "unmute": "Unmute sound"
+        "unmute": "Unmute sound",
+        "history": "History",
+        "history_title": "Game History",
+        "no_games_yet": "No games played yet.",
+        "played_on": "Played on",
+        "winner": "Winner",
+        "view_results": "View Results",
+        "players_played": "{count} players",
+        "resume_game": "Resume",
+        "in_progress": "In progress",
+        "started_on": "Started on"
     },
     "admin": {
         "dashboard": "Admin Panel",
