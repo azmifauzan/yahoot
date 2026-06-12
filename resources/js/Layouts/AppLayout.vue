@@ -32,7 +32,6 @@ const effectiveCollapsed = computed(() => isDesktop.value && collapsed.value);
 const menuLinks = computed(() => {
     const links = [
         { href: route('dashboard'), label: t('nav.my_quizzes'), icon: 'home', active: route().current('dashboard') },
-        { href: route('profile.show'), label: t('nav.profile'), icon: 'user', active: route().current('profile.show') },
     ];
 
     if (page.props.jetstream.hasApiFeatures) {
@@ -174,9 +173,6 @@ const logout = () => {
                                 </button>
                             </template>
                             <template #content>
-                                <div class="block px-4 py-2 text-xs text-gray-400">
-                                    {{ t('nav.profile') }}
-                                </div>
                                 <DropdownLink :href="route('profile.show')">
                                     {{ t('nav.profile') }}
                                 </DropdownLink>
