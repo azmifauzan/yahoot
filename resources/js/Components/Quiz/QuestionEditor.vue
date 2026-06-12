@@ -222,7 +222,7 @@ function getAnswerActiveClasses(color) {
         </div>
 
         <!-- Answer Grid -->
-        <div :class="isTrueFalse ? 'grid grid-cols-2 gap-4' : 'grid grid-cols-2 gap-4'">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div
                 v-for="(answer, index) in answers"
                 :key="answer.id || index"

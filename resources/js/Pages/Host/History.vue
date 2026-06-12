@@ -67,14 +67,14 @@ function cancelGame(session) {
                     <div
                         v-for="(session, index) in sessions"
                         :key="session.id"
-                        class="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm border border-gray-100 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-500/10 dark:bg-gray-900 dark:border-gray-800 animate-slide-in-up"
+                        class="flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl bg-white p-4 shadow-sm border border-gray-100 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-500/10 dark:bg-gray-900 dark:border-gray-800 animate-slide-in-up"
                         :style="{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }"
                     >
                         <Link
                             :href="session.status === 'finished' ? route('game.stats', session.id) : route('game.host', session.id)"
-                            class="flex flex-1 items-center gap-4 min-w-0"
+                            class="flex flex-col sm:flex-row flex-1 sm:items-center gap-4 min-w-0 w-full"
                         >
-                            <div class="flex-1 min-w-0">
+                            <div class="flex-1 min-w-0 w-full">
                                 <p class="text-sm font-semibold text-gray-900 dark:text-white">
                                     <template v-if="session.status === 'finished'">
                                         {{ t('host.played_on') }} {{ formatDate(session.finished_at) }}
@@ -89,27 +89,41 @@ function cancelGame(session) {
                                     {{ t('host.players_played', { count: session.players_count }) }}
                                 </p>
                             </div>
-                            <!-- Winner -->
-                            <div v-if="session.winner" class="flex items-center gap-2">
-                                <AvatarDisplay :name="session.winner.avatar" :size="32" />
-                                <div class="text-right">
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">🥇 {{ t('host.winner') }}</p>
-                                    <p class="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[120px]">{{ session.winner.nickname }}</p>
+                            
+                            <div class="flex items-center justify-between w-full sm:w-auto gap-4">
+                                <!-- Winner -->
+                                <div v-if="session.winner" class="flex items-center gap-2">
+                                    <AvatarDisplay :name="session.winner.avatar" :size="32" />
+                                    <div class="text-left sm:text-right">
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">🥇 {{ t('host.winner') }}</p>
+                                        <p class="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[120px]">{{ session.winner.nickname }}</p>
+                                    </div>
                                 </div>
+                                
+                                <span class="rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400 whitespace-nowrap hidden sm:inline-block">
+                                    {{ session.status === 'finished' ? t('host.view_results') : t('host.resume_game') }} →
+                                </span>
                             </div>
-                            <span class="rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400 whitespace-nowrap">
-                                {{ session.status === 'finished' ? t('host.view_results') : t('host.resume_game') }} →
-                            </span>
                         </Link>
-                        <!-- Cancel button for in-progress sessions -->
-                        <button
-                            v-if="session.status !== 'finished'"
-                            @click="cancelGame(session)"
-                            :title="t('host.cancel_game')"
-                            class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 whitespace-nowrap"
-                        >
-                            ✕ {{ t('host.cancel_game') }}
-                        </button>
+                        
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0">
+                            <Link
+                                :href="session.status === 'finished' ? route('game.stats', session.id) : route('game.host', session.id)"
+                                class="rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400 whitespace-nowrap sm:hidden"
+                            >
+                                {{ session.status === 'finished' ? t('host.view_results') : t('host.resume_game') }} →
+                            </Link>
+
+                            <!-- Cancel button for in-progress sessions -->
+                            <button
+                                v-if="session.status !== 'finished'"
+                                @click="cancelGame(session)"
+                                :title="t('host.cancel_game')"
+                                class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 whitespace-nowrap"
+                            >
+                                ✕ <span class="hidden sm:inline">{{ t('host.cancel_game') }}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

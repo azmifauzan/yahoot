@@ -374,20 +374,20 @@ function isQuestionComplete(question) {
                     />
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
                     <!-- Saving indicator -->
                     <span v-if="saving" class="text-xs text-gray-400 flex items-center gap-1">
                         <svg class="h-3.5 w-3.5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                         </svg>
-                        {{ t('common.loading') }}
+                        <span class="hidden sm:inline">{{ t('common.loading') }}</span>
                     </span>
                     <span v-else-if="!hasUnsavedChanges && !titleDirty && !isNew && questions.length > 0" class="text-xs text-green-500 flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
-                        {{ t('quiz.saved') }}
+                        <span class="hidden sm:inline">{{ t('quiz.saved') }}</span>
                     </span>
 
                     <!-- Save button -->
@@ -396,7 +396,7 @@ function isQuestionComplete(question) {
                         @click="manualSave"
                         :disabled="saving || (!hasUnsavedChanges && !titleDirty)"
                         :class="[
-                            'rounded-lg px-4 py-2 text-sm font-semibold transition flex items-center gap-1.5',
+                            'rounded-lg px-3 sm:px-4 py-2 text-sm font-semibold transition flex items-center gap-1.5',
                             saving || (!hasUnsavedChanges && !titleDirty)
                                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600',
@@ -405,7 +405,7 @@ function isQuestionComplete(question) {
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                         </svg>
-                        {{ t('quiz.save') }}
+                        <span class="hidden sm:inline">{{ t('quiz.save') }}</span>
                     </button>
 
                     <!-- Publish button -->
@@ -413,7 +413,7 @@ function isQuestionComplete(question) {
                         v-if="!isNew"
                         @click="togglePublish"
                         :class="[
-                            'rounded-lg px-4 py-2 text-sm font-semibold transition',
+                            'rounded-lg px-3 sm:px-4 py-2 text-sm font-semibold transition',
                             quiz.is_published
                                 ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 : 'bg-primary-600 text-white hover:bg-primary-700',
@@ -426,12 +426,12 @@ function isQuestionComplete(question) {
                     <button
                         v-if="!isNew && quiz.is_published"
                         @click="router.post(route('game.store', quiz.id))"
-                        class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 flex items-center gap-1.5"
+                        class="rounded-lg bg-primary-600 px-3 sm:px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 flex items-center gap-1.5"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
                         </svg>
-                        {{ t('dashboard.play') }}
+                        <span class="hidden sm:inline">{{ t('dashboard.play') }}</span>
                     </button>
 
                     <!-- Create button for new quiz -->
@@ -447,12 +447,13 @@ function isQuestionComplete(question) {
         </template>
 
         <!-- Editor Layout -->
-        <div v-if="!isNew" class="flex h-full overflow-hidden">
+        <div v-if="!isNew" class="flex flex-col md:flex-row h-[calc(100vh-120px)] md:h-full overflow-y-auto md:overflow-hidden">
             <!-- Left Sidebar - Question List -->
             <QuestionSidebar
                 :questions="questions"
                 :selectedIndex="selectedQuestionIndex"
                 :isQuestionComplete="isQuestionComplete"
+                class="w-full md:w-64 max-h-48 md:max-h-none h-auto md:h-full flex-shrink-0 border-b md:border-b-0 md:border-r border-gray-200"
                 @select="selectQuestion"
                 @add="addQuestion"
                 @reorder="reorderQuestions"
@@ -460,7 +461,7 @@ function isQuestionComplete(question) {
             />
 
             <!-- Main Content - Question Editor -->
-            <div class="flex-1 overflow-y-auto bg-gray-50 p-6 dark:bg-gray-950">
+            <div class="flex-1 overflow-visible md:overflow-y-auto bg-gray-50 p-4 md:p-6 dark:bg-gray-950">
                 <QuestionEditor
                     v-if="selectedQuestion"
                     ref="questionEditorRef"
@@ -472,7 +473,7 @@ function isQuestionComplete(question) {
                     @remove-image="removeQuestionImage(selectedQuestion)"
                 />
 
-                <div v-else class="flex h-full items-center justify-center">
+                <div v-else class="flex h-full items-center justify-center py-10">
                     <div class="text-center">
                         <div class="mb-4 rounded-full bg-gray-100 dark:bg-gray-800 p-6 inline-block">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -491,7 +492,7 @@ function isQuestionComplete(question) {
             </div>
 
             <!-- Right Sidebar - Question Properties + Theme -->
-            <div class="w-64 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+            <div class="w-full md:w-64 flex-shrink-0 h-auto md:h-full overflow-y-auto border-t md:border-t-0 md:border-l border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
                 <QuestionProperties
                     v-if="selectedQuestion"
                     :question="selectedQuestion"

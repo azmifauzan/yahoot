@@ -62,7 +62,7 @@ function getTypeIcon(type) {
 </script>
 
 <template>
-    <div class="w-64 flex-shrink-0 overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
+    <div class="w-full md:w-64 flex-shrink-0 overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
         <!-- Header -->
         <div class="sticky top-0 z-10 border-b border-gray-100 bg-white p-3 dark:border-gray-800 dark:bg-gray-950">
             <button

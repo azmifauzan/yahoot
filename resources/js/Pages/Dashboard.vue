@@ -140,13 +140,13 @@ function getPlaceholderColor(index) {
 
                 <!-- Filters & Search -->
                 <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div class="flex gap-2">
+                    <div class="flex flex-wrap gap-2">
                         <button
                             v-for="option in filterOptions"
                             :key="option.value"
                             @click="setFilter(option.value)"
                             :class="[
-                                'rounded-lg px-4 py-2 text-sm font-medium transition',
+                                'rounded-lg px-4 py-2 text-sm font-medium transition whitespace-nowrap',
                                 activeFilter === option.value
                                     ? 'bg-primary-600 text-white shadow-sm shadow-primary-500/30'
                                     : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800',
@@ -155,8 +155,8 @@ function getPlaceholderColor(index) {
                             {{ option.label() }}
                         </button>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div class="relative">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="relative w-full sm:w-auto">
                             <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
@@ -165,7 +165,7 @@ function getPlaceholderColor(index) {
                                 @input="onSearchInput"
                                 type="text"
                                 :placeholder="t('dashboard.search_placeholder')"
-                                class="rounded-lg border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-500 dark:focus:border-primary-400 dark:focus:ring-primary-400"
+                                class="w-full sm:w-auto rounded-lg border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-500 dark:focus:border-primary-400 dark:focus:ring-primary-400"
                             />
                         </div>
                         <!-- View toggle -->
@@ -238,31 +238,31 @@ function getPlaceholderColor(index) {
                                 {{ new Date(quiz.created_at).toLocaleDateString() }}
                             </p>
                             <!-- Actions -->
-                            <div class="flex items-center gap-2" @click.stop>
+                            <div class="flex flex-wrap items-center gap-2" @click.stop>
                                 <button
                                     v-if="quiz.is_published"
                                     @click="playQuiz(quiz)"
-                                    class="flex-1 rounded-lg bg-primary-50 py-1.5 text-center text-xs font-medium text-primary-600 transition hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-400 dark:hover:bg-primary-900/50"
+                                    class="flex-1 rounded-lg bg-primary-50 py-1.5 px-2 text-center text-xs font-medium text-primary-600 transition hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-400 dark:hover:bg-primary-900/50"
                                 >
-                                    ▶ {{ t('dashboard.play') }}
+                                    ▶ <span class="hidden sm:inline">{{ t('dashboard.play') }}</span>
                                 </button>
                                 <button
                                     @click="duplicateQuiz(quiz)"
-                                    class="flex-1 rounded-lg bg-gray-50 py-1.5 text-center text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                                    class="flex-1 rounded-lg bg-gray-50 py-1.5 px-2 text-center text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                                 >
-                                    {{ t('dashboard.duplicate') }}
+                                    <span class="hidden sm:inline">{{ t('dashboard.duplicate') }}</span><span class="sm:hidden">📋</span>
                                 </button>
                                 <Link
                                     :href="route('quizzes.history', quiz.id)"
-                                    class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 flex items-center justify-center gap-1"
+                                    class="flex-1 rounded-lg bg-gray-50 py-1.5 px-2 text-center text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 flex items-center justify-center gap-1"
                                 >
-                                    🕒 {{ t('host.history') }}
+                                    🕒 <span class="hidden sm:inline">{{ t('host.history') }}</span>
                                 </Link>
                                 <button
                                     @click="confirmDelete(quiz)"
-                                    class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
+                                    class="flex-1 rounded-lg bg-red-50 py-1.5 px-2 text-center text-xs font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
                                 >
-                                    {{ t('dashboard.delete') }}
+                                    <span class="hidden sm:inline">{{ t('dashboard.delete') }}</span><span class="sm:hidden">🗑️</span>
                                 </button>
                             </div>
                         </div>
@@ -274,59 +274,72 @@ function getPlaceholderColor(index) {
                     <div
                         v-for="(quiz, index) in quizzes"
                         :key="quiz.id"
-                        :class="['flex items-center gap-4 p-4 cursor-pointer transition hover:bg-gray-50 dark:hover:bg-gray-800/50', index > 0 ? 'border-t border-gray-100 dark:border-gray-800' : '']"
+                        :class="['flex flex-col sm:flex-row sm:items-center gap-4 p-4 cursor-pointer transition hover:bg-gray-50 dark:hover:bg-gray-800/50', index > 0 ? 'border-t border-gray-100 dark:border-gray-800' : '']"
                         @click="$inertia.visit(route('quizzes.edit', quiz.id))"
                     >
-                        <!-- Mini cover -->
-                        <div class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
-                            <img v-if="quiz.cover_image" :src="quiz.cover_image" class="h-full w-full object-cover" alt="" />
-                            <div v-else :class="['h-full w-full bg-gradient-to-br', getPlaceholderColor(index)]" class="flex items-center justify-center">
-                                <span class="text-lg font-bold text-white/60">{{ quiz.title.charAt(0).toUpperCase() }}</span>
+                        <div class="flex items-center gap-4 flex-1">
+                            <!-- Mini cover -->
+                            <div class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+                                <img v-if="quiz.cover_image" :src="quiz.cover_image" class="h-full w-full object-cover" alt="" />
+                                <div v-else :class="['h-full w-full bg-gradient-to-br', getPlaceholderColor(index)]" class="flex items-center justify-center">
+                                    <span class="text-lg font-bold text-white/60">{{ quiz.title.charAt(0).toUpperCase() }}</span>
+                                </div>
                             </div>
+                            <!-- Info -->
+                            <div class="flex-1 min-w-0">
+                                <h3 class="truncate text-sm font-semibold text-gray-900 dark:text-white">{{ quiz.title }}</h3>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    {{ t('dashboard.questions_count', { count: quiz.questions_count }) }}
+                                    &middot;
+                                    {{ new Date(quiz.created_at).toLocaleDateString() }}
+                                </p>
+                            </div>
+                            <!-- Status (Desktop) -->
+                            <span :class="[
+                                'hidden sm:inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0',
+                                quiz.is_published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                            ]">
+                                {{ quiz.is_published ? t('dashboard.published') : t('dashboard.draft') }}
+                            </span>
                         </div>
-                        <!-- Info -->
-                        <div class="flex-1 min-w-0">
-                            <h3 class="truncate text-sm font-semibold text-gray-900 dark:text-white">{{ quiz.title }}</h3>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ t('dashboard.questions_count', { count: quiz.questions_count }) }}
-                                &middot;
-                                {{ new Date(quiz.created_at).toLocaleDateString() }}
-                            </p>
-                        </div>
-                        <!-- Status -->
-                        <span :class="[
-                            'rounded-full px-2.5 py-0.5 text-xs font-medium',
-                            quiz.is_published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
-                        ]">
-                            {{ quiz.is_published ? t('dashboard.published') : t('dashboard.draft') }}
-                        </span>
-                        <!-- Actions -->
-                        <div class="flex items-center gap-2" @click.stop>
-                            <button
-                                v-if="quiz.is_published"
-                                @click="playQuiz(quiz)"
-                                class="rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-600 transition hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-400 dark:hover:bg-primary-900/50"
-                            >
-                                ▶ {{ t('dashboard.play') }}
-                            </button>
-                            <button
-                                @click="duplicateQuiz(quiz)"
-                                class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-                            >
-                                {{ t('dashboard.duplicate') }}
-                            </button>
-                            <Link
-                                :href="route('quizzes.history', quiz.id)"
-                                class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 flex items-center justify-center gap-1"
-                            >
-                                🕒 {{ t('host.history') }}
-                            </Link>
-                            <button
-                                @click="confirmDelete(quiz)"
-                                class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
-                            >
-                                {{ t('dashboard.delete') }}
-                            </button>
+                        
+                        <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto mt-2 sm:mt-0">
+                            <!-- Status (Mobile) -->
+                            <span :class="[
+                                'sm:hidden rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0',
+                                quiz.is_published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                            ]">
+                                {{ quiz.is_published ? t('dashboard.published') : t('dashboard.draft') }}
+                            </span>
+
+                            <!-- Actions -->
+                            <div class="flex flex-wrap items-center justify-end gap-2 shrink-0" @click.stop>
+                                <button
+                                    v-if="quiz.is_published"
+                                    @click="playQuiz(quiz)"
+                                    class="rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-600 transition hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-400 dark:hover:bg-primary-900/50"
+                                >
+                                    ▶ <span class="hidden md:inline">{{ t('dashboard.play') }}</span>
+                                </button>
+                                <button
+                                    @click="duplicateQuiz(quiz)"
+                                    class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                                >
+                                    <span class="hidden md:inline">{{ t('dashboard.duplicate') }}</span><span class="md:hidden">📋</span>
+                                </button>
+                                <Link
+                                    :href="route('quizzes.history', quiz.id)"
+                                    class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 flex items-center justify-center gap-1"
+                                >
+                                    🕒 <span class="hidden md:inline">{{ t('host.history') }}</span>
+                                </Link>
+                                <button
+                                    @click="confirmDelete(quiz)"
+                                    class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
+                                >
+                                    <span class="hidden md:inline">{{ t('dashboard.delete') }}</span><span class="md:hidden">🗑️</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
