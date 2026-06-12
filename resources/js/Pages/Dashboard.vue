@@ -16,7 +16,7 @@ const props = defineProps({
 
 const search = ref(props.filters.search || '');
 const activeFilter = ref(props.filters.filter || 'all');
-const viewMode = ref('grid');
+const viewMode = ref('list');
 
 const filterOptions = [
     { value: 'all', label: () => t('dashboard.filter_all') },
@@ -254,10 +254,9 @@ function getPlaceholderColor(index) {
                                 </button>
                                 <Link
                                     :href="route('quizzes.history', quiz.id)"
-                                    class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-                                    :title="t('host.history')"
+                                    class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 flex items-center justify-center gap-1"
                                 >
-                                    🕒
+                                    🕒 {{ t('host.history') }}
                                 </Link>
                                 <button
                                     @click="confirmDelete(quiz)"
@@ -318,10 +317,9 @@ function getPlaceholderColor(index) {
                             </button>
                             <Link
                                 :href="route('quizzes.history', quiz.id)"
-                                class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-                                :title="t('host.history')"
+                                class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 flex items-center justify-center gap-1"
                             >
-                                🕒
+                                🕒 {{ t('host.history') }}
                             </Link>
                             <button
                                 @click="confirmDelete(quiz)"
