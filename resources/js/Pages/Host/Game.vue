@@ -11,9 +11,11 @@ import QRCodeDisplay from '@/Components/Game/QRCodeDisplay.vue';
 import GameLayout from '@/Components/Game/GameLayout.vue';
 import CountdownOverlay from '@/Components/Game/CountdownOverlay.vue';
 import TimerBar from '@/Components/Game/TimerBar.vue';
+import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
 const sound = useSound();
+const { confirm } = useSwal();
 
 const props = defineProps({
     gameSession: Object,
@@ -143,6 +145,20 @@ function endGame() {
     router.post(route('game.end', props.gameSession.id), {}, { preserveState: true });
 }
 
+function cancelGame() {
+    confirm({
+        title: t('host.cancel_game'),
+        text: t('host.confirm_cancel'),
+        confirmText: t('common.yes') || 'Ya',
+        cancelText: t('common.cancel') || 'Batal',
+        icon: 'warning',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            router.post(route('game.cancel', props.gameSession.id));
+        }
+    });
+}
+
 const answerColorMap = {
     red: { bg: 'bg-red-500', text: 'text-white', shape: '▲' },
     blue: { bg: 'bg-blue-500', text: 'text-white', shape: '◆' },
@@ -189,6 +205,15 @@ watch(gameState, (state) => {
             :title="sound.muted.value ? t('host.unmute') : t('host.mute')"
         >
             {{ sound.muted.value ? '🔇' : '🔊' }}
+        </button>
+
+        <!-- Cancel game button -->
+        <button
+            v-if="gameState !== 'finished'"
+            @click="cancelGame"
+            class="fixed top-3 left-3 z-50 px-4 py-2 rounded-xl bg-red-600/80 hover:bg-red-700 text-white text-xs font-bold flex items-center gap-1 transition-all shadow-md active:scale-95 backdrop-blur"
+        >
+            ✕ {{ t('host.cancel_game') }}
         </button>
 
         <!-- LOBBY -->

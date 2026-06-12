@@ -200,7 +200,9 @@
         "points": "points",
         "back_home": "Back to Home",
         "mute": "Mute sound",
-        "unmute": "Unmute sound"
+        "unmute": "Unmute sound",
+        "game_cancelled": "Quiz Cancelled",
+        "game_cancelled_desc": "The host has cancelled this quiz session."
     },
     "host": {
         "join_at": "Join at",
@@ -208,6 +210,8 @@
         "joined": "joined",
         "waiting_players": "Waiting for players to join...",
         "start_game": "Start Game",
+        "cancel_game": "Cancel Game",
+        "confirm_cancel": "Are you sure you want to cancel this game? All game progress will be lost.",
         "answered": "answered",
         "reveal_answer": "Reveal Answer",
         "votes": "votes",

@@ -249,6 +249,37 @@ test('host can end game', function () {
         ->and($session->fresh()->finished_at)->not->toBeNull();
 });
 
+test('host can cancel game', function () {
+    [$user, $quiz] = createGameSetup();
+
+    $session = GameSession::factory()->playing()->create([
+        'quiz_id' => $quiz->id,
+        'host_id' => $user->id,
+    ]);
+
+    $this->actingAs($user)
+        ->post(route('game.cancel', $session))
+        ->assertRedirect(route('dashboard'));
+
+    expect(GameSession::find($session->id))->toBeNull();
+});
+
+test('non-host cannot cancel game', function () {
+    [$user, $quiz] = createGameSetup();
+    $nonHost = User::factory()->create();
+
+    $session = GameSession::factory()->playing()->create([
+        'quiz_id' => $quiz->id,
+        'host_id' => $user->id,
+    ]);
+
+    $this->actingAs($nonHost)
+        ->post(route('game.cancel', $session))
+        ->assertForbidden();
+
+    expect(GameSession::find($session->id))->not->toBeNull();
+});
+
 test('host can view results page', function () {
     [$user, $quiz] = createGameSetup();
 

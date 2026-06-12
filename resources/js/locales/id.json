@@ -200,7 +200,9 @@
         "points": "poin",
         "back_home": "Kembali ke Beranda",
         "mute": "Matikan suara",
-        "unmute": "Nyalakan suara"
+        "unmute": "Nyalakan suara",
+        "game_cancelled": "Kuis Dibatalkan",
+        "game_cancelled_desc": "Kreator telah membatalkan sesi kuis ini."
     },
     "host": {
         "join_at": "Gabung di",
@@ -208,6 +210,8 @@
         "joined": "bergabung",
         "waiting_players": "Menunggu pemain bergabung...",
         "start_game": "Mulai Game",
+        "cancel_game": "Batalkan Kuis",
+        "confirm_cancel": "Apakah Anda yakin ingin membatalkan kuis ini? Semua progress kuis akan dihapus.",
         "answered": "menjawab",
         "reveal_answer": "Tampilkan Jawaban",
         "votes": "suara",

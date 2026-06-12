@@ -305,6 +305,18 @@ function goHome() {
                 </button>
             </div>
         </div>
+
+        <!-- Cancelled -->
+        <div v-else-if="gameState === 'cancelled'" class="flex-1 flex items-center justify-center bg-gray-900">
+            <div class="text-center text-white p-8 max-w-sm">
+                <div class="text-6xl mb-4 animate-bounce">❌</div>
+                <h2 class="text-3xl font-extrabold mb-2 animate-slide-in-up">{{ t('play.game_cancelled') }}</h2>
+                <p class="text-gray-400 mb-6 animate-slide-in-up" style="animation-delay: 0.3s">{{ t('play.game_cancelled_desc') }}</p>
+                <button @click="goHome" class="px-8 py-3 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 transition-all hover:scale-105 active:scale-95 animate-slide-in-up" style="animation-delay: 0.5s">
+                    {{ t('play.back_home') }}
+                </button>
+            </div>
+        </div>
     </GameLayout>
 </template>
 

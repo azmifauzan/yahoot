@@ -41,4 +41,9 @@ class GameSessionPolicy
     {
         return $gameSession->host_id === $user->id;
     }
+
+    public function cancel(User $user, GameSession $gameSession): bool
+    {
+        return $gameSession->host_id === $user->id;
+    }
 }

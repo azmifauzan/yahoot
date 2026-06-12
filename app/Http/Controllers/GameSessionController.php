@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\GameStatus;
 use App\Enums\QuizTheme;
+use App\Events\GameCancelled;
 use App\Events\GameEnded;
 use App\Events\GameStarted;
 use App\Events\QuestionStarted;
@@ -226,6 +227,20 @@ class GameSessionController extends Controller
         ));
 
         return redirect()->route('game.results', $gameSession);
+    }
+
+    /**
+     * Cancel the game (delete session and notify players).
+     */
+    public function cancel(GameSession $gameSession): RedirectResponse
+    {
+        $this->authorize('cancel', $gameSession);
+
+        broadcast(new GameCancelled($gameSession->id));
+
+        $gameSession->delete();
+
+        return redirect()->route('dashboard');
     }
 
     /**

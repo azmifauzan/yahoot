@@ -64,6 +64,9 @@ export function useGame(gameSessionId) {
                 finalLeaderboard.value = e.finalLeaderboard;
                 podium.value = e.podium;
                 gameState.value = 'finished';
+            })
+            .listen('GameCancelled', (e) => {
+                gameState.value = 'cancelled';
             });
     }
 

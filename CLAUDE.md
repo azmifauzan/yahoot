@@ -108,6 +108,7 @@ tests/
 5. Per-question leaderboard → final podium with confetti
 6. Session Resuming: Host can close and resume in-progress sessions at any time; status, timer, answered count, and leaderboard are restored.
 7. Secure Presence: Join tokens secure player endpoints, and player disconnections are handled gracefully via `pagehide` beaconing.
+8. Game Cancellation: Hosts can abort an active game session, broadcasting a `GameCancelled` event to return players to the home page and deleting the session database records.
 
 ## 2 Question Types
 

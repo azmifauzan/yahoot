@@ -109,6 +109,7 @@ All done:
 - **Graceful Player Leaving**: Implemented `apiLeave` endpoint and JS lifecycle hook (`pagehide` / `sendBeacon`) to notify the host and broadcast `PlayerLeft` immediately when a player closes the tab or navigates away.
 - **Quiz Game History**: Added quiz history page (`Host/History.vue`) accessible from the dashboard via a clock icon button, listing past finished and active game sessions.
 - **Podium & Leaderboard Animations**: Added `podium-rise` and `slide-in-up` stagger animations on host results page.
+- **Game Cancellation**: Added a Cancel button for hosts to abort in-progress games. This deletes the session from the database, broadcasts a `GameCancelled` event to immediately redirect players to the home page, and redirects the host to the dashboard.
 
 ---
 
