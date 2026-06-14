@@ -21,11 +21,12 @@ class AnswerRevealed implements ShouldBroadcastNow
         public int $gameSessionId,
         public array $correctAnswer,
         public array $stats,
-        public array $playerResults
+        public array $playerResults,
+        public bool $isPoll = false
     ) {}
 
     /**
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return array<int, Channel>
      */
     public function broadcastOn(): array
     {
@@ -43,6 +44,7 @@ class AnswerRevealed implements ShouldBroadcastNow
             'correctAnswer' => $this->correctAnswer,
             'stats' => $this->stats,
             'playerResults' => $this->playerResults,
+            'isPoll' => $this->isPoll,
         ];
     }
 }

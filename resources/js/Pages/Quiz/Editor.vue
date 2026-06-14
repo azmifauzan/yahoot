@@ -7,6 +7,9 @@ import QuestionSidebar from '@/Components/Quiz/QuestionSidebar.vue';
 import QuestionEditor from '@/Components/Quiz/QuestionEditor.vue';
 import QuestionProperties from '@/Components/Quiz/QuestionProperties.vue';
 import ThemeSelector from '@/Components/Quiz/ThemeSelector.vue';
+import CategorySelect from '@/Components/Quiz/CategorySelect.vue';
+import TagInput from '@/Components/Quiz/TagInput.vue';
+import SoundThemeSelector from '@/Components/Quiz/SoundThemeSelector.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
@@ -18,6 +21,7 @@ const props = defineProps({
     pointTypes: Array,
     answerColors: Array,
     themes: Array,
+    categories: { type: Array, default: () => [] },
 });
 
 // Quiz header form
@@ -324,6 +328,56 @@ function updateTheme(themeValue) {
     });
 }
 
+// Category, tags & sound settings
+const categoryId = ref(props.quiz?.category_id ?? null);
+const tags = ref(props.quiz?.tags?.map((tag) => tag.name) ?? []);
+const soundTheme = ref(props.quiz?.settings?.sound_theme ?? 'classic');
+const musicEnabled = ref(props.quiz?.settings?.music_enabled ?? true);
+
+function updateCategory(value) {
+    categoryId.value = value;
+    if (isNew.value) return;
+    router.put(route('quizzes.update', props.quiz.id), {
+        category_id: value,
+    }, {
+        preserveScroll: true,
+        preserveState: true,
+    });
+}
+
+function updateTags(value) {
+    tags.value = value;
+    if (isNew.value) return;
+    router.put(route('quizzes.update', props.quiz.id), {
+        tags: value,
+    }, {
+        preserveScroll: true,
+        preserveState: true,
+    });
+}
+
+function updateSoundTheme(value) {
+    soundTheme.value = value;
+    if (isNew.value) return;
+    router.put(route('quizzes.update', props.quiz.id), {
+        settings: { sound_theme: value },
+    }, {
+        preserveScroll: true,
+        preserveState: true,
+    });
+}
+
+function toggleMusicEnabled() {
+    musicEnabled.value = !musicEnabled.value;
+    if (isNew.value) return;
+    router.put(route('quizzes.update', props.quiz.id), {
+        settings: { music_enabled: musicEnabled.value },
+    }, {
+        preserveScroll: true,
+        preserveState: true,
+    });
+}
+
 // Question validation indicator
 function isQuestionComplete(question) {
     if (!question.question_text) return false;
@@ -508,6 +562,35 @@ function isQuestionComplete(question) {
                         :currentTheme="quiz?.theme?.value || quiz?.theme || 'standard'"
                         @select="updateTheme"
                     />
+                </div>
+
+                <!-- Category -->
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <CategorySelect
+                        :categories="categories"
+                        :modelValue="categoryId"
+                        @update:modelValue="updateCategory"
+                    />
+                </div>
+
+                <!-- Tags -->
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <TagInput :modelValue="tags" @update:modelValue="updateTags" />
+                </div>
+
+                <!-- Sound theme -->
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <SoundThemeSelector :currentTheme="soundTheme" @select="updateSoundTheme" />
+                    <label class="mt-3 flex items-center justify-between">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('sound.music_enabled') }}</span>
+                        <button
+                            type="button"
+                            @click="toggleMusicEnabled"
+                            :class="['relative inline-flex h-6 w-11 rounded-full transition', musicEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700']"
+                        >
+                            <span :class="['absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform', musicEnabled ? 'translate-x-5' : 'translate-x-0']" />
+                        </button>
+                    </label>
                 </div>
             </div>
         </div>

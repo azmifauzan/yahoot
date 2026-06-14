@@ -98,19 +98,16 @@ function onAnswerTextChange(index, value) {
 }
 
 function toggleCorrect(index) {
-    if (props.question.type === 'multiple_choice') {
-        answers.value.forEach((a, i) => {
-            a.is_correct = i === index;
-        });
-    } else {
-        answers.value.forEach((a, i) => {
-            a.is_correct = i === index;
-        });
-    }
+    if (isPoll.value) return;
+
+    answers.value.forEach((a, i) => {
+        a.is_correct = i === index;
+    });
     markDirty();
 }
 
 const isTrueFalse = computed(() => props.question.type === 'true_false');
+const isPoll = computed(() => props.question.type === 'poll');
 
 // Expose for parent to trigger immediate save
 function emitUpdateNow() {
@@ -221,14 +218,20 @@ function getAnswerActiveClasses(color) {
             </div>
         </div>
 
+        <!-- Poll hint -->
+        <p v-if="isPoll" class="mb-4 text-center text-sm text-gray-400 dark:text-gray-500">
+            {{ t('quiz.poll_no_correct_answer') }}
+        </p>
+
         <!-- Answer Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div
                 v-for="(answer, index) in answers"
                 :key="answer.id || index"
                 :class="[
-                    'relative rounded-xl border-2 p-4 transition cursor-pointer',
-                    answer.is_correct
+                    'relative rounded-xl border-2 p-4 transition',
+                    isPoll ? 'cursor-default' : 'cursor-pointer',
+                    !isPoll && answer.is_correct
                         ? getAnswerActiveClasses(answer.color) + ' ring-2'
                         : getAnswerClasses(answer.color),
                 ]"
@@ -249,7 +252,7 @@ function getAnswerActiveClasses(color) {
                     </div>
 
                     <!-- Correct indicator -->
-                    <div class="ml-auto">
+                    <div v-if="!isPoll" class="ml-auto">
                         <div
                             :class="[
                                 'flex h-6 w-6 items-center justify-center rounded-full border-2 transition',

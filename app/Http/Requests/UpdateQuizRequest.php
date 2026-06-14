@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use App\Enums\QuizTheme;
 use App\Enums\QuizVisibility;
+use App\Enums\SoundTheme;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,7 +17,7 @@ class UpdateQuizRequest extends FormRequest
     }
 
     /**
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -25,6 +27,12 @@ class UpdateQuizRequest extends FormRequest
             'cover_image' => ['nullable', 'image', 'max:2048'],
             'visibility' => ['nullable', Rule::enum(QuizVisibility::class)],
             'theme' => ['nullable', Rule::enum(QuizTheme::class)],
+            'category_id' => ['nullable', 'integer', Rule::exists('categories', 'id')],
+            'tags' => ['nullable', 'array', 'max:5'],
+            'tags.*' => ['string', 'max:30'],
+            'settings' => ['nullable', 'array'],
+            'settings.sound_theme' => ['nullable', Rule::enum(SoundTheme::class)],
+            'settings.music_enabled' => ['nullable', 'boolean'],
         ];
     }
 }

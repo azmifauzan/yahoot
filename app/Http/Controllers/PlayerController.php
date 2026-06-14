@@ -53,6 +53,8 @@ class PlayerController extends Controller
                 'game_code' => $session->game_code,
                 'status' => $session->status->value,
                 'quiz_title' => $session->quiz->title,
+                'sound_theme' => $session->quiz->settings['sound_theme'] ?? 'classic',
+                'music_enabled' => $session->quiz->settings['music_enabled'] ?? true,
             ],
         ]);
     }

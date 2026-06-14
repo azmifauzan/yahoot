@@ -14,7 +14,6 @@ import TimerBar from '@/Components/Game/TimerBar.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
-const sound = useSound();
 const { confirm } = useSwal();
 
 const props = defineProps({
@@ -25,6 +24,9 @@ const props = defineProps({
     theme: Object,
     resumeState: Object,
 });
+
+const sound = useSound(props.quiz?.settings?.sound_theme ?? 'classic');
+const musicEnabled = computed(() => props.quiz?.settings?.music_enabled ?? true);
 
 const themeGradients = computed(() => props.theme?.gradients || {
     lobby: 'from-primary-600 to-purple-700',
@@ -47,7 +49,7 @@ const { timeRemaining, progress, start: startTimer, stop: stopTimer } = useTimer
 const {
     gameState, players: livePlayers, currentQuestion, questionNumber, totalQuestions,
     timeLimit, answeredCount, totalPlayers, leaderboard, playerPositions,
-    correctAnswer, answerStats, playerResults, finalLeaderboard, podium,
+    correctAnswer, answerStats, playerResults, isPoll, finalLeaderboard, podium,
     joinChannel,
 } = useGame(props.gameSession.id);
 
@@ -79,6 +81,7 @@ onMounted(async () => {
             correctAnswer.value = resume.reveal.correctAnswer;
             answerStats.value = resume.reveal.stats;
             playerResults.value = resume.reveal.playerResults;
+            isPoll.value = resume.reveal.isPoll ?? false;
             leaderboard.value = resume.reveal.leaderboard;
             playerPositions.value = resume.reveal.playerPositions;
             gameState.value = 'scoreboard';
@@ -116,8 +119,8 @@ watch(gameState, (state) => {
     if (mode === musicMode) return;
     musicMode = mode;
 
-    if (mode === 'lobby') sound.startLobbyMusic();
-    else if (mode === 'game') sound.startGameMusic();
+    if (mode === 'lobby' && musicEnabled.value) sound.startLobbyMusic();
+    else if (mode === 'game' && musicEnabled.value) sound.startGameMusic();
     else sound.stopMusic();
 }, { immediate: true });
 
@@ -345,6 +348,9 @@ watch(gameState, (state) => {
         <!-- RESULT / ANSWER REVEAL -->
         <div v-else-if="gameState === 'result'" class="flex-1 flex flex-col text-white" :class="themeGradients.question">
             <div class="p-6 text-center animate-slide-in-down">
+                <p v-if="isPoll" class="text-sm font-bold uppercase tracking-wide text-white/70 mb-1">
+                    📊 {{ t('host.poll_results') }}
+                </p>
                 <h2 class="text-2xl font-extrabold mb-6">{{ currentQuestion?.question_text }}</h2>
             </div>
 
@@ -354,12 +360,13 @@ watch(gameState, (state) => {
                     :key="answer.id"
                     :class="[
                         answerColorMap[answer.color]?.bg,
-                        isCorrectAnswer(answer.id) ? 'ring-4 ring-white scale-105 animate-pulse-glow' : 'animate-fade-dim'
+                        !isPoll && isCorrectAnswer(answer.id) ? 'ring-4 ring-white scale-105 animate-pulse-glow' : '',
+                        !isPoll && !isCorrectAnswer(answer.id) ? 'animate-fade-dim' : '',
                     ]"
                     class="p-4 rounded-2xl flex flex-col items-center justify-center min-h-[100px] transition-all"
                 >
                     <span class="text-2xl font-bold mb-1">{{ answerColorMap[answer.color]?.shape }} {{ answer.answer_text }}</span>
-                    <span v-if="isCorrectAnswer(answer.id)" class="text-3xl animate-score-reveal">✓</span>
+                    <span v-if="!isPoll && isCorrectAnswer(answer.id)" class="text-3xl animate-score-reveal">✓</span>
                     <!-- Answer count bar -->
                     <div class="mt-2 w-full">
                         <div class="h-6 bg-black/20 rounded-full overflow-hidden">

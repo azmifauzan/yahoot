@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\GameStatus;
+use App\Enums\QuestionType;
 use App\Events\AnswerRevealed;
 use App\Events\ScoreboardUpdated;
 use App\Models\GameSession;
@@ -44,7 +45,8 @@ class RevealService
             $gameSession->id,
             $data['correctAnswer'],
             $data['stats'],
-            $data['playerResults']
+            $data['playerResults'],
+            $data['isPoll']
         ));
 
         broadcast(new ScoreboardUpdated(
@@ -60,12 +62,14 @@ class RevealService
      * Compute the reveal data (correct answer, stats, player results, leaderboard)
      * for the given question without broadcasting or mutating state.
      *
-     * @return array{correctAnswer: array, stats: array, playerResults: array, leaderboard: Collection, playerPositions: array}
+     * @return array{correctAnswer: array, stats: array, playerResults: array, leaderboard: Collection, playerPositions: array, isPoll: bool}
      */
     public function getRevealData(GameSession $gameSession, Question $currentQuestion): array
     {
+        $isPoll = $currentQuestion->type === QuestionType::Poll;
+
         $correctAnswers = $currentQuestion->answers->where('is_correct', true);
-        $correctAnswerData = $correctAnswers->map(fn ($a) => [
+        $correctAnswerData = $isPoll ? [] : $correctAnswers->map(fn ($a) => [
             'id' => $a->id,
             'answer_text' => $a->answer_text,
             'color' => $a->color->value,
@@ -128,6 +132,7 @@ class RevealService
             'playerResults' => $playerResults,
             'leaderboard' => $leaderboard,
             'playerPositions' => $playerPositions,
+            'isPoll' => $isPoll,
         ];
     }
 }

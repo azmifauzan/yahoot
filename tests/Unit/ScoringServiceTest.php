@@ -1,13 +1,15 @@
 <?php
 
 use App\Enums\PointType;
+use App\Enums\QuestionType;
 use App\Models\GamePlayer;
 use App\Models\Question;
 use App\Services\ScoringService;
 
-function makeQuestion(PointType $points = PointType::Standard, int $timeLimit = 20): Question
+function makeQuestion(PointType $points = PointType::Standard, int $timeLimit = 20, QuestionType $type = QuestionType::MultipleChoice): Question
 {
     $question = new Question;
+    $question->type = $type;
     $question->points = $points;
     $question->time_limit = $timeLimit;
 
@@ -67,6 +69,15 @@ test('no points question gives zero but increments streak', function () {
     $result = $service->calculate(makeQuestion(PointType::None), makePlayer(2), true, 5000);
 
     expect($result['points_earned'])->toBe(0)
+        ->and($result['new_streak'])->toBe(3);
+});
+
+test('poll question gives zero points and does not change streak', function () {
+    $service = new ScoringService;
+    $result = $service->calculate(makeQuestion(type: QuestionType::Poll), makePlayer(3), false, 5000);
+
+    expect($result['points_earned'])->toBe(0)
+        ->and($result['streak_bonus'])->toBe(0)
         ->and($result['new_streak'])->toBe(3);
 });
 

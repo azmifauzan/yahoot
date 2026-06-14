@@ -9,11 +9,14 @@ use App\Enums\QuizTheme;
 use App\Enums\QuizVisibility;
 use App\Http\Requests\StoreQuizRequest;
 use App\Http\Requests\UpdateQuizRequest;
+use App\Models\Category;
 use App\Models\Quiz;
+use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -23,7 +26,7 @@ class QuizController extends Controller
     {
         $user = $request->user();
 
-        $query = $user->quizzes()->withCount('questions');
+        $query = $user->quizzes()->withCount('questions')->with(['category', 'tags']);
 
         if ($request->filled('filter') && in_array($request->input('filter'), ['draft', 'published'])) {
             $query->where('is_published', $request->input('filter') === 'published');
@@ -33,6 +36,16 @@ class QuizController extends Controller
             $query->where('title', 'like', '%'.$request->input('search').'%');
         }
 
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->input('category'));
+        }
+
+        if ($request->filled('tag')) {
+            $query->whereHas('tags', function ($tagQuery) use ($request) {
+                $tagQuery->where('tags.id', $request->input('tag'));
+            });
+        }
+
         $quizzes = $query->latest()->get();
 
         return Inertia::render('Dashboard', [
@@ -40,7 +53,11 @@ class QuizController extends Controller
             'filters' => [
                 'filter' => $request->input('filter', 'all'),
                 'search' => $request->input('search', ''),
+                'category' => $request->input('category', ''),
+                'tag' => $request->input('tag', ''),
             ],
+            'categories' => Category::orderBy('name')->get(),
+            'tags' => Tag::orderBy('name')->get(),
             'stats' => [
                 'total_quizzes' => $user->quizzes()->count(),
                 'total_games' => $user->quizzes()->withCount('gameSessions')->get()->sum('game_sessions_count'),
@@ -64,6 +81,7 @@ class QuizController extends Controller
                 'label' => $theme->label(),
                 'gradients' => $theme->gradients(),
             ]),
+            'categories' => Category::orderBy('name')->get(),
         ]);
     }
 
@@ -80,8 +98,13 @@ class QuizController extends Controller
             'description' => $data['description'] ?? null,
             'cover_image' => $data['cover_image'] ?? null,
             'visibility' => $data['visibility'] ?? QuizVisibility::Private,
+            'category_id' => $data['category_id'] ?? null,
             'is_published' => false,
         ]);
+
+        if (! empty($data['tags'])) {
+            $this->syncTags($quiz, $data['tags']);
+        }
 
         return redirect()->route('quizzes.edit', $quiz);
     }
@@ -90,7 +113,7 @@ class QuizController extends Controller
     {
         $this->authorize('update', $quiz);
 
-        $quiz->load('questions.answers');
+        $quiz->load(['questions.answers', 'category', 'tags']);
 
         return Inertia::render('Quiz/Editor', [
             'quiz' => $quiz,
@@ -106,6 +129,7 @@ class QuizController extends Controller
                 'label' => $theme->label(),
                 'gradients' => $theme->gradients(),
             ]),
+            'categories' => Category::orderBy('name')->get(),
         ]);
     }
 
@@ -122,9 +146,41 @@ class QuizController extends Controller
             $data['cover_image'] = $request->file('cover_image')->store('quiz-covers', 's3');
         }
 
+        if (array_key_exists('tags', $data)) {
+            $this->syncTags($quiz, $data['tags'] ?? []);
+            unset($data['tags']);
+        }
+
+        if (array_key_exists('settings', $data)) {
+            $data['settings'] = array_merge($quiz->settings ?? [], $data['settings'] ?? []);
+        }
+
         $quiz->update($data);
 
         return redirect()->back();
+    }
+
+    /**
+     * Sync the quiz's tags, creating any new tags on the fly.
+     *
+     * @param  array<int, string>  $tagNames
+     */
+    private function syncTags(Quiz $quiz, array $tagNames): void
+    {
+        $tagIds = collect($tagNames)
+            ->map(fn (string $name) => trim($name))
+            ->filter()
+            ->unique()
+            ->map(function (string $name) {
+                $tag = Tag::firstOrCreate(
+                    ['slug' => Str::slug($name)],
+                    ['name' => $name]
+                );
+
+                return $tag->id;
+            });
+
+        $quiz->tags()->sync($tagIds);
     }
 
     public function destroy(Quiz $quiz): RedirectResponse
@@ -149,6 +205,7 @@ class QuizController extends Controller
             $newQuiz->title = $quiz->title.' (Salinan)';
             $newQuiz->is_published = false;
             $newQuiz->save();
+            $newQuiz->tags()->sync($quiz->tags()->pluck('tags.id'));
 
             foreach ($quiz->questions()->with('answers')->get() as $question) {
                 $newQuestion = $question->replicate(['id', 'quiz_id', 'created_at', 'updated_at']);

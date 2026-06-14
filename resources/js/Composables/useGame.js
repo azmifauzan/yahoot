@@ -15,6 +15,7 @@ export function useGame(gameSessionId) {
     const correctAnswer = ref(null);
     const answerStats = ref([]);
     const playerResults = ref([]);
+    const isPoll = ref(false);
     const finalLeaderboard = ref([]);
     const podium = ref([]);
     const myResult = ref(null);
@@ -53,6 +54,7 @@ export function useGame(gameSessionId) {
                 correctAnswer.value = e.correctAnswer;
                 answerStats.value = e.stats;
                 playerResults.value = e.playerResults;
+                isPoll.value = e.isPoll ?? false;
                 gameState.value = 'result';
             })
             .listen('ScoreboardUpdated', (e) => {
@@ -122,6 +124,7 @@ export function useGame(gameSessionId) {
         correctAnswer,
         answerStats,
         playerResults,
+        isPoll,
         finalLeaderboard,
         podium,
         myResult,
