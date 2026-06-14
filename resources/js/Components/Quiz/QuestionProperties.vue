@@ -90,9 +90,17 @@ function getQuestionTypeLabel(qt) {
     const labels = {
         multiple_choice: () => t('quiz.multiple_choice'),
         true_false: () => t('quiz.true_false'),
+        poll: () => t('quiz.poll'),
     };
     const val = typeof qt === 'object' ? qt.value || qt : qt;
     return labels[val] ? labels[val]() : val;
+}
+
+function getQuestionTypeIcon(qt) {
+    const val = typeof qt === 'object' ? qt.value || qt : qt;
+    if (val === 'multiple_choice') return '📝';
+    if (val === 'poll') return '📊';
+    return '✅';
 }
 </script>
 
@@ -116,8 +124,7 @@ function getQuestionTypeLabel(qt) {
                             : 'border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500',
                     ]"
                 >
-                    <span v-if="(qt.value || qt) === 'multiple_choice'" class="text-base">📝</span>
-                    <span v-else class="text-base">✅</span>
+                    <span class="text-base">{{ getQuestionTypeIcon(qt) }}</span>
                     {{ getQuestionTypeLabel(qt) }}
                 </button>
             </div>

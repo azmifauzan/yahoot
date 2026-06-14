@@ -20,6 +20,14 @@ class ScoringService
         bool $isCorrect,
         int $timeTakenMs
     ): array {
+        if (! $question->type->isScored()) {
+            return [
+                'points_earned' => 0,
+                'streak_bonus' => 0,
+                'new_streak' => $player->streak,
+            ];
+        }
+
         if (! $isCorrect) {
             return [
                 'points_earned' => 0,

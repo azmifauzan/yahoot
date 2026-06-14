@@ -4,21 +4,24 @@ namespace App\Models;
 
 use App\Enums\QuizTheme;
 use App\Enums\QuizVisibility;
+use Database\Factories\QuizFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Quiz extends Model
 {
-    /** @use HasFactory<\Database\Factories\QuizFactory> */
+    /** @use HasFactory<QuizFactory> */
     use HasFactory;
 
     use SoftDeletes;
 
     protected $fillable = [
         'user_id',
+        'category_id',
         'title',
         'description',
         'cover_image',
@@ -39,7 +42,7 @@ class Quiz extends Model
     }
 
     /**
-     * @return BelongsTo<\App\Models\User, $this>
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -47,7 +50,7 @@ class Quiz extends Model
     }
 
     /**
-     * @return HasMany<\App\Models\Question, $this>
+     * @return HasMany<Question, $this>
      */
     public function questions(): HasMany
     {
@@ -55,10 +58,26 @@ class Quiz extends Model
     }
 
     /**
-     * @return HasMany<\App\Models\GameSession, $this>
+     * @return HasMany<GameSession, $this>
      */
     public function gameSessions(): HasMany
     {
         return $this->hasMany(GameSession::class);
+    }
+
+    /**
+     * @return BelongsTo<Category, $this>
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * @return BelongsToMany<Tag, $this>
+     */
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class);
     }
 }

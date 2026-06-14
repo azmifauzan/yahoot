@@ -14,11 +14,13 @@ import ScoreAnimation from '@/Components/Game/ScoreAnimation.vue';
 import StreakBadge from '@/Components/Game/StreakBadge.vue';
 
 const { t } = useI18n();
-const sound = useSound();
 
 const props = defineProps({
     gameSession: Object,
 });
+
+const sound = useSound(props.gameSession?.sound_theme ?? 'classic');
+const musicEnabled = computed(() => props.gameSession?.music_enabled ?? true);
 
 const player = ref(null);
 const selectedAnswer = ref(null);
@@ -34,7 +36,7 @@ const { timeRemaining, progress, start: startTimer, stop: stopTimer, getElapsedM
 
 const {
     gameState, players, currentQuestion, questionNumber, totalQuestions,
-    timeLimit, myResult, correctAnswer, answerStats, playerResults,
+    timeLimit, myResult, correctAnswer, answerStats, playerResults, isPoll,
     leaderboard, playerPositions, finalLeaderboard, podium,
     joinChannel, submitAnswer,
 } = useGame(props.gameSession.id);
@@ -86,8 +88,8 @@ watch(gameState, (state) => {
     if (mode === musicMode) return;
     musicMode = mode;
 
-    if (mode === 'lobby') sound.startLobbyMusic();
-    else if (mode === 'game') sound.startGameMusic();
+    if (mode === 'lobby' && musicEnabled.value) sound.startLobbyMusic();
+    else if (mode === 'game' && musicEnabled.value) sound.startGameMusic();
     else sound.stopMusic();
 }, { immediate: true });
 
@@ -165,6 +167,9 @@ const motivationalMessage = computed(() => {
 
 // Trigger confetti on correct answer or final top 3
 watch(gameState, (state) => {
+    if (state === 'result' && isPoll.value) {
+        return;
+    }
     if (state === 'result' && myPlayerResult.value?.is_correct) {
         showConfetti.value = true;
         sound.correct();
@@ -263,6 +268,14 @@ function goHome() {
                 <div class="text-6xl mb-4 animate-score-reveal">✓</div>
                 <p class="text-xl font-bold">{{ t('play.answer_sent') }}</p>
                 <p class="text-gray-400 mt-2">{{ t('play.waiting_others') }}</p>
+            </div>
+        </div>
+
+        <!-- Result: Poll -->
+        <div v-else-if="gameState === 'result' && isPoll" class="flex-1 flex items-center justify-center bg-primary-500">
+            <div class="text-center text-white p-8">
+                <div class="text-6xl mb-4 animate-pop-bounce">📊</div>
+                <h2 class="text-3xl font-extrabold animate-slide-in-up">{{ t('play.poll_thanks') }}</h2>
             </div>
         </div>
 

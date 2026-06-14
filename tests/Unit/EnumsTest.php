@@ -15,9 +15,10 @@ test('GameStatus has correct cases', function () {
 });
 
 test('QuestionType has correct cases', function () {
-    expect(QuestionType::cases())->toHaveCount(2)
+    expect(QuestionType::cases())->toHaveCount(3)
         ->and(QuestionType::MultipleChoice->value)->toBe('multiple_choice')
-        ->and(QuestionType::TrueFalse->value)->toBe('true_false');
+        ->and(QuestionType::TrueFalse->value)->toBe('true_false')
+        ->and(QuestionType::Poll->value)->toBe('poll');
 });
 
 test('PointType returns correct base points', function () {

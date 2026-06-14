@@ -80,6 +80,8 @@
         "question_type": "Question Type",
         "multiple_choice": "Multiple Choice",
         "true_false": "True / False",
+        "poll": "Poll",
+        "poll_no_correct_answer": "Poll questions have no correct answer — they only collect player opinions.",
         "true": "True",
         "false": "False",
         "time_limit": "Time Limit",
@@ -114,6 +116,7 @@
         "invalid_code": "Invalid code",
         "nickname": "Nickname",
         "nickname_placeholder": "Enter your nickname",
+        "randomize_nickname": "Randomize nickname",
         "choose_avatar": "Choose Avatar",
         "waiting": "Waiting for host to start...",
         "you_joined": "You're in!",
@@ -202,6 +205,7 @@
         "waiting_others": "Waiting for other players...",
         "correct": "Correct! 🎉",
         "wrong": "Wrong 😞",
+        "poll_thanks": "Thanks for voting!",
         "streak": "in a row!",
         "your_position": "Your position",
         "points": "points",
@@ -221,6 +225,7 @@
         "confirm_cancel": "Are you sure you want to cancel this game? All game progress will be lost.",
         "answered": "answered",
         "reveal_answer": "Reveal Answer",
+        "poll_results": "Poll Results",
         "votes": "votes",
         "next": "Next",
         "scoreboard": "Scoreboard",
@@ -318,7 +323,33 @@
         "setting_allow_registration": "Allow Registration",
         "setting_require_email_verification": "Require Email Verification",
         "setting_allow_guest_play": "Allow Guest Play",
-        "setting_maintenance_mode": "Maintenance Mode"
+        "setting_maintenance_mode": "Maintenance Mode",
+        "categories": "Categories",
+        "delete_category": "Delete Category",
+        "confirm_delete_category": "Are you sure you want to delete this category?",
+        "category_deleted": "Category deleted successfully"
+    },
+    "category": {
+        "label": "Category",
+        "name": "Category Name",
+        "icon": "Icon",
+        "add": "Add",
+        "none": "No category",
+        "all": "All Categories"
+    },
+    "tag": {
+        "label": "Tags",
+        "placeholder": "Add tag...",
+        "hint": "Press Enter to add a tag (max 5)",
+        "all": "All Tags"
+    },
+    "sound": {
+        "sound_theme": "Sound Theme",
+        "theme_classic": "Classic",
+        "theme_chill": "Chill",
+        "theme_energetic": "Energetic",
+        "theme_none": "No Sound",
+        "music_enabled": "Background Music"
     },
     "common": {
         "save": "Save",

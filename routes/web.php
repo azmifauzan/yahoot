@@ -60,6 +60,13 @@ Route::middleware([
         Route::delete('/{gameSession}', [Admin\GameController::class, 'destroy'])->name('destroy');
     });
 
+    Route::prefix('categories')->name('categories.')->group(function (): void {
+        Route::get('/', [Admin\CategoryController::class, 'index'])->name('index');
+        Route::post('/', [Admin\CategoryController::class, 'store'])->name('store');
+        Route::put('/{category}', [Admin\CategoryController::class, 'update'])->name('update');
+        Route::delete('/{category}', [Admin\CategoryController::class, 'destroy'])->name('destroy');
+    });
+
     Route::get('/settings', [Admin\SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [Admin\SettingController::class, 'update'])->name('settings.update');
 });

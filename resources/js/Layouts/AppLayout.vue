@@ -51,6 +51,7 @@ const adminLinks = computed(() => {
         { href: route('admin.users.index'), label: t('admin.users'), icon: 'users', active: route().current('admin.users.*') },
         { href: route('admin.quizzes.index'), label: t('admin.quizzes'), icon: 'document', active: route().current('admin.quizzes.*') },
         { href: route('admin.games.index'), label: t('admin.games'), icon: 'bolt', active: route().current('admin.games.*') },
+        { href: route('admin.categories.index'), label: t('admin.categories'), icon: 'tag', active: route().current('admin.categories.*') },
         { href: route('admin.settings.index'), label: t('admin.settings'), icon: 'cog', active: route().current('admin.settings.*') },
     ];
 });

@@ -80,6 +80,8 @@
         "question_type": "Tipe Pertanyaan",
         "multiple_choice": "Pilihan Ganda",
         "true_false": "Benar / Salah",
+        "poll": "Polling",
+        "poll_no_correct_answer": "Soal polling tidak memiliki jawaban benar — hanya mengumpulkan opini pemain.",
         "true": "Benar",
         "false": "Salah",
         "time_limit": "Batas Waktu",
@@ -114,6 +116,7 @@
         "invalid_code": "Kode tidak valid",
         "nickname": "Nama Panggilan",
         "nickname_placeholder": "Masukkan nama panggilanmu",
+        "randomize_nickname": "Acak nama panggilan",
         "choose_avatar": "Pilih Avatar",
         "waiting": "Menunggu host memulai...",
         "you_joined": "Kamu sudah masuk!",
@@ -202,6 +205,7 @@
         "waiting_others": "Menunggu pemain lain...",
         "correct": "Benar! 🎉",
         "wrong": "Salah 😞",
+        "poll_thanks": "Terima kasih atas suaramu!",
         "streak": "berturut-turut!",
         "your_position": "Posisi kamu",
         "points": "poin",
@@ -221,6 +225,7 @@
         "confirm_cancel": "Apakah Anda yakin ingin membatalkan kuis ini? Semua progress kuis akan dihapus.",
         "answered": "menjawab",
         "reveal_answer": "Tampilkan Jawaban",
+        "poll_results": "Hasil Polling",
         "votes": "suara",
         "next": "Lanjut",
         "scoreboard": "Papan Skor",
@@ -318,7 +323,33 @@
         "setting_allow_registration": "Izinkan Registrasi",
         "setting_require_email_verification": "Wajib Verifikasi Email",
         "setting_allow_guest_play": "Izinkan Tamu Bermain",
-        "setting_maintenance_mode": "Mode Pemeliharaan"
+        "setting_maintenance_mode": "Mode Pemeliharaan",
+        "categories": "Kategori",
+        "delete_category": "Hapus Kategori",
+        "confirm_delete_category": "Yakin ingin menghapus kategori ini?",
+        "category_deleted": "Kategori berhasil dihapus"
+    },
+    "category": {
+        "label": "Kategori",
+        "name": "Nama Kategori",
+        "icon": "Ikon",
+        "add": "Tambah",
+        "none": "Tanpa kategori",
+        "all": "Semua Kategori"
+    },
+    "tag": {
+        "label": "Tag",
+        "placeholder": "Tambah tag...",
+        "hint": "Tekan Enter untuk menambahkan tag (maks. 5)",
+        "all": "Semua Tag"
+    },
+    "sound": {
+        "sound_theme": "Tema Suara",
+        "theme_classic": "Klasik",
+        "theme_chill": "Santai",
+        "theme_energetic": "Energik",
+        "theme_none": "Tanpa Suara",
+        "music_enabled": "Musik Latar"
     },
     "common": {
         "save": "Simpan",

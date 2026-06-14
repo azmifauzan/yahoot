@@ -4,11 +4,12 @@ import { Head, router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import { useSound } from '@/Composables/useSound';
+import { randomNickname } from '@/utils/nicknameGenerator';
 import AvatarGrid from '@/Components/Avatar/AvatarGrid.vue';
 import AvatarDisplay from '@/Components/Avatar/AvatarDisplay.vue';
 import GameCodeInput from '@/Components/Game/GameCodeInput.vue';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const sound = useSound();
 
 const props = defineProps({
@@ -17,10 +18,14 @@ const props = defineProps({
 
 const step = ref(props.gameCode ? 'setup' : 'code'); // code → setup
 const gameCode = ref(props.gameCode);
-const nickname = ref('');
+const nickname = ref(randomNickname(locale.value));
 const avatar = ref('fox');
 const error = ref('');
 const loading = ref(false);
+
+function randomizeNickname() {
+    nickname.value = randomNickname(locale.value);
+}
 
 function submitCode() {
     if (gameCode.value.length !== 6) {
@@ -100,15 +105,23 @@ async function joinGame() {
                     {{ t('play.game_code') }}: <span class="font-mono font-bold text-primary-600">{{ gameCode }}</span>
                 </p>
 
-                <div class="mb-4">
+                <div class="mb-4 relative">
                     <input
                         v-model="nickname"
                         type="text"
                         :placeholder="t('play.nickname_placeholder')"
                         maxlength="20"
-                        class="w-full px-4 py-3 text-lg rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 outline-none transition-all"
+                        class="w-full px-4 py-3 pr-12 text-lg rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 outline-none transition-all"
                         @keyup.enter="joinGame"
                     />
+                    <button
+                        type="button"
+                        @click="randomizeNickname"
+                        :title="t('game.randomize_nickname')"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center text-xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    >
+                        🎲
+                    </button>
                 </div>
 
                 <!-- Selected avatar preview -->

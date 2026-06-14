@@ -12,10 +12,14 @@ const props = defineProps({
     quizzes: Array,
     filters: Object,
     stats: Object,
+    categories: { type: Array, default: () => [] },
+    tags: { type: Array, default: () => [] },
 });
 
 const search = ref(props.filters.search || '');
 const activeFilter = ref(props.filters.filter || 'all');
+const categoryFilter = ref(props.filters.category || '');
+const tagFilter = ref(props.filters.tag || '');
 const viewMode = ref('list');
 
 const filterOptions = [
@@ -28,6 +32,8 @@ function applyFilters() {
     router.get(route('dashboard'), {
         filter: activeFilter.value !== 'all' ? activeFilter.value : undefined,
         search: search.value || undefined,
+        category: categoryFilter.value || undefined,
+        tag: tagFilter.value || undefined,
     }, {
         preserveState: true,
         replace: true,
@@ -154,6 +160,26 @@ function getPlaceholderColor(index) {
                         >
                             {{ option.label() }}
                         </button>
+                        <select
+                            v-model="categoryFilter"
+                            @change="applyFilters"
+                            class="rounded-lg border-gray-300 text-sm dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200"
+                        >
+                            <option value="">{{ t('category.all') }}</option>
+                            <option v-for="category in categories" :key="category.id" :value="category.id">
+                                {{ category.icon ? `${category.icon} ` : '' }}{{ category.name }}
+                            </option>
+                        </select>
+                        <select
+                            v-model="tagFilter"
+                            @change="applyFilters"
+                            class="rounded-lg border-gray-300 text-sm dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200"
+                        >
+                            <option value="">{{ t('tag.all') }}</option>
+                            <option v-for="tag in tags" :key="tag.id" :value="tag.id">
+                                #{{ tag.name }}
+                            </option>
+                        </select>
                     </div>
                     <div class="flex flex-wrap items-center gap-3">
                         <div class="relative w-full sm:w-auto">
@@ -232,11 +258,19 @@ function getPlaceholderColor(index) {
                         <!-- Content -->
                         <div class="p-4">
                             <h3 class="mb-1 truncate text-base font-semibold text-gray-900 dark:text-white">{{ quiz.title }}</h3>
-                            <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
+                            <p class="mb-1 text-xs text-gray-500 dark:text-gray-400">
                                 {{ t('dashboard.questions_count', { count: quiz.questions_count }) }}
                                 &middot;
                                 {{ new Date(quiz.created_at).toLocaleDateString() }}
                             </p>
+                            <div v-if="quiz.category || quiz.tags?.length" class="mb-3 flex flex-wrap items-center gap-1">
+                                <span v-if="quiz.category" class="rounded-full bg-primary-50 dark:bg-primary-900/30 px-2 py-0.5 text-xs text-primary-600 dark:text-primary-400">
+                                    {{ quiz.category.icon }} {{ quiz.category.name }}
+                                </span>
+                                <span v-for="tag in quiz.tags" :key="tag.id" class="rounded-full bg-gray-100 dark:bg-gray-700 px-2 py-0.5 text-xs text-gray-500 dark:text-gray-400">
+                                    #{{ tag.name }}
+                                </span>
+                            </div>
                             <!-- Actions -->
                             <div class="flex flex-wrap items-center gap-2" @click.stop>
                                 <button
@@ -292,6 +326,9 @@ function getPlaceholderColor(index) {
                                     {{ t('dashboard.questions_count', { count: quiz.questions_count }) }}
                                     &middot;
                                     {{ new Date(quiz.created_at).toLocaleDateString() }}
+                                    <template v-if="quiz.category">
+                                        &middot; {{ quiz.category.icon }} {{ quiz.category.name }}
+                                    </template>
                                 </p>
                             </div>
                             <!-- Status (Desktop) -->
