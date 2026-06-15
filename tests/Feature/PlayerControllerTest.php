@@ -4,6 +4,7 @@ use App\Enums\GameStatus;
 use App\Models\Answer;
 use App\Models\GamePlayer;
 use App\Models\GameSession;
+use App\Models\GameTeam;
 use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\User;
@@ -35,15 +36,17 @@ test('player can view join page with code query param', function () {
 test('player can join a waiting game via API', function () {
     [,,,, , $session] = createPlayerGameSetup();
 
-    $this->postJson('/api/games/join', [
+    $response = $this->postJson('/api/games/join', [
         'game_code' => $session->game_code,
         'nickname' => 'TestPlayer',
         'avatar' => 'cat',
     ])->assertCreated()
         ->assertJsonStructure([
-            'player' => ['id', 'nickname', 'avatar', 'player_token'],
+            'player' => ['id', 'nickname', 'avatar', 'player_token', 'powerups_available'],
             'gameSession' => ['id', 'game_code', 'status'],
         ]);
+
+    expect($response->json('player.powerups_available'))->not->toBeEmpty();
 
     $this->assertDatabaseHas('game_players', [
         'game_session_id' => $session->id,
@@ -229,6 +232,45 @@ test('player cannot leave game with wrong token', function () {
     ])->assertForbidden();
 
     expect($player->fresh()->is_connected)->toBeTrue();
+});
+
+test('game info endpoint returns individual mode with no teams', function () {
+    [,,,, , $session] = createPlayerGameSetup();
+
+    $this->getJson("/api/games/code/{$session->game_code}/info")
+        ->assertSuccessful()
+        ->assertJson([
+            'mode' => 'individual',
+            'team_selection' => 'auto',
+            'teams' => [],
+        ]);
+});
+
+test('game info endpoint returns 404 for unknown code', function () {
+    $this->getJson('/api/games/code/000000/info')->assertNotFound();
+});
+
+test('game info endpoint returns 404 for an already-started game', function () {
+    [,,,, , $session] = createPlayerGameSetup();
+    $session->update(['status' => GameStatus::Playing]);
+
+    $this->getJson("/api/games/code/{$session->game_code}/info")->assertNotFound();
+});
+
+test('game info endpoint lists teams for team mode sessions', function () {
+    [,,,, , $session] = createPlayerGameSetup();
+    $session->update(['settings' => ['mode' => 'team', 'team_count' => 2, 'team_selection' => 'manual']]);
+    $teamA = GameTeam::factory()->for($session)->create(['name' => 'Red Team', 'color' => 'red']);
+    $teamB = GameTeam::factory()->for($session)->create(['name' => 'Blue Team', 'color' => 'blue']);
+
+    $response = $this->getJson("/api/games/code/{$session->game_code}/info")
+        ->assertSuccessful()
+        ->assertJson([
+            'mode' => 'team',
+            'team_selection' => 'manual',
+        ]);
+
+    expect(collect($response->json('teams'))->pluck('id'))->toContain($teamA->id, $teamB->id);
 });
 
 test('player cannot submit answer with wrong token', function () {

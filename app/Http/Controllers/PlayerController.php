@@ -69,6 +69,37 @@ class PlayerController extends Controller
     }
 
     /**
+     * API: Look up a waiting game session by code for the join flow
+     * (mode + team selection info, used to drive the join UI).
+     */
+    public function apiInfo(string $code): JsonResponse
+    {
+        $session = GameSession::query()
+            ->where('game_code', $code)
+            ->where('status', GameStatus::Waiting)
+            ->first();
+
+        if (! $session) {
+            return response()->json(['message' => 'Game not found or already started.'], 404);
+        }
+
+        $mode = $session->settings['mode'] ?? 'individual';
+
+        return response()->json([
+            'mode' => $mode,
+            'team_selection' => $session->settings['team_selection'] ?? 'auto',
+            'teams' => $mode === 'team'
+                ? $session->teams()->withCount('players')->get()->map(fn ($team) => [
+                    'id' => $team->id,
+                    'name' => $team->name,
+                    'color' => $team->color,
+                    'player_count' => $team->players_count,
+                ])
+                : [],
+        ]);
+    }
+
+    /**
      * API: Join a game session.
      */
     public function apiJoin(JoinGameRequest $request): JsonResponse
@@ -98,10 +129,16 @@ class PlayerController extends Controller
             ], 422);
         }
 
-        // Team mode: auto-balance the joining player into the smallest team.
+        // Team mode: let the player pick a team (manual) or auto-balance into the smallest team.
         $team = null;
         if (($session->settings['mode'] ?? 'individual') === 'team') {
-            $team = $session->teams()->withCount('players')->orderBy('players_count')->orderBy('id')->first();
+            if (($session->settings['team_selection'] ?? 'auto') === 'manual' && ! empty($validated['team_id'])) {
+                $team = $session->teams()->find($validated['team_id']);
+            }
+
+            if (! $team) {
+                $team = $session->teams()->withCount('players')->orderBy('players_count')->orderBy('id')->first();
+            }
         }
 
         $player = GamePlayer::query()->create([
@@ -112,6 +149,8 @@ class PlayerController extends Controller
             'avatar' => $validated['avatar'],
             'score' => 0,
             'streak' => 0,
+            'powerups_available' => PowerUpType::defaults(),
+            'powerups_used' => [],
             'is_connected' => true,
             'player_token' => Str::random(40),
         ]);
@@ -130,6 +169,7 @@ class PlayerController extends Controller
                 'nickname' => $player->nickname,
                 'avatar' => $player->avatar,
                 'player_token' => $player->player_token,
+                'powerups_available' => $player->powerups_available,
                 'team' => $team ? [
                     'id' => $team->id,
                     'name' => $team->name,

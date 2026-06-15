@@ -51,15 +51,24 @@ class GameSessionController extends Controller
         $mode = $validated['mode'] ?? 'individual';
         $teamCount = (int) ($validated['team_count'] ?? 2);
 
+        $settings = [
+            'mode' => $mode,
+            'powerups_enabled' => $request->boolean('powerups_enabled', true),
+            'reactions_enabled' => $request->boolean('reactions_enabled', true),
+        ];
+
+        if ($mode === 'team') {
+            $settings['team_count'] = $teamCount;
+            $settings['team_selection'] = $validated['team_selection'] ?? 'auto';
+        }
+
         $session = GameSession::query()->create([
             'quiz_id' => $quiz->id,
             'host_id' => $request->user()->id,
             'game_code' => $this->gameCodeService->generate(),
             'status' => GameStatus::Waiting,
             'current_question_index' => 0,
-            'settings' => $mode === 'team'
-                ? ['mode' => 'team', 'team_count' => $teamCount]
-                : ['mode' => 'individual'],
+            'settings' => $settings,
         ]);
 
         if ($mode === 'team') {
@@ -83,7 +92,7 @@ class GameSessionController extends Controller
         $this->authorize('view', $gameSession);
 
         $gameSession->load(['quiz.questions.answers', 'players' => function ($query) {
-            $query->where('is_connected', true);
+            $query->where('is_connected', true)->with('team');
         }, 'teams']);
 
         $theme = $gameSession->quiz->theme ?? QuizTheme::Standard;

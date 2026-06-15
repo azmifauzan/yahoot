@@ -10,6 +10,7 @@ Route::get('/user', function (Request $request) {
 
 // Player game API (stateless — guests can use these)
 Route::prefix('games')->group(function () {
+    Route::get('/code/{code}/info', [PlayerController::class, 'apiInfo']);
     Route::post('/join', [PlayerController::class, 'apiJoin']);
     Route::post('/{gameSession}/answer', [PlayerController::class, 'apiAnswer']);
     Route::post('/{gameSession}/leave', [PlayerController::class, 'apiLeave']);

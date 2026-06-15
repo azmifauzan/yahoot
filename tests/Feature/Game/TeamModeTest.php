@@ -80,6 +80,50 @@ test('team leaderboard sums member scores and ranks teams', function () {
         ->and($leaderboard->last()['score'])->toBe(100);
 });
 
+test('manual team selection respects the chosen team', function () {
+    $host = User::factory()->create();
+    $quiz = publishedQuizForTeams($host);
+
+    $session = GameSession::factory()->create([
+        'quiz_id' => $quiz->id,
+        'host_id' => $host->id,
+        'settings' => ['mode' => 'team', 'team_count' => 2, 'team_selection' => 'manual'],
+    ]);
+    GameTeam::factory()->for($session)->create();
+    $teamB = GameTeam::factory()->for($session)->create();
+
+    $this->postJson('/api/games/join', [
+        'game_code' => $session->game_code,
+        'nickname' => 'Picker',
+        'avatar' => 'cat',
+        'team_id' => $teamB->id,
+    ])->assertCreated()
+        ->assertJsonPath('player.team.id', $teamB->id);
+
+    expect(GamePlayer::query()->where('nickname', 'Picker')->first()->game_team_id)->toBe($teamB->id);
+});
+
+test('manual team selection falls back to auto-balance when no team is chosen', function () {
+    $host = User::factory()->create();
+    $quiz = publishedQuizForTeams($host);
+
+    $session = GameSession::factory()->create([
+        'quiz_id' => $quiz->id,
+        'host_id' => $host->id,
+        'settings' => ['mode' => 'team', 'team_count' => 2, 'team_selection' => 'manual'],
+    ]);
+    GameTeam::factory()->for($session)->create();
+    GameTeam::factory()->for($session)->create();
+
+    $this->postJson('/api/games/join', [
+        'game_code' => $session->game_code,
+        'nickname' => 'NoChoice',
+        'avatar' => 'cat',
+    ])->assertCreated();
+
+    expect(GamePlayer::query()->where('nickname', 'NoChoice')->first()->game_team_id)->not->toBeNull();
+});
+
 test('individual mode creates no teams and leaves players unassigned', function () {
     $host = User::factory()->create();
     $quiz = publishedQuizForTeams($host);

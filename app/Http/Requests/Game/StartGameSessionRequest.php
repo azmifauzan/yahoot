@@ -20,6 +20,9 @@ class StartGameSessionRequest extends FormRequest
         return [
             'mode' => ['nullable', 'in:individual,team'],
             'team_count' => ['nullable', 'integer', 'min:2', 'max:6'],
+            'team_selection' => ['nullable', 'in:auto,manual'],
+            'powerups_enabled' => ['nullable', 'boolean'],
+            'reactions_enabled' => ['nullable', 'boolean'],
         ];
     }
 }

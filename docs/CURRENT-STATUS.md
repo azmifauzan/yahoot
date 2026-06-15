@@ -1,6 +1,6 @@
 # Yahoot — Current Status
 
-**Date:** 2026-06-12  
+**Date:** 2026-06-15  
 **Branch:** main  
 **Production:** https://yahoot.web.id
 
@@ -16,6 +16,7 @@
 | Phase 4 | Polish & Animation | ✅ Complete |
 | Phase 5 | Admin Panel & Launch | ✅ Complete |
 | Phase 6 | Security, History & Resuming | ✅ Complete |
+| Expansion Phase 1-3 | Quick wins, foundations, engagement (poll, power-ups, team mode, reactions) | ✅ Complete |
 
 ---
 
@@ -112,6 +113,28 @@ All done:
 - **Game Cancellation**: Added a Cancel button for hosts to abort in-progress games. This deletes the session from the database, broadcasts a `GameCancelled` event to immediately redirect players to the home page, and redirects the host to the dashboard.
 - **Detailed Game Statistics View**: Added a statistics view (`Host/Stats.vue`) using `AppLayout` within the user panel to view past game results. It shows a summary card, player standings table, and a detailed question-by-question performance analysis with correct rates and answer breakdowns, replacing redirects to the fullscreen Kahoot-style leaderboard for past games.
 
+## Expansion Phase 1-3 — Quick Wins, Foundations & Engagement ✅
+
+All done (see `docs/FEATURE-EXPANSION-PLAN.md` for full spec):
+- **Poll/Survey question type**: `QuestionType::Poll`, unscored, vote-distribution reveal
+- **Nickname generator**: random nickname suggestion on `Player/Join.vue`
+- **Quiz categories & tags**: filterable on dashboard
+- **Sound customization**: per-quiz `sound_theme` + `music_enabled`
+- **Global leaderboard / user ranking**, **badges & achievements**
+- **Advanced analytics**: PDF/print report, difficulty insights, progress tracking
+- **Power-ups**: Double Points, 50:50, Freeze Timer — `PowerUpType` enum, `powerups_available`/`powerups_used` on `GamePlayer`, `apiUsePowerup` endpoint, `PowerUpUsed` event
+- **Team Mode**: `GameTeam` model, auto-balance or manual team selection (`team_selection` setting), team leaderboard/standings, `TeamBadge.vue`
+- **Emoji Reactions**: ephemeral `ReactionSent` broadcast, rate-limited, toggleable via `reactions_enabled`
+
+### Gap-fixing pass (2026-06-15)
+- Fixed `isQuestionComplete()` in `Quiz/Editor.vue` incorrectly requiring a correct answer for poll questions
+- `apiJoin` now initializes and returns `powerups_available` for new players
+- `StartGameSessionRequest` validates `powerups_enabled`, `reactions_enabled`, `team_selection`; `GameSessionController::store()` persists explicit defaults (both default to enabled, team selection defaults to `auto`)
+- Dashboard "Play" flow (`Dashboard.vue`) now asks the host for team selection mode (auto/manual) and power-up/reaction toggles before starting a session
+- New `GET /api/games/code/{code}/info` endpoint powers manual team selection on `Player/Join.vue` (3rd "choose your team" step)
+- `Host/Game.vue` lobby groups players by team and shows team standings on the finished/podium screen (team mode)
+- New i18n keys added to `id.json`/`en.json`: `host.game_settings`, `powerups.enabled/disabled`, `team.team_selection/auto_balance/manual_select`
+
 ---
 
 ## Architecture Reality vs PRD
@@ -150,7 +173,7 @@ All PRD shared game components now exist as separate files:
 - Public routes: `/`, `/play`, `/play/{code}` ✅
 - Auth routes: Jetstream defaults ✅
 - Creator routes: `/dashboard`, `/quizzes/*`, `/game-sessions/*` ✅
-- Player API: `/api/games/join`, `/api/games/{session}/answer`, `/api/games/{session}/status` ✅
+- Player API: `/api/games/code/{code}/info`, `/api/games/join`, `/api/games/{session}/answer`, `/api/games/{session}/status`, `/api/games/{session}/react`, `/api/games/{session}/powerup`, `/api/games/{session}/leave` ✅
 - Admin routes: `/admin/*` (dashboard, users, quizzes, games, settings) ✅
 
 ### Test Coverage
@@ -168,3 +191,4 @@ All PRD shared game components now exist as separate files:
 | Admin Quizzes | ✅ AdminQuizManagementTest |
 | Admin Games | ✅ AdminGameManagementTest |
 | Admin Settings | ✅ AdminSettingsTest |
+| Engagement (Phase 3) | ✅ PowerUpTest, TeamModeTest, ReactionTest, PollQuestionTest |

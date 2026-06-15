@@ -8,6 +8,7 @@ import { randomNickname } from '@/utils/nicknameGenerator';
 import AvatarGrid from '@/Components/Avatar/AvatarGrid.vue';
 import AvatarDisplay from '@/Components/Avatar/AvatarDisplay.vue';
 import GameCodeInput from '@/Components/Game/GameCodeInput.vue';
+import TeamBadge from '@/Components/Game/TeamBadge.vue';
 
 const { t, locale } = useI18n();
 const sound = useSound();
@@ -16,32 +17,52 @@ const props = defineProps({
     gameCode: { type: String, default: '' },
 });
 
-const step = ref(props.gameCode ? 'setup' : 'code'); // code → setup
+const step = ref(props.gameCode ? 'setup' : 'code'); // code → setup → team → (join)
 const gameCode = ref(props.gameCode);
 const nickname = ref(randomNickname(locale.value));
 const avatar = ref('fox');
 const error = ref('');
 const loading = ref(false);
+const gameInfo = ref(null); // { mode, team_selection, teams }
 
 function randomizeNickname() {
     nickname.value = randomNickname(locale.value);
 }
 
-function submitCode() {
+async function submitCode() {
     if (gameCode.value.length !== 6) {
         error.value = t('play.code_invalid');
         return;
     }
     error.value = '';
+
+    try {
+        const { data } = await axios.get(`/api/games/code/${gameCode.value}/info`);
+        gameInfo.value = data;
+    } catch {
+        gameInfo.value = null;
+    }
+
     step.value = 'setup';
 }
 
-async function joinGame() {
+function proceedFromSetup() {
     if (!nickname.value.trim()) {
         error.value = t('play.nickname_required');
         return;
     }
 
+    error.value = '';
+
+    if (gameInfo.value?.mode === 'team' && gameInfo.value?.team_selection === 'manual') {
+        step.value = 'team';
+        return;
+    }
+
+    joinGame();
+}
+
+async function joinGame(teamId = null) {
     sound.unlock();
     loading.value = true;
     error.value = '';
@@ -51,6 +72,7 @@ async function joinGame() {
             game_code: gameCode.value,
             nickname: nickname.value.trim(),
             avatar: avatar.value,
+            team_id: teamId,
         });
 
         // Store player info in sessionStorage for the game page
@@ -61,6 +83,7 @@ async function joinGame() {
         router.visit(`/play/${gameCode.value}`);
     } catch (err) {
         error.value = err.response?.data?.message || t('play.join_error');
+        if (teamId) step.value = 'team';
     } finally {
         loading.value = false;
     }
@@ -139,17 +162,47 @@ async function joinGame() {
                 <p v-if="error" class="text-red-500 text-sm text-center mb-4">{{ error }}</p>
 
                 <button
-                    @click="joinGame"
+                    @click="proceedFromSetup"
                     :disabled="loading || !nickname.trim()"
                     class="w-full py-3 px-6 bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white font-bold rounded-xl text-lg transition-all shadow-lg shadow-green-500/30 disabled:shadow-none"
                 >
                     <span v-if="loading">{{ t('play.joining') }}...</span>
+                    <span v-else-if="gameInfo?.mode === 'team' && gameInfo?.team_selection === 'manual'">{{ t('common.confirm') }} →</span>
                     <span v-else>{{ t('play.join') }} 🎮</span>
                 </button>
 
                 <button
                     @click="step = 'code'; error = ''"
                     class="w-full mt-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm transition-colors"
+                >
+                    ← {{ t('play.back') }}
+                </button>
+            </div>
+
+            <!-- Step 3: Choose a team (manual team selection) -->
+            <div v-else-if="step === 'team'" class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
+                <h2 class="text-xl font-bold text-center text-gray-800 dark:text-white mb-6">
+                    {{ t('team.choose_team') }}
+                </h2>
+
+                <div class="grid grid-cols-1 gap-3 mb-6">
+                    <button
+                        v-for="team in gameInfo?.teams ?? []"
+                        :key="team.id"
+                        @click="joinGame(team.id)"
+                        :disabled="loading"
+                        class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-primary-500 disabled:opacity-50 transition-all"
+                    >
+                        <TeamBadge :name="team.name" :color="team.color" />
+                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ team.player_count }}</span>
+                    </button>
+                </div>
+
+                <p v-if="error" class="text-red-500 text-sm text-center mb-4">{{ error }}</p>
+
+                <button
+                    @click="step = 'setup'; error = ''"
+                    class="w-full mt-1 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm transition-colors"
                 >
                     ← {{ t('play.back') }}
                 </button>

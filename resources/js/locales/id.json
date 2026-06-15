@@ -218,6 +218,7 @@
         "game_cancelled_desc": "Kreator telah membatalkan sesi kuis ini."
     },
     "host": {
+        "game_settings": "Pengaturan permainan",
         "join_at": "Gabung di",
         "players": "Pemain",
         "joined": "bergabung",
@@ -424,13 +425,18 @@
         "double_points": "Poin Ganda",
         "fifty_fifty": "50:50",
         "freeze_timer": "Bekukan",
-        "used": "{nickname} memakai {powerup}!"
+        "used": "{nickname} memakai {powerup}!",
+        "enabled": "Izinkan power-up",
+        "disabled": "Power-up mati"
     },
     "team": {
         "choose_mode": "Pilih mode permainan",
         "individual_mode": "Individu",
         "team_mode": "Tim",
         "team_count": "Berapa jumlah tim?",
+        "team_selection": "Bagaimana pemain memilih tim?",
+        "auto_balance": "Otomatis (seimbang)",
+        "manual_select": "Manual (pemain pilih sendiri)",
         "choose_team": "Pilih timmu",
         "team_score": "Skor tim",
         "team_standings": "Klasemen tim"

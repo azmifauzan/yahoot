@@ -31,6 +31,13 @@ const props = defineProps({
 
 const isTeamMode = computed(() => props.mode === 'team');
 
+const teamGroups = computed(() => props.teams.map(team => ({
+    id: team.id,
+    name: team.name,
+    color: team.color,
+    players: livePlayers.value.filter(p => p.team?.id === team.id),
+})));
+
 const sound = useSound(props.quiz?.settings?.sound_theme ?? 'classic');
 const musicEnabled = computed(() => props.quiz?.settings?.music_enabled ?? true);
 
@@ -67,6 +74,7 @@ onMounted(async () => {
         id: p.id,
         nickname: p.nickname,
         avatar: p.avatar,
+        team: p.team ? { id: p.team.id, name: p.team.name, color: p.team.color } : null,
     }));
     totalPlayers.value = props.players.length;
 
@@ -286,7 +294,32 @@ watch(gameState, (state) => {
                         {{ livePlayers.length }} {{ t('host.joined') }}
                     </span>
                 </div>
-                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                <!-- Team mode: grouped by team -->
+                <div v-if="isTeamMode" class="space-y-6">
+                    <div v-for="team in teamGroups" :key="team.id">
+                        <div class="mb-2">
+                            <TeamBadge :name="team.name" :color="team.color" :score="team.players.length" />
+                        </div>
+                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                            <div
+                                v-for="player in team.players"
+                                :key="player.id"
+                                class="flex flex-col items-center animate-bounce-in"
+                            >
+                                <div class="animate-float">
+                                    <AvatarDisplay :name="player.avatar" :size="56" />
+                                </div>
+                                <span class="mt-1 text-sm font-medium truncate max-w-[80px]">{{ player.nickname }}</span>
+                            </div>
+                            <div v-if="team.players.length === 0" class="col-span-full text-sm opacity-60 py-2">
+                                {{ t('host.waiting_players') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Individual mode: flat grid -->
+                <div v-else class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
                     <div
                         v-for="player in livePlayers"
                         :key="player.id"
@@ -298,7 +331,7 @@ watch(gameState, (state) => {
                         <span class="mt-1 text-sm font-medium truncate max-w-[80px]">{{ player.nickname }}</span>
                     </div>
                 </div>
-                <div v-if="livePlayers.length === 0" class="text-center py-12 opacity-60">
+                <div v-if="!isTeamMode && livePlayers.length === 0" class="text-center py-12 opacity-60">
                     <p class="text-xl">{{ t('host.waiting_players') }}</p>
                 </div>
             </div>
@@ -464,6 +497,22 @@ watch(gameState, (state) => {
         <div v-else-if="gameState === 'finished'" class="flex-1 flex flex-col text-white bg-gradient-to-br" :class="themeGradients.finished">
             <div class="p-6 text-center animate-slide-in-down">
                 <h2 class="text-4xl font-extrabold">🏆 {{ t('host.game_over') }}</h2>
+            </div>
+
+            <!-- Team standings (team mode) -->
+            <div v-if="isTeamMode && teamLeaderboard.length" class="px-8 max-w-2xl mx-auto w-full mb-2">
+                <h3 class="text-center text-sm font-bold uppercase tracking-wide opacity-70 mb-2">
+                    {{ t('team.team_standings') }}
+                </h3>
+                <div class="flex flex-wrap items-center justify-center gap-3">
+                    <TeamBadge
+                        v-for="team in teamLeaderboard"
+                        :key="team.team_id"
+                        :name="`${team.rank}. ${team.name}`"
+                        :color="team.color"
+                        :score="team.score"
+                    />
+                </div>
             </div>
 
             <!-- Podium -->

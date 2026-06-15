@@ -1,6 +1,6 @@
 # Yahoot — Feature Expansion Plan
 
-**Tanggal:** 2026-06-14
+**Tanggal:** 2026-06-15
 **Status:** Sebagian terimplementasi
 **Sumber:** Permintaan penambahan fitur baru di atas codebase saat ini (Laravel 12 + Vue 3 + Inertia v2 + Reverb)
 
@@ -10,6 +10,11 @@
 - ✅ **Fondasi data (Phase 2):** Global Leaderboard / Ranking (7), Badge & Achievement (6),
   Advanced Analytics (13a PDF/print report, 13b difficulty insights, 13c progress tracking).
 - ✅ **Engagement berat (Phase 3):** Power-ups (2), Team Mode (3), Reactions/Emoji (14a).
+- ✅ **Phase 1-3 gap-fixing pass (2026-06-15):** poll completeness bug di Editor, init
+  `powerups_available` saat join, setting eksplisit `powerups_enabled`/`reactions_enabled`/
+  `team_selection` saat start game, host toggle UI di Dashboard untuk power-up/reaksi/mode
+  tim, pemilihan tim manual saat join (`GET /api/games/code/{code}/info`), serta grouping
+  per-tim di lobby host + standings tim di podium finished.
 - ⬜ Belum: Practice/Solo (4), Import/Export (9), Question Bank (10),
   Marketplace/Explore (11), AI Question Generator (12), Live Chat (14a chat — emoji done).
 
