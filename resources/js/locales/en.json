@@ -203,7 +203,9 @@
         "or": "or",
         "continue_with_google": "Continue with Google",
         "terms": "Terms of Service",
-        "privacy": "Privacy Policy"
+        "privacy": "Privacy Policy",
+        "demo_title": "Try the demo account",
+        "demo_hint": "Click to fill in the demo login and explore."
     },
     "play": {
         "join_game": "Join Game",
