@@ -137,13 +137,13 @@ const fillDemo = () => {
                 </svg>
             </button>
 
-            <div v-if="showDemo" class="mt-3 rounded-lg border border-dashed border-primary-300 bg-primary-50 p-3 dark:border-primary-700 dark:bg-primary-900/20">
+            <div v-if="showDemo" class="mt-3 rounded-lg border border-dashed border-primary-300 bg-primary-50 p-3 text-center dark:border-primary-700 dark:bg-primary-900/20">
                 <p class="text-xs text-primary-600/80 dark:text-primary-400/80">{{ t('auth.demo_hint') }}</p>
                 <p class="mt-1 font-mono text-xs text-gray-500 dark:text-gray-400">demo@yahoot.app · password</p>
                 <button
                     type="button"
                     @click="fillDemo"
-                    class="mt-2 rounded-md bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-primary-700"
+                    class="mx-auto mt-2 block rounded-md bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-primary-700"
                 >
                     {{ t('auth.demo_fill') }}
                 </button>

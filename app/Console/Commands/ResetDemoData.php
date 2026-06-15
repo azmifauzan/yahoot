@@ -18,9 +18,15 @@ class ResetDemoData extends Command
         $demo = User::where('email', SampleQuizSeeder::DEMO_EMAIL)->first();
 
         if ($demo) {
-            // Sessions the demo user hosted on other people's quizzes
-            // (sessions on demo-owned quizzes cascade when the seeder wipes them).
-            GameSession::where('host_id', $demo->id)->delete();
+            $demoQuizIds = $demo->quizzes()->pluck('id');
+
+            // Wipe every game played on the demo: sessions hosted by the demo
+            // account on any quiz, plus sessions anyone hosted on a demo quiz.
+            // Deleting a session cascades its players and player answers.
+            GameSession::where('host_id', $demo->id)
+                ->orWhereIn('quiz_id', $demoQuizIds)
+                ->delete();
+
             $demo->llmSetting()->delete();
         }
 
