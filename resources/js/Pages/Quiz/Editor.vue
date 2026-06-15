@@ -10,10 +10,16 @@ import ThemeSelector from '@/Components/Quiz/ThemeSelector.vue';
 import CategorySelect from '@/Components/Quiz/CategorySelect.vue';
 import TagInput from '@/Components/Quiz/TagInput.vue';
 import SoundThemeSelector from '@/Components/Quiz/SoundThemeSelector.vue';
+import Modal from '@/Components/Modal.vue';
+import BankPickerModal from '@/Components/Quiz/BankPickerModal.vue';
 import { useSwal } from '@/Composables/useSwal';
 
-const { t } = useI18n();
+const { t, tm } = useI18n();
 const { toast, confirm, error: swalError } = useSwal();
+
+// Help modal
+const showHelp = ref(false);
+const helpItems = computed(() => tm('quiz.help_items'));
 
 const props = defineProps({
     quiz: Object,
@@ -32,6 +38,8 @@ const quizForm = useForm({
 
 // Local questions state
 const showExport = ref(false);
+const showBankPicker = ref(false);
+const bankSubmitting = ref(false);
 const questions = ref(props.quiz?.questions || []);
 const selectedQuestionIndex = ref(questions.value.length > 0 ? 0 : -1);
 const selectedQuestion = computed(() =>
@@ -190,6 +198,42 @@ function addQuestion() {
     });
 }
 
+// Pull selected questions from the user's bank into this quiz
+function addFromBank(itemIds) {
+    bankSubmitting.value = true;
+    router.post(route('quizzes.from-bank', props.quiz.id), { item_ids: itemIds }, {
+        preserveScroll: true,
+        onSuccess: (page) => {
+            questions.value = page.props.quiz?.questions || [];
+            selectedQuestionIndex.value = questions.value.length - 1;
+            showBankPicker.value = false;
+            toast(t('question_bank.added'));
+        },
+        onFinish: () => { bankSubmitting.value = false; },
+    });
+}
+
+// Save the current question into the user's reusable bank
+function saveToBank(question) {
+    if (!question) return;
+    router.post(route('question-bank.store'), {
+        type: question.type,
+        question_text: question.question_text,
+        time_limit: question.time_limit,
+        points: question.points,
+        answers: (question.answers || []).map((a) => ({
+            answer_text: a.answer_text,
+            is_correct: a.is_correct,
+            color: a.color,
+        })),
+    }, {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: () => toast(t('question_bank.saved')),
+        onError: () => swalError(t('question_bank.save_failed')),
+    });
+}
+
 // Select question — save current if dirty before switching
 function selectQuestion(index) {
     if (index === selectedQuestionIndex.value) return;
@@ -334,6 +378,7 @@ const categoryId = ref(props.quiz?.category_id ?? null);
 const tags = ref(props.quiz?.tags?.map((tag) => tag.name) ?? []);
 const soundTheme = ref(props.quiz?.settings?.sound_theme ?? 'classic');
 const musicEnabled = ref(props.quiz?.settings?.music_enabled ?? true);
+const powerupsEnabled = ref(props.quiz?.settings?.powerups_enabled ?? false);
 
 function updateCategory(value) {
     categoryId.value = value;
@@ -379,6 +424,17 @@ function toggleMusicEnabled() {
     });
 }
 
+function togglePowerupsEnabled() {
+    powerupsEnabled.value = !powerupsEnabled.value;
+    if (isNew.value) return;
+    router.put(route('quizzes.update', props.quiz.id), {
+        settings: { powerups_enabled: powerupsEnabled.value },
+    }, {
+        preserveScroll: true,
+        preserveState: true,
+    });
+}
+
 // Question validation indicator
 function isQuestionComplete(question) {
     if (!question.question_text) return false;
@@ -400,7 +456,7 @@ function isQuestionComplete(question) {
 </script>
 
 <template>
-    <AppLayout :title="isNew ? t('dashboard.create_quiz') : quizForm.title || t('quiz.untitled')" :fullscreen="true">
+    <AppLayout :title="isNew ? t('dashboard.create_quiz') : quizForm.title || t('quiz.untitled')" :fullscreen="true" :headerFullWidth="true">
         <!-- Custom header -->
         <template #header>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -464,6 +520,24 @@ function isQuestionComplete(question) {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                         </svg>
                         <span class="hidden sm:inline">{{ t('quiz.save') }}</span>
+                    </button>
+
+                    <!-- Add from bank -->
+                    <button
+                        v-if="!isNew"
+                        @click="showBankPicker = true"
+                        class="rounded-lg px-3 sm:px-4 py-2 text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 flex items-center gap-1.5"
+                    >
+                        🗂️ <span class="hidden sm:inline">{{ t('question_bank.add_from_bank') }}</span>
+                    </button>
+
+                    <!-- Save current question to bank -->
+                    <button
+                        v-if="!isNew && selectedQuestion"
+                        @click="saveToBank(selectedQuestion)"
+                        class="rounded-lg px-3 sm:px-4 py-2 text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 flex items-center gap-1.5"
+                    >
+                        ⭐ <span class="hidden sm:inline">{{ t('question_bank.save_to_bank') }}</span>
                     </button>
 
                     <!-- Export menu -->
@@ -621,6 +695,21 @@ function isQuestionComplete(question) {
                         </button>
                     </label>
                 </div>
+
+                <!-- Power-ups -->
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <label class="flex items-center justify-between">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('powerups.enabled') }}</span>
+                        <button
+                            type="button"
+                            @click="togglePowerupsEnabled"
+                            :class="['relative inline-flex h-6 w-11 rounded-full transition', powerupsEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700']"
+                        >
+                            <span :class="['absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform', powerupsEnabled ? 'translate-x-5' : 'translate-x-0']" />
+                        </button>
+                    </label>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('powerups.editor_hint') }}</p>
+                </div>
             </div>
         </div>
 
@@ -653,6 +742,47 @@ function isQuestionComplete(question) {
             </div>
         </div>
 
+        <!-- Help button -->
+        <button
+            v-if="!isNew"
+            type="button"
+            @click="showHelp = true"
+            :title="t('quiz.help_button')"
+            :aria-label="t('quiz.help_button')"
+            class="fixed bottom-6 right-6 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-primary-600 text-white shadow-lg transition hover:bg-primary-700"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </button>
 
+        <!-- Help modal -->
+        <Modal :show="showHelp" max-width="lg" @close="showHelp = false">
+            <div class="p-6">
+                <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">{{ t('quiz.help_title') }}</h2>
+                <div class="max-h-[60vh] space-y-4 overflow-y-auto">
+                    <div v-for="(item, index) in helpItems" :key="index">
+                        <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ item.title }}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ item.desc }}</p>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button
+                        type="button"
+                        @click="showHelp = false"
+                        class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
+                    >
+                        {{ t('common.close') }}
+                    </button>
+                </div>
+            </div>
+        </Modal>
+
+        <BankPickerModal
+            v-if="showBankPicker && !isNew"
+            :submitting="bankSubmitting"
+            @submit="addFromBank"
+            @close="showBankPicker = false"
+        />
     </AppLayout>
 </template>

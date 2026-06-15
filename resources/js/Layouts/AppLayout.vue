@@ -14,10 +14,15 @@ import { useSidebar } from '@/Composables/useSidebar';
 const { t } = useI18n();
 const page = usePage();
 
-defineProps({
+const props = defineProps({
     title: String,
     fullscreen: { type: Boolean, default: false },
+    headerFullWidth: { type: Boolean, default: false },
 });
+
+const headerWrapperClass = computed(() =>
+    props.headerFullWidth ? 'w-full px-4 sm:px-6 lg:px-8 py-4' : 'max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8'
+);
 
 const { collapsed, mobileOpen, toggleCollapsed, toggleMobile, closeMobile } = useSidebar();
 
@@ -34,6 +39,7 @@ const menuLinks = computed(() => {
         { href: route('dashboard'), label: t('nav.my_quizzes'), icon: 'home', active: route().current('dashboard') },
         { href: route('progress'), label: t('nav.progress'), icon: 'chart', active: route().current('progress') },
         { href: route('leaderboard'), label: t('nav.leaderboard'), icon: 'trophy', active: route().current('leaderboard') },
+        { href: route('question-bank.index'), label: t('nav.question_bank'), icon: 'document', active: route().current('question-bank.*') },
     ];
 
     if (page.props.jetstream.hasApiFeatures) {
@@ -100,7 +106,7 @@ const logout = () => {
             <!-- Fullscreen mode: header only, no sidebar -->
             <template v-if="fullscreen">
                 <header v-if="$slots.header" class="bg-white shadow-sm dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shrink-0">
-                    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                    <div :class="headerWrapperClass">
                         <slot name="header" />
                     </div>
                 </header>
@@ -194,7 +200,7 @@ const logout = () => {
                 <div class="flex min-w-0 flex-1 flex-col overflow-y-auto">
                     <!-- Page Heading -->
                     <header v-if="$slots.header" class="bg-white shadow-sm dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shrink-0">
-                        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                        <div :class="headerWrapperClass">
                             <slot name="header" />
                         </div>
                     </header>

@@ -19,7 +19,8 @@
         "collapse": "Collapse",
         "expand": "Expand",
         "progress": "My Progress",
-        "leaderboard": "Leaderboard"
+        "leaderboard": "Leaderboard",
+        "question_bank": "Question Bank"
     },
     "landing": {
         "hero_title": "Create Quizzes, Play Together!",
@@ -109,7 +110,19 @@
         "unsaved_title": "Unsaved Changes",
         "unsaved_text": "You have unsaved changes. Are you sure you want to leave?",
         "leave": "Leave",
-        "theme": "Theme"
+        "theme": "Theme",
+        "help_button": "Editor help",
+        "help_title": "Quiz Editor Guide",
+        "help_items": [
+            { "title": "Title & description", "desc": "Click the quiz title at the top to rename it. Changes save automatically after a few seconds, or use the Save button." },
+            { "title": "Questions", "desc": "Use the sidebar to add, reorder, and select questions. Each question can be Multiple Choice, True/False, or a Poll (no correct answer needed)." },
+            { "title": "Time limit & points", "desc": "In the right panel, set how many seconds players get to answer and whether the question awards Standard, Double, or no points." },
+            { "title": "Theme", "desc": "Pick a visual theme that changes colors and backgrounds shown to players during the game." },
+            { "title": "Category & tags", "desc": "Set a category and up to 5 tags to help organize and discover your quiz." },
+            { "title": "Sound", "desc": "Choose a sound theme and toggle background music for the game session." },
+            { "title": "Power-ups", "desc": "Turn this on to let players use power-ups (Double Points, 50:50, Freeze Timer) when this quiz is played. Off by default." },
+            { "title": "Publish & Play", "desc": "Publish your quiz to make it playable, then use Play to start a live game session and get a join code." }
+        ]
     },
     "game": {
         "game_code": "Game Code",
@@ -420,6 +433,23 @@
         "enabled": "Allow reactions",
         "disabled": "Reactions off"
     },
+    "question_bank": {
+        "title": "Question Bank",
+        "search_placeholder": "Search questions...",
+        "all_types": "All types",
+        "all_categories": "All categories",
+        "empty": "No questions in your bank yet.",
+        "delete": "Delete Question",
+        "confirm_delete": "Remove this question from your bank?",
+        "deleted": "Question removed from bank",
+        "answers": "answers",
+        "add_from_bank": "From Bank",
+        "add_selected": "Add ({count})",
+        "save_to_bank": "Save to Bank",
+        "added": "Questions added from bank",
+        "saved": "Question saved to bank",
+        "save_failed": "Failed to save question"
+    },
     "import_export": {
         "import": "Import",
         "export": "Export",
@@ -449,7 +479,8 @@
         "freeze_timer": "Freeze",
         "used": "{nickname} used {powerup}!",
         "enabled": "Allow power-ups",
-        "disabled": "Power-ups off"
+        "disabled": "Power-ups off",
+        "editor_hint": "When enabled, players can use power-ups (double points, 50:50, freeze timer) during this quiz."
     },
     "team": {
         "choose_mode": "Choose game mode",

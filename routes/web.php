@@ -7,6 +7,7 @@ use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\PracticeController;
 use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\QuestionBankController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuestionImageController;
 use App\Http\Controllers\QuizAnalyticsController;
@@ -93,6 +94,12 @@ Route::middleware([
     // Cross-session progress + earned achievement badges
     Route::get('/me/progress', [ProgressController::class, 'index'])->name('progress');
 
+    // Question bank
+    Route::get('/question-bank', [QuestionBankController::class, 'index'])->name('question-bank.index');
+    Route::get('/question-bank/list', [QuestionBankController::class, 'list'])->name('question-bank.list');
+    Route::post('/question-bank', [QuestionBankController::class, 'store'])->name('question-bank.store');
+    Route::delete('/question-bank/{bankQuestion}', [QuestionBankController::class, 'destroy'])->name('question-bank.destroy');
+
     Route::prefix('quizzes')->name('quizzes.')->group(function () {
         Route::get('/create', [QuizController::class, 'create'])->name('create');
         Route::post('/import', [QuizImportExportController::class, 'import'])->name('import');
@@ -105,6 +112,8 @@ Route::middleware([
         Route::post('/{quiz}/duplicate', [QuizController::class, 'duplicate'])->name('duplicate');
         Route::post('/{quiz}/publish', [QuizController::class, 'publish'])->name('publish');
         Route::get('/{quiz}/history', [GameSessionController::class, 'history'])->name('history');
+
+        Route::post('/{quiz}/from-bank', [QuestionBankController::class, 'fromBank'])->name('from-bank');
 
         Route::post('/{quiz}/questions', [QuestionController::class, 'store'])->name('questions.store');
     });

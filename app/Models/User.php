@@ -121,4 +121,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserBadge::class);
     }
+
+    /**
+     * @return HasMany<BankQuestion, $this>
+     */
+    public function bankQuestions(): HasMany
+    {
+        return $this->hasMany(BankQuestion::class);
+    }
 }

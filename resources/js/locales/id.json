@@ -19,7 +19,8 @@
         "collapse": "Ciutkan",
         "expand": "Perluas",
         "progress": "Progres Saya",
-        "leaderboard": "Papan Peringkat"
+        "leaderboard": "Papan Peringkat",
+        "question_bank": "Bank Soal"
     },
     "landing": {
         "hero_title": "Buat Kuis, Main Bareng!",
@@ -109,7 +110,19 @@
         "unsaved_title": "Perubahan Belum Disimpan",
         "unsaved_text": "Ada perubahan yang belum disimpan. Yakin ingin keluar?",
         "leave": "Keluar",
-        "theme": "Tema"
+        "theme": "Tema",
+        "help_button": "Bantuan editor",
+        "help_title": "Panduan Editor Kuis",
+        "help_items": [
+            { "title": "Judul & deskripsi", "desc": "Klik judul kuis di bagian atas untuk mengubahnya. Perubahan tersimpan otomatis setelah beberapa detik, atau pakai tombol Simpan." },
+            { "title": "Pertanyaan", "desc": "Gunakan sidebar untuk menambah, mengurutkan, dan memilih pertanyaan. Setiap pertanyaan bisa berupa Pilihan Ganda, Benar/Salah, atau Polling (tanpa jawaban benar)." },
+            { "title": "Batas waktu & poin", "desc": "Di panel kanan, atur berapa detik waktu jawab pemain dan apakah pertanyaan memberi poin Standar, Ganda, atau Tidak Ada." },
+            { "title": "Tema", "desc": "Pilih tema visual yang mengubah warna dan latar yang dilihat pemain selama permainan." },
+            { "title": "Kategori & tag", "desc": "Atur kategori dan hingga 5 tag agar kuis lebih mudah diorganisir dan ditemukan." },
+            { "title": "Suara", "desc": "Pilih tema suara dan atur musik latar untuk sesi permainan." },
+            { "title": "Power-up", "desc": "Aktifkan agar pemain bisa memakai power-up (Poin Ganda, 50:50, Bekukan Waktu) saat kuis ini dimainkan. Defaultnya nonaktif." },
+            { "title": "Publikasi & Main", "desc": "Publikasikan kuis agar bisa dimainkan, lalu pakai tombol Main untuk memulai sesi permainan dan mendapatkan kode gabung." }
+        ]
     },
     "game": {
         "game_code": "Kode Game",
@@ -420,6 +433,23 @@
         "enabled": "Izinkan reaksi",
         "disabled": "Reaksi mati"
     },
+    "question_bank": {
+        "title": "Bank Soal",
+        "search_placeholder": "Cari soal...",
+        "all_types": "Semua tipe",
+        "all_categories": "Semua kategori",
+        "empty": "Belum ada soal di bank.",
+        "delete": "Hapus Soal",
+        "confirm_delete": "Yakin ingin menghapus soal ini dari bank?",
+        "deleted": "Soal dihapus dari bank",
+        "answers": "jawaban",
+        "add_from_bank": "Dari Bank",
+        "add_selected": "Tambah ({count})",
+        "save_to_bank": "Simpan ke Bank",
+        "added": "Soal ditambahkan dari bank",
+        "saved": "Soal disimpan ke bank",
+        "save_failed": "Gagal menyimpan soal"
+    },
     "import_export": {
         "import": "Impor",
         "export": "Ekspor",
@@ -449,7 +479,8 @@
         "freeze_timer": "Bekukan",
         "used": "{nickname} memakai {powerup}!",
         "enabled": "Izinkan power-up",
-        "disabled": "Power-up mati"
+        "disabled": "Power-up mati",
+        "editor_hint": "Jika aktif, pemain bisa memakai power-up (poin ganda, 50:50, bekukan waktu) saat kuis ini berlangsung."
     },
     "team": {
         "choose_mode": "Pilih mode permainan",
