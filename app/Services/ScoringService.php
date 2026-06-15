@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\PowerUpType;
 use App\Models\GamePlayer;
 use App\Models\PlayerAnswer;
 use App\Models\Question;
@@ -18,7 +19,8 @@ class ScoringService
         Question $question,
         GamePlayer $player,
         bool $isCorrect,
-        int $timeTakenMs
+        int $timeTakenMs,
+        ?PowerUpType $powerup = null
     ): array {
         if (! $question->type->isScored()) {
             return [
@@ -54,6 +56,10 @@ class ScoringService
         $streakBonus = min($newStreak * 100, 500);
 
         $pointsEarned = (int) floor($basePoints * $timeBonusFactor);
+
+        if ($powerup === PowerUpType::DoublePoints) {
+            $pointsEarned *= 2;
+        }
 
         return [
             'points_earned' => $pointsEarned,

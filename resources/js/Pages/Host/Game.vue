@@ -51,8 +51,10 @@ const {
     gameState, players: livePlayers, currentQuestion, questionNumber, totalQuestions,
     timeLimit, answeredCount, totalPlayers, leaderboard, playerPositions,
     correctAnswer, answerStats, playerResults, isPoll, finalLeaderboard, podium,
-    reactions, joinChannel,
+    reactions, powerupEvents, joinChannel,
 } = useGame(props.gameSession.id);
+
+const powerupIcons = { double_points: '2️⃣', fifty_fifty: '✂️', freeze_timer: '❄️' };
 
 // Initialize from props
 onMounted(async () => {
@@ -222,6 +224,17 @@ watch(gameState, (state) => {
 
         <!-- Floating emoji reactions from players -->
         <FloatingReactions :reactions="reactions" />
+
+        <!-- Power-up usage notices -->
+        <div class="fixed top-16 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-1">
+            <div
+                v-for="p in powerupEvents"
+                :key="p.id"
+                class="px-3 py-1 rounded-full bg-yellow-400/90 text-yellow-900 text-sm font-bold shadow animate-slide-in-down"
+            >
+                {{ powerupIcons[p.powerup] }} {{ t('powerups.used', { nickname: p.nickname, powerup: t(`powerups.${p.powerup}`) }) }}
+            </div>
+        </div>
 
         <!-- Mute toggle -->
         <button

@@ -419,6 +419,13 @@
         "enabled": "Allow reactions",
         "disabled": "Reactions off"
     },
+    "powerups": {
+        "title": "Power-ups",
+        "double_points": "Double Points",
+        "fifty_fifty": "50:50",
+        "freeze_timer": "Freeze",
+        "used": "{nickname} used {powerup}!"
+    },
     "common": {
         "save": "Save",
         "cancel": "Cancel",

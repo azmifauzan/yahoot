@@ -20,6 +20,8 @@ class GamePlayer extends Model
         'avatar',
         'score',
         'streak',
+        'powerups_available',
+        'powerups_used',
         'is_connected',
         'player_token',
         'finished_at',
@@ -34,6 +36,8 @@ class GamePlayer extends Model
         return [
             'score' => 'integer',
             'streak' => 'integer',
+            'powerups_available' => 'array',
+            'powerups_used' => 'array',
             'is_connected' => 'boolean',
             'finished_at' => 'datetime',
         ];

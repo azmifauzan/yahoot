@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Enums\GameStatus;
+use App\Enums\PowerUpType;
 use App\Events\AnswerSubmitted;
 use App\Events\PlayerJoined;
 use App\Events\PlayerLeft;
+use App\Events\PowerUpUsed;
 use App\Events\ReactionSent;
 use App\Http\Requests\Game\JoinGameRequest;
 use App\Http\Requests\Game\LeaveGameRequest;
 use App\Http\Requests\Game\SendReactionRequest;
 use App\Http\Requests\Game\SubmitAnswerRequest;
+use App\Http\Requests\Game\UsePowerUpRequest;
 use App\Models\GamePlayer;
 use App\Models\GameSession;
 use App\Models\PlayerAnswer;
@@ -59,6 +62,7 @@ class PlayerController extends Controller
                 'sound_theme' => $session->quiz->settings['sound_theme'] ?? 'classic',
                 'music_enabled' => $session->quiz->settings['music_enabled'] ?? true,
                 'reactions_enabled' => $session->settings['reactions_enabled'] ?? true,
+                'powerups_enabled' => $session->settings['powerups_enabled'] ?? true,
             ],
         ]);
     }
@@ -200,6 +204,72 @@ class PlayerController extends Controller
     }
 
     /**
+     * API: Use a power-up for the current question.
+     */
+    public function apiUsePowerup(UsePowerUpRequest $request, GameSession $gameSession): JsonResponse
+    {
+        $validated = $request->validated();
+
+        if (($gameSession->settings['powerups_enabled'] ?? true) === false) {
+            return response()->json(['message' => 'Power-ups are disabled.'], 403);
+        }
+
+        $player = GamePlayer::query()
+            ->where('id', $validated['player_id'])
+            ->where('game_session_id', $gameSession->id)
+            ->firstOrFail();
+
+        if (! hash_equals((string) $player->player_token, (string) $validated['player_token'])) {
+            return response()->json(['message' => 'Invalid player token.'], 403);
+        }
+
+        $questions = $gameSession->quiz->questions()->orderBy('order')->get();
+        $currentQuestion = $questions[$gameSession->current_question_index] ?? null;
+
+        if (! $currentQuestion || (int) $validated['question_id'] !== $currentQuestion->id) {
+            return response()->json(['message' => 'Power-up can only be used on the current question.'], 422);
+        }
+
+        $powerup = PowerUpType::from($validated['powerup']);
+        $available = $player->powerups_available ?? PowerUpType::defaults();
+        $used = $player->powerups_used ?? [];
+
+        if (! in_array($powerup->value, $available, true)) {
+            return response()->json(['message' => 'Power-up not available.'], 422);
+        }
+
+        $available = array_values(array_filter($available, fn ($p) => $p !== $powerup->value));
+        $used[] = ['type' => $powerup->value, 'question_id' => $currentQuestion->id];
+
+        $player->update([
+            'powerups_available' => $available,
+            'powerups_used' => $used,
+        ]);
+
+        $response = ['powerups_available' => $available];
+
+        if ($powerup === PowerUpType::FiftyFifty) {
+            $hidden = $currentQuestion->answers()
+                ->where('is_correct', false)
+                ->inRandomOrder()
+                ->limit(2)
+                ->pluck('id')
+                ->all();
+
+            $response['hidden_answers'] = $hidden;
+        }
+
+        broadcast(new PowerUpUsed(
+            $gameSession->id,
+            $player->id,
+            $player->nickname,
+            $powerup->value
+        ));
+
+        return response()->json($response);
+    }
+
+    /**
      * API: Submit an answer.
      */
     public function apiAnswer(SubmitAnswerRequest $request, GameSession $gameSession): JsonResponse
@@ -243,12 +313,22 @@ class PlayerController extends Controller
             $isCorrect = $answer?->is_correct ?? false;
         }
 
+        // Resolve any power-up this player activated for the current question.
+        $powerup = null;
+        foreach ($player->powerups_used ?? [] as $entry) {
+            if (($entry['question_id'] ?? null) === $currentQuestion->id) {
+                $powerup = PowerUpType::tryFrom($entry['type'] ?? '');
+                break;
+            }
+        }
+
         // Calculate score
         $scoringResult = $this->scoringService->calculate(
             $currentQuestion,
             $player,
             $isCorrect,
-            $validated['time_taken']
+            $validated['time_taken'],
+            $powerup
         );
 
         // Save player answer
@@ -260,6 +340,7 @@ class PlayerController extends Controller
             'time_taken' => $validated['time_taken'],
             'points_earned' => $scoringResult['points_earned'],
             'streak_bonus' => $scoringResult['streak_bonus'],
+            'powerup_used' => $powerup?->value,
         ]);
 
         // Update player score and streak

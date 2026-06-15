@@ -419,6 +419,13 @@
         "enabled": "Izinkan reaksi",
         "disabled": "Reaksi mati"
     },
+    "powerups": {
+        "title": "Power-up",
+        "double_points": "Poin Ganda",
+        "fifty_fifty": "50:50",
+        "freeze_timer": "Bekukan",
+        "used": "{nickname} memakai {powerup}!"
+    },
     "common": {
         "save": "Simpan",
         "cancel": "Batal",

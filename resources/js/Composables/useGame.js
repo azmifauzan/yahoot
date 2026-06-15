@@ -20,8 +20,10 @@ export function useGame(gameSessionId) {
     const podium = ref([]);
     const myResult = ref(null);
     const reactions = ref([]); // active floating reactions: { id, emoji, nickname }
+    const powerupEvents = ref([]); // recent PowerUpUsed notices: { id, nickname, powerup }
     const channel = ref(null);
     let reactionSeq = 0;
+    let powerupSeq = 0;
 
     function joinChannel() {
         if (!window.Echo || !gameSessionId) return;
@@ -78,7 +80,28 @@ export function useGame(gameSessionId) {
                 setTimeout(() => {
                     reactions.value = reactions.value.filter(r => r.id !== id);
                 }, 3000);
+            })
+            .listen('PowerUpUsed', (e) => {
+                const id = ++powerupSeq;
+                powerupEvents.value.push({ id, nickname: e.nickname, powerup: e.powerup });
+                setTimeout(() => {
+                    powerupEvents.value = powerupEvents.value.filter(p => p.id !== id);
+                }, 2500);
             });
+    }
+
+    async function usePowerup(playerId, powerup, questionId, playerToken) {
+        try {
+            const response = await axios.post(`/api/games/${gameSessionId}/powerup`, {
+                player_id: playerId,
+                powerup,
+                question_id: questionId,
+                player_token: playerToken,
+            });
+            return response.data; // { powerups_available, hidden_answers? }
+        } catch (error) {
+            return null;
+        }
     }
 
     async function sendReaction(playerId, emoji, playerToken) {
@@ -152,10 +175,12 @@ export function useGame(gameSessionId) {
         podium,
         myResult,
         reactions,
+        powerupEvents,
         joinChannel,
         leaveChannel,
         submitAnswer,
         sendReaction,
+        usePowerup,
         fetchStatus,
     };
 }
