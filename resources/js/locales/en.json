@@ -426,6 +426,15 @@
         "freeze_timer": "Freeze",
         "used": "{nickname} used {powerup}!"
     },
+    "team": {
+        "choose_mode": "Choose game mode",
+        "individual_mode": "Individual",
+        "team_mode": "Teams",
+        "team_count": "How many teams?",
+        "choose_team": "Choose your team",
+        "team_score": "Team score",
+        "team_standings": "Team standings"
+    },
     "common": {
         "save": "Save",
         "cancel": "Cancel",

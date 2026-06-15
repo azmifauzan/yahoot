@@ -6,7 +6,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
-const { toast, confirm } = useSwal();
+const { toast, confirm, Swal } = useSwal();
 
 const props = defineProps({
     quizzes: Array,
@@ -73,10 +73,38 @@ function duplicateQuiz(quiz) {
     });
 }
 
-function playQuiz(quiz) {
+async function playQuiz(quiz) {
     if (!quiz.is_published) {
         toast(t('dashboard.publish_first'), 'warning');
         return;
+    }
+
+    // Ask the host which game mode to run.
+    const { value: mode } = await Swal.fire({
+        title: t('team.choose_mode'),
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: t('team.individual_mode'),
+        denyButtonText: t('team.team_mode'),
+        cancelButtonText: t('common.cancel'),
+        confirmButtonColor: '#6366f1',
+        denyButtonColor: '#ec4899',
+    }).then((r) => ({ value: r.isConfirmed ? 'individual' : r.isDenied ? 'team' : null }));
+
+    if (!mode) return;
+
+    let teamCount = 2;
+    if (mode === 'team') {
+        const { value } = await Swal.fire({
+            title: t('team.team_count'),
+            input: 'range',
+            inputAttributes: { min: 2, max: 6, step: 1 },
+            inputValue: 2,
+            confirmButtonText: t('common.confirm'),
+            confirmButtonColor: '#ec4899',
+        });
+        if (!value) return;
+        teamCount = value;
     }
 
     // Open the host session in a new tab so the dashboard stays usable
@@ -86,11 +114,15 @@ function playQuiz(quiz) {
     form.action = route('game.store', quiz.id);
     form.target = '_blank';
 
-    const csrfInput = document.createElement('input');
-    csrfInput.type = 'hidden';
-    csrfInput.name = '_token';
-    csrfInput.value = token;
-    form.appendChild(csrfInput);
+    const fields = { _token: token, mode };
+    if (mode === 'team') fields.team_count = teamCount;
+    for (const [name, value] of Object.entries(fields)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+    }
 
     document.body.appendChild(form);
     form.submit();

@@ -15,6 +15,7 @@ import StreakBadge from '@/Components/Game/StreakBadge.vue';
 import ReactionBar from '@/Components/Game/ReactionBar.vue';
 import FloatingReactions from '@/Components/Game/FloatingReactions.vue';
 import PowerUpBar from '@/Components/Game/PowerUpBar.vue';
+import TeamBadge from '@/Components/Game/TeamBadge.vue';
 
 const { t } = useI18n();
 
@@ -265,6 +266,9 @@ function goHome() {
                         <AvatarDisplay :name="player.avatar" :size="96" class="mx-auto mb-4" />
                     </div>
                     <h2 class="text-2xl font-bold">{{ player.nickname }}</h2>
+                    <div v-if="player.team" class="mt-2 flex justify-center">
+                        <TeamBadge :name="player.team.name" :color="player.team.color" />
+                    </div>
                 </div>
                 <div>
                     <p class="text-xl">{{ t('play.waiting_host') }}</p>

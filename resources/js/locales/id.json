@@ -426,6 +426,15 @@
         "freeze_timer": "Bekukan",
         "used": "{nickname} memakai {powerup}!"
     },
+    "team": {
+        "choose_mode": "Pilih mode permainan",
+        "individual_mode": "Individu",
+        "team_mode": "Tim",
+        "team_count": "Berapa jumlah tim?",
+        "choose_team": "Pilih timmu",
+        "team_score": "Skor tim",
+        "team_standings": "Klasemen tim"
+    },
     "common": {
         "save": "Simpan",
         "cancel": "Batal",

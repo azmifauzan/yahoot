@@ -22,7 +22,8 @@ class GameEnded implements ShouldBroadcastNow
         public int $gameSessionId,
         public mixed $finalLeaderboard,
         public array $podium,
-        public mixed $playerStats = null
+        public mixed $playerStats = null,
+        public mixed $teams = null
     ) {}
 
     /**
@@ -44,6 +45,7 @@ class GameEnded implements ShouldBroadcastNow
             'finalLeaderboard' => $this->finalLeaderboard,
             'podium' => $this->podium,
             'playerStats' => $this->playerStats,
+            'teams' => $this->teams,
         ];
     }
 }

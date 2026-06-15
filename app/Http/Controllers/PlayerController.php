@@ -63,6 +63,7 @@ class PlayerController extends Controller
                 'music_enabled' => $session->quiz->settings['music_enabled'] ?? true,
                 'reactions_enabled' => $session->settings['reactions_enabled'] ?? true,
                 'powerups_enabled' => $session->settings['powerups_enabled'] ?? true,
+                'mode' => $session->settings['mode'] ?? 'individual',
             ],
         ]);
     }
@@ -97,8 +98,15 @@ class PlayerController extends Controller
             ], 422);
         }
 
+        // Team mode: auto-balance the joining player into the smallest team.
+        $team = null;
+        if (($session->settings['mode'] ?? 'individual') === 'team') {
+            $team = $session->teams()->withCount('players')->orderBy('players_count')->orderBy('id')->first();
+        }
+
         $player = GamePlayer::query()->create([
             'game_session_id' => $session->id,
+            'game_team_id' => $team?->id,
             'user_id' => $request->user()?->id,
             'nickname' => $validated['nickname'],
             'avatar' => $validated['avatar'],
@@ -122,6 +130,11 @@ class PlayerController extends Controller
                 'nickname' => $player->nickname,
                 'avatar' => $player->avatar,
                 'player_token' => $player->player_token,
+                'team' => $team ? [
+                    'id' => $team->id,
+                    'name' => $team->name,
+                    'color' => $team->color,
+                ] : null,
             ],
             'gameSession' => [
                 'id' => $session->id,
@@ -344,10 +357,16 @@ class PlayerController extends Controller
         ]);
 
         // Update player score and streak
+        $gained = $scoringResult['points_earned'] + $scoringResult['streak_bonus'];
         $player->update([
-            'score' => $player->score + $scoringResult['points_earned'] + $scoringResult['streak_bonus'],
+            'score' => $player->score + $gained,
             'streak' => $scoringResult['new_streak'],
         ]);
+
+        // Mirror the gain onto the player's team total (team mode).
+        if ($player->game_team_id && $gained > 0) {
+            $player->team()->increment('score', $gained);
+        }
 
         // Broadcast answer count
         $answeredCount = PlayerAnswer::query()

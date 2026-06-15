@@ -18,6 +18,7 @@ export function useGame(gameSessionId) {
     const isPoll = ref(false);
     const finalLeaderboard = ref([]);
     const podium = ref([]);
+    const teamLeaderboard = ref([]);
     const myResult = ref(null);
     const reactions = ref([]); // active floating reactions: { id, emoji, nickname }
     const powerupEvents = ref([]); // recent PowerUpUsed notices: { id, nickname, powerup }
@@ -64,11 +65,13 @@ export function useGame(gameSessionId) {
             .listen('ScoreboardUpdated', (e) => {
                 leaderboard.value = e.leaderboard;
                 playerPositions.value = e.playerPositions;
+                if (e.teams) teamLeaderboard.value = e.teams;
                 gameState.value = 'scoreboard';
             })
             .listen('GameEnded', (e) => {
                 finalLeaderboard.value = e.finalLeaderboard;
                 podium.value = e.podium;
+                if (e.teams) teamLeaderboard.value = e.teams;
                 gameState.value = 'finished';
             })
             .listen('GameCancelled', (e) => {
@@ -173,6 +176,7 @@ export function useGame(gameSessionId) {
         isPoll,
         finalLeaderboard,
         podium,
+        teamLeaderboard,
         myResult,
         reactions,
         powerupEvents,

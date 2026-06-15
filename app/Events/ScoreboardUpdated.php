@@ -7,23 +7,25 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 
 class ScoreboardUpdated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * @param  \Illuminate\Support\Collection<int, array<string, mixed>>  $leaderboard
+     * @param  Collection<int, array<string, mixed>>  $leaderboard
      * @param  array<int, array<string, mixed>>  $playerPositions
      */
     public function __construct(
         public int $gameSessionId,
         public mixed $leaderboard,
-        public array $playerPositions
+        public array $playerPositions,
+        public mixed $teams = null
     ) {}
 
     /**
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return array<int, Channel>
      */
     public function broadcastOn(): array
     {
@@ -40,6 +42,7 @@ class ScoreboardUpdated implements ShouldBroadcastNow
         return [
             'leaderboard' => $this->leaderboard,
             'playerPositions' => $this->playerPositions,
+            'teams' => $this->teams,
         ];
     }
 }

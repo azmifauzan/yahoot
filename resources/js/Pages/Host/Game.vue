@@ -12,6 +12,7 @@ import GameLayout from '@/Components/Game/GameLayout.vue';
 import CountdownOverlay from '@/Components/Game/CountdownOverlay.vue';
 import TimerBar from '@/Components/Game/TimerBar.vue';
 import FloatingReactions from '@/Components/Game/FloatingReactions.vue';
+import TeamBadge from '@/Components/Game/TeamBadge.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
@@ -22,9 +23,13 @@ const props = defineProps({
     quiz: Object,
     questions: Array,
     players: Array,
+    mode: { type: String, default: 'individual' },
+    teams: { type: Array, default: () => [] },
     theme: Object,
     resumeState: Object,
 });
+
+const isTeamMode = computed(() => props.mode === 'team');
 
 const sound = useSound(props.quiz?.settings?.sound_theme ?? 'classic');
 const musicEnabled = computed(() => props.quiz?.settings?.music_enabled ?? true);
@@ -51,7 +56,7 @@ const {
     gameState, players: livePlayers, currentQuestion, questionNumber, totalQuestions,
     timeLimit, answeredCount, totalPlayers, leaderboard, playerPositions,
     correctAnswer, answerStats, playerResults, isPoll, finalLeaderboard, podium,
-    reactions, powerupEvents, joinChannel,
+    teamLeaderboard, reactions, powerupEvents, joinChannel,
 } = useGame(props.gameSession.id);
 
 const powerupIcons = { double_points: '2️⃣', fifty_fifty: '✂️', freeze_timer: '❄️' };
@@ -413,6 +418,19 @@ watch(gameState, (state) => {
         <div v-else-if="gameState === 'scoreboard'" class="flex-1 flex flex-col text-white bg-gradient-to-br" :class="themeGradients.scoreboard">
             <div class="p-6 text-center animate-slide-in-down">
                 <h2 class="text-3xl font-extrabold">{{ t('host.scoreboard') }}</h2>
+            </div>
+
+            <!-- Team standings (team mode) -->
+            <div v-if="isTeamMode && teamLeaderboard.length" class="px-8 max-w-2xl mx-auto w-full mb-4">
+                <div class="flex flex-wrap items-center justify-center gap-3">
+                    <TeamBadge
+                        v-for="team in teamLeaderboard"
+                        :key="team.team_id"
+                        :name="`${team.rank}. ${team.name}`"
+                        :color="team.color"
+                        :score="team.score"
+                    />
+                </div>
             </div>
 
             <div class="flex-1 flex flex-col items-center justify-center px-8 max-w-2xl mx-auto w-full">
