@@ -68,6 +68,22 @@ class QuizPolicy
      */
     public function duplicate(User $user, Quiz $quiz): bool
     {
+        if ($quiz->is_published && $quiz->visibility === QuizVisibility::Public) {
+            return true;
+        }
+
+        return $user->id === $quiz->user_id;
+    }
+
+    /**
+     * Determine whether the user can host a multiplayer game session for the quiz.
+     */
+    public function host(User $user, Quiz $quiz): bool
+    {
+        if ($quiz->is_published && $quiz->visibility === QuizVisibility::Public) {
+            return true;
+        }
+
         return $user->id === $quiz->user_id;
     }
 

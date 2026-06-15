@@ -20,7 +20,8 @@
         "expand": "Perluas",
         "progress": "Progres Saya",
         "leaderboard": "Papan Peringkat",
-        "question_bank": "Bank Soal"
+        "question_bank": "Bank Soal",
+        "explore": "Jelajahi"
     },
     "landing": {
         "hero_title": "Buat Kuis, Main Bareng!",
@@ -342,6 +343,7 @@
         "setting_require_email_verification": "Wajib Verifikasi Email",
         "setting_allow_guest_play": "Izinkan Tamu Bermain",
         "setting_maintenance_mode": "Mode Pemeliharaan",
+        "setting_ai_generation_enabled": "Izinkan Pembuatan Soal dengan AI",
         "categories": "Kategori",
         "delete_category": "Hapus Kategori",
         "confirm_delete_category": "Yakin ingin menghapus kategori ini?",
@@ -493,6 +495,45 @@
         "choose_team": "Pilih timmu",
         "team_score": "Skor tim",
         "team_standings": "Klasemen tim"
+    },
+    "explore": {
+        "title": "Jelajahi Kuis Publik",
+        "subtitle": "Temukan kuis yang dibuat oleh komunitas untuk dimainkan atau dijadikan template kuis Anda sendiri.",
+        "search_placeholder": "Cari kuis...",
+        "sort_popular": "Terpopuler",
+        "sort_newest": "Terbaru",
+        "sort_featured": "Unggulan",
+        "all_categories": "Semua Kategori",
+        "all_tags": "Semua Tag",
+        "play_solo": "Latihan Solo",
+        "use_template": "Gunakan Template",
+        "by_author": "Oleh",
+        "plays": "{count} kali dimainkan",
+        "questions_count": "{count} soal",
+        "empty_state": "Kuis tidak ditemukan. Coba ubah pencarian atau filter Anda.",
+        "favorite_success": "Status favorit kuis berhasil diubah",
+        "favorites_only": "Hanya Favorit",
+        "featured_badge": "Unggulan"
+    },
+    "ai": {
+        "generate_title": "Buat Soal dengan AI",
+        "generate_btn": "✨ Buat dengan AI",
+        "topic_label": "Topik Kuis",
+        "topic_placeholder": "mis. Tata Surya, Sejarah Indonesia, Dasar Pemrograman",
+        "count_label": "Jumlah Pertanyaan",
+        "difficulty_label": "Tingkat Kesulitan",
+        "difficulty_easy": "Mudah",
+        "difficulty_medium": "Sedang",
+        "difficulty_hard": "Sulit",
+        "type_label": "Tipe Pertanyaan",
+        "type_multiple_choice": "Pilihan Ganda",
+        "type_true_false": "Benar / Salah",
+        "type_all": "Campuran",
+        "disclaimer": "Catatan: Soal dihasilkan oleh AI. Harap periksa kembali keakuratan jawaban sebelum mempublikasikan kuis.",
+        "generating": "Sedang membuat soal... Ini mungkin memakan waktu beberapa detik.",
+        "success": "Pekerjaan pembuatan soal dengan AI telah dimulai di latar belakang. Soal akan otomatis muncul di editor Anda.",
+        "error_disabled": "Pembuatan soal dengan AI sedang dinonaktifkan oleh admin.",
+        "generation_failed": "Gagal membuat soal dengan AI. Silakan coba lagi."
     },
     "common": {
         "save": "Simpan",

@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\AiQuestionController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\GameSessionController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\PlayerController;
@@ -39,6 +41,9 @@ Route::get('/play/{code}', [PlayerController::class, 'play'])->name('play.game')
 
 // Global leaderboard (public)
 Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
+
+// Explore public quizzes
+Route::get('/explore', [ExploreController::class, 'index'])->name('explore');
 
 // Practice / solo mode (public for published+public quizzes; owner for private)
 Route::get('/quizzes/{quiz}/practice', [PracticeController::class, 'start'])->name('quizzes.practice');
@@ -112,10 +117,13 @@ Route::middleware([
         Route::post('/{quiz}/duplicate', [QuizController::class, 'duplicate'])->name('duplicate');
         Route::post('/{quiz}/publish', [QuizController::class, 'publish'])->name('publish');
         Route::get('/{quiz}/history', [GameSessionController::class, 'history'])->name('history');
+        Route::post('/{quiz}/favorite', [ExploreController::class, 'favorite'])->name('favorite');
+        Route::post('/{quiz}/ai-generate', [AiQuestionController::class, 'generate'])->name('ai-generate');
 
         Route::post('/{quiz}/from-bank', [QuestionBankController::class, 'fromBank'])->name('from-bank');
 
         Route::post('/{quiz}/questions', [QuestionController::class, 'store'])->name('questions.store');
+        Route::post('/{quiz}/questions/bulk', [QuestionController::class, 'storeBulk'])->name('questions.store-bulk');
     });
 
     Route::prefix('questions')->name('questions.')->group(function () {

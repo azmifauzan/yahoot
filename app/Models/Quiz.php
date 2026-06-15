@@ -29,6 +29,9 @@ class Quiz extends Model
         'is_published',
         'settings',
         'theme',
+        'plays_count',
+        'duplicates_count',
+        'featured',
     ];
 
     protected function casts(): array
@@ -38,6 +41,9 @@ class Quiz extends Model
             'is_published' => 'boolean',
             'settings' => 'array',
             'theme' => QuizTheme::class,
+            'featured' => 'boolean',
+            'plays_count' => 'integer',
+            'duplicates_count' => 'integer',
         ];
     }
 
@@ -79,5 +85,13 @@ class Quiz extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    /**
+     * @return BelongsToMany<User, $this>
+     */
+    public function favoritedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'quiz_favorites')->withTimestamps();
     }
 }

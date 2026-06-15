@@ -26,6 +26,12 @@ defineProps({
                 <!-- Right side -->
                 <div class="flex items-center gap-3">
                     <Link
+                        :href="route('explore')"
+                        class="hidden sm:inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                    >
+                        🔍 {{ t('nav.explore') || 'Explore' }}
+                    </Link>
+                    <Link
                         :href="route('leaderboard')"
                         class="hidden sm:inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
                     >

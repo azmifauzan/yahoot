@@ -20,7 +20,8 @@
         "expand": "Expand",
         "progress": "My Progress",
         "leaderboard": "Leaderboard",
-        "question_bank": "Question Bank"
+        "question_bank": "Question Bank",
+        "explore": "Explore"
     },
     "landing": {
         "hero_title": "Create Quizzes, Play Together!",
@@ -342,6 +343,7 @@
         "setting_require_email_verification": "Require Email Verification",
         "setting_allow_guest_play": "Allow Guest Play",
         "setting_maintenance_mode": "Maintenance Mode",
+        "setting_ai_generation_enabled": "Allow AI Question Generation",
         "categories": "Categories",
         "delete_category": "Delete Category",
         "confirm_delete_category": "Are you sure you want to delete this category?",
@@ -493,6 +495,45 @@
         "choose_team": "Choose your team",
         "team_score": "Team score",
         "team_standings": "Team standings"
+    },
+    "explore": {
+        "title": "Explore Public Quizzes",
+        "subtitle": "Discover quizzes made by the community to play or use as templates for your own quizzes.",
+        "search_placeholder": "Search quizzes...",
+        "sort_popular": "Popular",
+        "sort_newest": "Newest",
+        "sort_featured": "Featured",
+        "all_categories": "All Categories",
+        "all_tags": "All Tags",
+        "play_solo": "Practice Solo",
+        "use_template": "Use Template",
+        "by_author": "By",
+        "plays": "{count} plays",
+        "questions_count": "{count} questions",
+        "empty_state": "No quizzes found. Try changing your search query or filters.",
+        "favorite_success": "Quiz favorite status updated successfully",
+        "favorites_only": "Favorites Only",
+        "featured_badge": "Featured"
+    },
+    "ai": {
+        "generate_title": "Generate Questions with AI",
+        "generate_btn": "✨ Generate with AI",
+        "topic_label": "Quiz Topic",
+        "topic_placeholder": "e.g., Solar System, World War II, Javascript Basics",
+        "count_label": "Number of Questions",
+        "difficulty_label": "Difficulty Level",
+        "difficulty_easy": "Easy",
+        "difficulty_medium": "Medium",
+        "difficulty_hard": "Hard",
+        "type_label": "Question Type",
+        "type_multiple_choice": "Multiple Choice",
+        "type_true_false": "True / False",
+        "type_all": "Mixed",
+        "disclaimer": "Note: Questions are AI-generated. Please review for correctness before publishing your quiz.",
+        "generating": "Generating questions... This may take a few seconds.",
+        "success": "AI question generation has started in the background. The questions will appear in your editor automatically.",
+        "error_disabled": "AI question generation is currently disabled by the administrator.",
+        "generation_failed": "Failed to generate questions with AI. Please try again."
     },
     "common": {
         "save": "Save",

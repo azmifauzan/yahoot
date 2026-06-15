@@ -37,6 +37,7 @@ const effectiveCollapsed = computed(() => isDesktop.value && collapsed.value);
 const menuLinks = computed(() => {
     const links = [
         { href: route('dashboard'), label: t('nav.my_quizzes'), icon: 'home', active: route().current('dashboard') },
+        { href: route('explore'), label: t('nav.explore') || 'Explore', icon: 'search', active: route().current('explore') },
         { href: route('progress'), label: t('nav.progress'), icon: 'chart', active: route().current('progress') },
         { href: route('leaderboard'), label: t('nav.leaderboard'), icon: 'trophy', active: route().current('leaderboard') },
         { href: route('question-bank.index'), label: t('nav.question_bank'), icon: 'document', active: route().current('question-bank.*') },
