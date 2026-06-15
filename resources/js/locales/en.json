@@ -218,6 +218,7 @@
         "game_cancelled_desc": "The host has cancelled this quiz session."
     },
     "host": {
+        "game_settings": "Game settings",
         "join_at": "Join at",
         "players": "Players",
         "joined": "joined",
@@ -412,6 +413,33 @@
         "score": "Score",
         "accuracy": "Accuracy",
         "empty": "You haven't finished any games yet. Join one to start tracking your progress!"
+    },
+    "reactions": {
+        "title": "Reactions",
+        "send": "Send a reaction",
+        "enabled": "Allow reactions",
+        "disabled": "Reactions off"
+    },
+    "powerups": {
+        "title": "Power-ups",
+        "double_points": "Double Points",
+        "fifty_fifty": "50:50",
+        "freeze_timer": "Freeze",
+        "used": "{nickname} used {powerup}!",
+        "enabled": "Allow power-ups",
+        "disabled": "Power-ups off"
+    },
+    "team": {
+        "choose_mode": "Choose game mode",
+        "individual_mode": "Individual",
+        "team_mode": "Teams",
+        "team_count": "How many teams?",
+        "team_selection": "How do players pick teams?",
+        "auto_balance": "Automatic (balanced)",
+        "manual_select": "Manual (players choose)",
+        "choose_team": "Choose your team",
+        "team_score": "Team score",
+        "team_standings": "Team standings"
     },
     "common": {
         "save": "Save",

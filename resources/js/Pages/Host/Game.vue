@@ -11,6 +11,8 @@ import QRCodeDisplay from '@/Components/Game/QRCodeDisplay.vue';
 import GameLayout from '@/Components/Game/GameLayout.vue';
 import CountdownOverlay from '@/Components/Game/CountdownOverlay.vue';
 import TimerBar from '@/Components/Game/TimerBar.vue';
+import FloatingReactions from '@/Components/Game/FloatingReactions.vue';
+import TeamBadge from '@/Components/Game/TeamBadge.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
@@ -21,9 +23,20 @@ const props = defineProps({
     quiz: Object,
     questions: Array,
     players: Array,
+    mode: { type: String, default: 'individual' },
+    teams: { type: Array, default: () => [] },
     theme: Object,
     resumeState: Object,
 });
+
+const isTeamMode = computed(() => props.mode === 'team');
+
+const teamGroups = computed(() => props.teams.map(team => ({
+    id: team.id,
+    name: team.name,
+    color: team.color,
+    players: livePlayers.value.filter(p => p.team?.id === team.id),
+})));
 
 const sound = useSound(props.quiz?.settings?.sound_theme ?? 'classic');
 const musicEnabled = computed(() => props.quiz?.settings?.music_enabled ?? true);
@@ -50,8 +63,10 @@ const {
     gameState, players: livePlayers, currentQuestion, questionNumber, totalQuestions,
     timeLimit, answeredCount, totalPlayers, leaderboard, playerPositions,
     correctAnswer, answerStats, playerResults, isPoll, finalLeaderboard, podium,
-    joinChannel,
+    teamLeaderboard, reactions, powerupEvents, joinChannel,
 } = useGame(props.gameSession.id);
+
+const powerupIcons = { double_points: '2️⃣', fifty_fifty: '✂️', freeze_timer: '❄️' };
 
 // Initialize from props
 onMounted(async () => {
@@ -59,6 +74,7 @@ onMounted(async () => {
         id: p.id,
         nickname: p.nickname,
         avatar: p.avatar,
+        team: p.team ? { id: p.team.id, name: p.team.name, color: p.team.color } : null,
     }));
     totalPlayers.value = props.players.length;
 
@@ -219,6 +235,20 @@ watch(gameState, (state) => {
         <!-- Confetti overlay -->
         <ConfettiEffect v-if="showConfetti" :duration="6000" @complete="showConfetti = false" />
 
+        <!-- Floating emoji reactions from players -->
+        <FloatingReactions :reactions="reactions" />
+
+        <!-- Power-up usage notices -->
+        <div class="fixed top-16 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-1">
+            <div
+                v-for="p in powerupEvents"
+                :key="p.id"
+                class="px-3 py-1 rounded-full bg-yellow-400/90 text-yellow-900 text-sm font-bold shadow animate-slide-in-down"
+            >
+                {{ powerupIcons[p.powerup] }} {{ t('powerups.used', { nickname: p.nickname, powerup: t(`powerups.${p.powerup}`) }) }}
+            </div>
+        </div>
+
         <!-- Mute toggle -->
         <button
             @click="sound.toggleMute()"
@@ -264,7 +294,32 @@ watch(gameState, (state) => {
                         {{ livePlayers.length }} {{ t('host.joined') }}
                     </span>
                 </div>
-                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                <!-- Team mode: grouped by team -->
+                <div v-if="isTeamMode" class="space-y-6">
+                    <div v-for="team in teamGroups" :key="team.id">
+                        <div class="mb-2">
+                            <TeamBadge :name="team.name" :color="team.color" :score="team.players.length" />
+                        </div>
+                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                            <div
+                                v-for="player in team.players"
+                                :key="player.id"
+                                class="flex flex-col items-center animate-bounce-in"
+                            >
+                                <div class="animate-float">
+                                    <AvatarDisplay :name="player.avatar" :size="56" />
+                                </div>
+                                <span class="mt-1 text-sm font-medium truncate max-w-[80px]">{{ player.nickname }}</span>
+                            </div>
+                            <div v-if="team.players.length === 0" class="col-span-full text-sm opacity-60 py-2">
+                                {{ t('host.waiting_players') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Individual mode: flat grid -->
+                <div v-else class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
                     <div
                         v-for="player in livePlayers"
                         :key="player.id"
@@ -276,7 +331,7 @@ watch(gameState, (state) => {
                         <span class="mt-1 text-sm font-medium truncate max-w-[80px]">{{ player.nickname }}</span>
                     </div>
                 </div>
-                <div v-if="livePlayers.length === 0" class="text-center py-12 opacity-60">
+                <div v-if="!isTeamMode && livePlayers.length === 0" class="text-center py-12 opacity-60">
                     <p class="text-xl">{{ t('host.waiting_players') }}</p>
                 </div>
             </div>
@@ -398,6 +453,19 @@ watch(gameState, (state) => {
                 <h2 class="text-3xl font-extrabold">{{ t('host.scoreboard') }}</h2>
             </div>
 
+            <!-- Team standings (team mode) -->
+            <div v-if="isTeamMode && teamLeaderboard.length" class="px-8 max-w-2xl mx-auto w-full mb-4">
+                <div class="flex flex-wrap items-center justify-center gap-3">
+                    <TeamBadge
+                        v-for="team in teamLeaderboard"
+                        :key="team.team_id"
+                        :name="`${team.rank}. ${team.name}`"
+                        :color="team.color"
+                        :score="team.score"
+                    />
+                </div>
+            </div>
+
             <div class="flex-1 flex flex-col items-center justify-center px-8 max-w-2xl mx-auto w-full">
                 <TransitionGroup name="scoreboard-list" tag="div" class="w-full">
                     <div
@@ -429,6 +497,22 @@ watch(gameState, (state) => {
         <div v-else-if="gameState === 'finished'" class="flex-1 flex flex-col text-white bg-gradient-to-br" :class="themeGradients.finished">
             <div class="p-6 text-center animate-slide-in-down">
                 <h2 class="text-4xl font-extrabold">🏆 {{ t('host.game_over') }}</h2>
+            </div>
+
+            <!-- Team standings (team mode) -->
+            <div v-if="isTeamMode && teamLeaderboard.length" class="px-8 max-w-2xl mx-auto w-full mb-2">
+                <h3 class="text-center text-sm font-bold uppercase tracking-wide opacity-70 mb-2">
+                    {{ t('team.team_standings') }}
+                </h3>
+                <div class="flex flex-wrap items-center justify-center gap-3">
+                    <TeamBadge
+                        v-for="team in teamLeaderboard"
+                        :key="team.team_id"
+                        :name="`${team.rank}. ${team.name}`"
+                        :color="team.color"
+                        :score="team.score"
+                    />
+                </div>
             </div>
 
             <!-- Podium -->

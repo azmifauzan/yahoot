@@ -12,6 +12,10 @@ import CountdownOverlay from '@/Components/Game/CountdownOverlay.vue';
 import TimerBar from '@/Components/Game/TimerBar.vue';
 import ScoreAnimation from '@/Components/Game/ScoreAnimation.vue';
 import StreakBadge from '@/Components/Game/StreakBadge.vue';
+import ReactionBar from '@/Components/Game/ReactionBar.vue';
+import FloatingReactions from '@/Components/Game/FloatingReactions.vue';
+import PowerUpBar from '@/Components/Game/PowerUpBar.vue';
+import TeamBadge from '@/Components/Game/TeamBadge.vue';
 
 const { t } = useI18n();
 
@@ -32,14 +36,41 @@ const showConfetti = ref(false);
 const rippleId = ref(null);
 const showShake = ref(false);
 
-const { timeRemaining, progress, start: startTimer, stop: stopTimer, getElapsedMs } = useTimer();
+const { timeRemaining, progress, start: startTimer, stop: stopTimer, freeze: freezeTimer, getElapsedMs } = useTimer();
 
 const {
     gameState, players, currentQuestion, questionNumber, totalQuestions,
     timeLimit, myResult, correctAnswer, answerStats, playerResults, isPoll,
     leaderboard, playerPositions, finalLeaderboard, podium,
-    joinChannel, submitAnswer,
+    reactions, joinChannel, submitAnswer, sendReaction, usePowerup,
 } = useGame(props.gameSession.id);
+
+const reactionsEnabled = computed(() => props.gameSession?.reactions_enabled ?? true);
+const powerupsEnabled = computed(() => props.gameSession?.powerups_enabled ?? true);
+
+function react(emoji) {
+    if (!player.value) return;
+    sendReaction(player.value.id, emoji, player.value.player_token);
+}
+
+// Power-ups
+const powerupsAvailable = ref(['double_points', 'fifty_fifty', 'freeze_timer']);
+const powerupUsedThisQuestion = ref(null);
+const hiddenAnswers = ref([]);
+
+async function activatePowerup(key) {
+    if (!player.value || !currentQuestion.value || powerupUsedThisQuestion.value) return;
+    const result = await usePowerup(player.value.id, key, currentQuestion.value.id, player.value.player_token);
+    if (!result) return;
+    powerupsAvailable.value = result.powerups_available ?? powerupsAvailable.value;
+    powerupUsedThisQuestion.value = key;
+    if (key === 'fifty_fifty' && Array.isArray(result.hidden_answers)) {
+        hiddenAnswers.value = result.hidden_answers;
+    }
+    if (key === 'freeze_timer') {
+        freezeTimer(5000);
+    }
+}
 
 // Notify the host when this player leaves (tab close, refresh, navigation away)
 function notifyLeave() {
@@ -72,6 +103,8 @@ watch(gameState, (state) => {
     if (state === 'question') {
         selectedAnswer.value = null;
         hasAnswered.value = false;
+        powerupUsedThisQuestion.value = null;
+        hiddenAnswers.value = [];
         if (pendingCountdown.value) {
             pendingCountdown.value = false;
             runCountdown();
@@ -205,6 +238,17 @@ function goHome() {
         <!-- Confetti overlay -->
         <ConfettiEffect v-if="showConfetti" :duration="4000" @complete="showConfetti = false" />
 
+        <!-- Floating emoji reactions overlay -->
+        <FloatingReactions :reactions="reactions" />
+
+        <!-- Reaction bar (lobby, between questions, scoreboard) -->
+        <div
+            v-if="reactionsEnabled && player && ['lobby', 'answering', 'result', 'scoreboard'].includes(gameState)"
+            class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 px-3 py-2 rounded-2xl bg-black/30 backdrop-blur"
+        >
+            <ReactionBar @react="react" />
+        </div>
+
         <!-- Mute toggle -->
         <button
             @click="sound.toggleMute()"
@@ -222,6 +266,9 @@ function goHome() {
                         <AvatarDisplay :name="player.avatar" :size="96" class="mx-auto mb-4" />
                     </div>
                     <h2 class="text-2xl font-bold">{{ player.nickname }}</h2>
+                    <div v-if="player.team" class="mt-2 flex justify-center">
+                        <TeamBadge :name="player.team.name" :color="player.team.color" />
+                    </div>
                 </div>
                 <div>
                     <p class="text-xl">{{ t('play.waiting_host') }}</p>
@@ -244,11 +291,21 @@ function goHome() {
                 <TimerBar :progress="progress" :time-remaining="timeRemaining" show-number rounded />
             </div>
 
+            <!-- Power-ups (scored questions only) -->
+            <div v-if="powerupsEnabled && currentQuestion?.type !== 'poll'" class="px-3 pb-2">
+                <PowerUpBar
+                    :available="powerupsAvailable"
+                    :used="powerupUsedThisQuestion"
+                    @use="activatePowerup"
+                />
+            </div>
+
             <!-- Answer buttons -->
             <div class="flex-1 p-3" :class="currentQuestion?.type === 'true_false' ? 'grid grid-cols-1 gap-3' : 'grid grid-cols-2 gap-3'">
                 <button
                     v-for="(answer, idx) in currentQuestion?.answers"
                     :key="answer.id"
+                    v-show="!hiddenAnswers.includes(answer.id)"
                     @click="selectAnswer(answer)"
                     :class="[
                         answerColors[answer.color]?.bg,

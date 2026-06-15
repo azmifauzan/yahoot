@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\PowerUpType;
 use App\Models\GamePlayer;
 use App\Models\GameSession;
 use App\Models\User;
@@ -31,6 +32,8 @@ class GamePlayerFactory extends Factory
             'avatar' => fake()->randomElement($avatars),
             'score' => 0,
             'streak' => 0,
+            'powerups_available' => PowerUpType::defaults(),
+            'powerups_used' => [],
             'is_connected' => true,
             'player_token' => Str::random(40),
             'finished_at' => null,

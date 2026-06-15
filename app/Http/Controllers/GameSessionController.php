@@ -8,9 +8,11 @@ use App\Events\GameCancelled;
 use App\Events\GameEnded;
 use App\Events\GameStarted;
 use App\Events\QuestionStarted;
+use App\Http\Requests\Game\StartGameSessionRequest;
 use App\Jobs\AutoRevealAnswer;
 use App\Jobs\ProcessGameResults;
 use App\Models\GameSession;
+use App\Models\GameTeam;
 use App\Models\PlayerAnswer;
 use App\Models\Quiz;
 use App\Services\GameCodeService;
@@ -18,7 +20,6 @@ use App\Services\RevealService;
 use App\Services\ScoringService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -34,7 +35,7 @@ class GameSessionController extends Controller
     /**
      * Create a new game session for a quiz and redirect to the host lobby.
      */
-    public function store(Request $request, Quiz $quiz): RedirectResponse
+    public function store(StartGameSessionRequest $request, Quiz $quiz): RedirectResponse
     {
         $this->authorize('update', $quiz);
 
@@ -46,13 +47,39 @@ class GameSessionController extends Controller
             return back()->withErrors(['quiz' => 'Quiz must have at least one question.']);
         }
 
+        $validated = $request->validated();
+        $mode = $validated['mode'] ?? 'individual';
+        $teamCount = (int) ($validated['team_count'] ?? 2);
+
+        $settings = [
+            'mode' => $mode,
+            'powerups_enabled' => $request->boolean('powerups_enabled', true),
+            'reactions_enabled' => $request->boolean('reactions_enabled', true),
+        ];
+
+        if ($mode === 'team') {
+            $settings['team_count'] = $teamCount;
+            $settings['team_selection'] = $validated['team_selection'] ?? 'auto';
+        }
+
         $session = GameSession::query()->create([
             'quiz_id' => $quiz->id,
             'host_id' => $request->user()->id,
             'game_code' => $this->gameCodeService->generate(),
             'status' => GameStatus::Waiting,
             'current_question_index' => 0,
+            'settings' => $settings,
         ]);
+
+        if ($mode === 'team') {
+            foreach (array_slice(GameTeam::PALETTE, 0, $teamCount) as $palette) {
+                $session->teams()->create([
+                    'name' => $palette['name'],
+                    'color' => $palette['color'],
+                    'score' => 0,
+                ]);
+            }
+        }
 
         return redirect()->route('game.host', $session);
     }
@@ -65,8 +92,8 @@ class GameSessionController extends Controller
         $this->authorize('view', $gameSession);
 
         $gameSession->load(['quiz.questions.answers', 'players' => function ($query) {
-            $query->where('is_connected', true);
-        }]);
+            $query->where('is_connected', true)->with('team');
+        }, 'teams']);
 
         $theme = $gameSession->quiz->theme ?? QuizTheme::Standard;
 
@@ -75,6 +102,8 @@ class GameSessionController extends Controller
             'quiz' => $gameSession->quiz,
             'questions' => $gameSession->quiz->questions,
             'players' => $gameSession->players,
+            'mode' => $gameSession->settings['mode'] ?? 'individual',
+            'teams' => $gameSession->teams,
             'theme' => [
                 'value' => $theme->value,
                 'gradients' => $theme->gradients(),
@@ -226,11 +255,16 @@ class GameSessionController extends Controller
         $podium = $finalLeaderboard->take(3)->values()->toArray();
         $playerStats = $this->scoringService->getPlayerStats($gameSession->id);
 
+        $teams = ($gameSession->settings['mode'] ?? 'individual') === 'team'
+            ? $this->scoringService->getTeamLeaderboard($gameSession->id)
+            : null;
+
         broadcast(new GameEnded(
             $gameSession->id,
             $finalLeaderboard,
             $podium,
-            $playerStats
+            $playerStats,
+            $teams
         ));
 
         // Accumulate lifetime XP/ranking + award achievement badges (heavy → queued).

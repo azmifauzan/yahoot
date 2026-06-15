@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\PointType;
+use App\Enums\PowerUpType;
 use App\Enums\QuestionType;
 use App\Models\GamePlayer;
 use App\Models\Question;
@@ -88,4 +89,21 @@ test('streak bonus is capped at 500', function () {
     // streak = 11, bonus = min(11*100, 500) = 500
     expect($result['streak_bonus'])->toBe(500)
         ->and($result['new_streak'])->toBe(11);
+});
+
+test('double points powerup doubles base points but not streak bonus', function () {
+    $service = new ScoringService;
+    $result = $service->calculate(makeQuestion(), makePlayer(0), true, 0, PowerUpType::DoublePoints);
+
+    // base 1000 doubled = 2000; streak bonus unaffected (streak 1 → 100)
+    expect($result['points_earned'])->toBe(2000)
+        ->and($result['streak_bonus'])->toBe(100)
+        ->and($result['new_streak'])->toBe(1);
+});
+
+test('non-double powerups do not change points', function () {
+    $service = new ScoringService;
+    $result = $service->calculate(makeQuestion(), makePlayer(0), true, 0, PowerUpType::FiftyFifty);
+
+    expect($result['points_earned'])->toBe(1000);
 });

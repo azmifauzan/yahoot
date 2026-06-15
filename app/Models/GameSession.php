@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\GameStatus;
+use Database\Factories\GameSessionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GameSession extends Model
 {
-    /** @use HasFactory<\Database\Factories\GameSessionFactory> */
+    /** @use HasFactory<GameSessionFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -38,7 +39,7 @@ class GameSession extends Model
     }
 
     /**
-     * @return BelongsTo<\App\Models\Quiz, $this>
+     * @return BelongsTo<Quiz, $this>
      */
     public function quiz(): BelongsTo
     {
@@ -46,7 +47,7 @@ class GameSession extends Model
     }
 
     /**
-     * @return BelongsTo<\App\Models\User, $this>
+     * @return BelongsTo<User, $this>
      */
     public function host(): BelongsTo
     {
@@ -54,10 +55,18 @@ class GameSession extends Model
     }
 
     /**
-     * @return HasMany<\App\Models\GamePlayer, $this>
+     * @return HasMany<GamePlayer, $this>
      */
     public function players(): HasMany
     {
         return $this->hasMany(GamePlayer::class);
+    }
+
+    /**
+     * @return HasMany<GameTeam, $this>
+     */
+    public function teams(): HasMany
+    {
+        return $this->hasMany(GameTeam::class);
     }
 }

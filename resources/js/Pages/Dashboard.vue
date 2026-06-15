@@ -6,7 +6,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
-const { toast, confirm } = useSwal();
+const { toast, confirm, Swal } = useSwal();
 
 const props = defineProps({
     quizzes: Array,
@@ -73,11 +73,77 @@ function duplicateQuiz(quiz) {
     });
 }
 
-function playQuiz(quiz) {
+async function playQuiz(quiz) {
     if (!quiz.is_published) {
         toast(t('dashboard.publish_first'), 'warning');
         return;
     }
+
+    // Ask the host which game mode to run.
+    const { value: mode } = await Swal.fire({
+        title: t('team.choose_mode'),
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: t('team.individual_mode'),
+        denyButtonText: t('team.team_mode'),
+        cancelButtonText: t('common.cancel'),
+        confirmButtonColor: '#6366f1',
+        denyButtonColor: '#ec4899',
+    }).then((r) => ({ value: r.isConfirmed ? 'individual' : r.isDenied ? 'team' : null }));
+
+    if (!mode) return;
+
+    let teamCount = 2;
+    let teamSelection = 'auto';
+    if (mode === 'team') {
+        const { value } = await Swal.fire({
+            title: t('team.team_count'),
+            input: 'range',
+            inputAttributes: { min: 2, max: 6, step: 1 },
+            inputValue: 2,
+            confirmButtonText: t('common.confirm'),
+            confirmButtonColor: '#ec4899',
+        });
+        if (!value) return;
+        teamCount = value;
+
+        const { value: selection } = await Swal.fire({
+            title: t('team.team_selection'),
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: t('team.auto_balance'),
+            denyButtonText: t('team.manual_select'),
+            cancelButtonText: t('common.cancel'),
+            confirmButtonColor: '#6366f1',
+            denyButtonColor: '#ec4899',
+        }).then((r) => ({ value: r.isConfirmed ? 'auto' : r.isDenied ? 'manual' : null }));
+        if (!selection) return;
+        teamSelection = selection;
+    }
+
+    // Ask which engagement features to enable for this session.
+    const { value: settings } = await Swal.fire({
+        title: t('host.game_settings'),
+        html: `
+            <label class="flex items-center gap-2 text-left mb-2">
+                <input type="checkbox" id="swal-powerups" checked class="w-4 h-4">
+                <span>${t('powerups.enabled')}</span>
+            </label>
+            <label class="flex items-center gap-2 text-left">
+                <input type="checkbox" id="swal-reactions" checked class="w-4 h-4">
+                <span>${t('reactions.enabled')}</span>
+            </label>
+        `,
+        confirmButtonText: t('common.confirm'),
+        confirmButtonColor: '#6366f1',
+        showCancelButton: true,
+        cancelButtonText: t('common.cancel'),
+        preConfirm: () => ({
+            powerups_enabled: document.getElementById('swal-powerups').checked,
+            reactions_enabled: document.getElementById('swal-reactions').checked,
+        }),
+    });
+    if (!settings) return;
 
     // Open the host session in a new tab so the dashboard stays usable
     const token = document.querySelector('meta[name="csrf-token"]')?.content;
@@ -86,11 +152,23 @@ function playQuiz(quiz) {
     form.action = route('game.store', quiz.id);
     form.target = '_blank';
 
-    const csrfInput = document.createElement('input');
-    csrfInput.type = 'hidden';
-    csrfInput.name = '_token';
-    csrfInput.value = token;
-    form.appendChild(csrfInput);
+    const fields = {
+        _token: token,
+        mode,
+        powerups_enabled: settings.powerups_enabled ? 1 : 0,
+        reactions_enabled: settings.reactions_enabled ? 1 : 0,
+    };
+    if (mode === 'team') {
+        fields.team_count = teamCount;
+        fields.team_selection = teamSelection;
+    }
+    for (const [name, value] of Object.entries(fields)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+    }
 
     document.body.appendChild(form);
     form.submit();

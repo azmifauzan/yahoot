@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Game;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class JoinGameRequest extends FormRequest
@@ -12,7 +13,7 @@ class JoinGameRequest extends FormRequest
     }
 
     /**
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -20,6 +21,7 @@ class JoinGameRequest extends FormRequest
             'game_code' => ['required', 'string', 'size:6', 'exists:game_sessions,game_code'],
             'nickname' => ['required', 'string', 'min:2', 'max:20'],
             'avatar' => ['required', 'string', 'max:50'],
+            'team_id' => ['nullable', 'integer'],
         ];
     }
 

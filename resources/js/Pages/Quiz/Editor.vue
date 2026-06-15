@@ -383,8 +383,11 @@ function isQuestionComplete(question) {
     if (!question.question_text) return false;
     if (!question.answers || question.answers.length < 2) return false;
 
-    const hasCorrect = question.answers.some(a => a.is_correct);
-    if (!hasCorrect) return false;
+    // Polls don't require a correct answer
+    if (question.type !== 'poll') {
+        const hasCorrect = question.answers.some(a => a.is_correct);
+        if (!hasCorrect) return false;
+    }
 
     if (question.type === 'multiple_choice') {
         const filledAnswers = question.answers.filter(a => a.answer_text);

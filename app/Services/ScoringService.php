@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\PowerUpType;
 use App\Models\GamePlayer;
+use App\Models\GameTeam;
 use App\Models\PlayerAnswer;
 use App\Models\Question;
 use Illuminate\Support\Collection;
@@ -18,7 +20,8 @@ class ScoringService
         Question $question,
         GamePlayer $player,
         bool $isCorrect,
-        int $timeTakenMs
+        int $timeTakenMs,
+        ?PowerUpType $powerup = null
     ): array {
         if (! $question->type->isScored()) {
             return [
@@ -54,6 +57,10 @@ class ScoringService
         $streakBonus = min($newStreak * 100, 500);
 
         $pointsEarned = (int) floor($basePoints * $timeBonusFactor);
+
+        if ($powerup === PowerUpType::DoublePoints) {
+            $pointsEarned *= 2;
+        }
 
         return [
             'points_earned' => $pointsEarned,
@@ -95,6 +102,30 @@ class ScoringService
                 'avg_time' => (float) ($answers->whereNotNull('answer_id')->avg('time_taken') ?? 0),
             ];
         });
+    }
+
+    /**
+     * Get the team leaderboard for a game session (sum of member scores).
+     *
+     * @return Collection<int, array{rank: int, team_id: int, name: string, color: string, score: int, player_count: int}>
+     */
+    public function getTeamLeaderboard(int $gameSessionId): Collection
+    {
+        return GameTeam::query()
+            ->withCount('players')
+            ->withSum('players as members_score', 'score')
+            ->where('game_session_id', $gameSessionId)
+            ->get()
+            ->sortByDesc(fn (GameTeam $team) => (int) $team->members_score)
+            ->values()
+            ->map(fn (GameTeam $team, int $index) => [
+                'rank' => $index + 1,
+                'team_id' => $team->id,
+                'name' => $team->name,
+                'color' => $team->color,
+                'score' => (int) $team->members_score,
+                'player_count' => $team->players_count,
+            ]);
     }
 
     /**

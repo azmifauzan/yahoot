@@ -49,10 +49,15 @@ class RevealService
             $data['isPoll']
         ));
 
+        $teams = ($gameSession->settings['mode'] ?? 'individual') === 'team'
+            ? $this->scoringService->getTeamLeaderboard($gameSession->id)
+            : null;
+
         broadcast(new ScoreboardUpdated(
             $gameSession->id,
             $data['leaderboard'],
-            $data['playerPositions']
+            $data['playerPositions'],
+            $teams
         ));
 
         return true;

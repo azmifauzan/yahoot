@@ -20,7 +20,7 @@ class PlayerJoined implements ShouldBroadcastNow
     ) {}
 
     /**
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return array<int, Channel>
      */
     public function broadcastOn(): array
     {
@@ -39,6 +39,11 @@ class PlayerJoined implements ShouldBroadcastNow
                 'id' => $this->player->id,
                 'nickname' => $this->player->nickname,
                 'avatar' => $this->player->avatar,
+                'team' => $this->player->team ? [
+                    'id' => $this->player->team->id,
+                    'name' => $this->player->team->name,
+                    'color' => $this->player->team->color,
+                ] : null,
             ],
             'totalPlayers' => $this->totalPlayers,
         ];

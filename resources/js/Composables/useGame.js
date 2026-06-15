@@ -18,8 +18,13 @@ export function useGame(gameSessionId) {
     const isPoll = ref(false);
     const finalLeaderboard = ref([]);
     const podium = ref([]);
+    const teamLeaderboard = ref([]);
     const myResult = ref(null);
+    const reactions = ref([]); // active floating reactions: { id, emoji, nickname }
+    const powerupEvents = ref([]); // recent PowerUpUsed notices: { id, nickname, powerup }
     const channel = ref(null);
+    let reactionSeq = 0;
+    let powerupSeq = 0;
 
     function joinChannel() {
         if (!window.Echo || !gameSessionId) return;
@@ -60,16 +65,60 @@ export function useGame(gameSessionId) {
             .listen('ScoreboardUpdated', (e) => {
                 leaderboard.value = e.leaderboard;
                 playerPositions.value = e.playerPositions;
+                if (e.teams) teamLeaderboard.value = e.teams;
                 gameState.value = 'scoreboard';
             })
             .listen('GameEnded', (e) => {
                 finalLeaderboard.value = e.finalLeaderboard;
                 podium.value = e.podium;
+                if (e.teams) teamLeaderboard.value = e.teams;
                 gameState.value = 'finished';
             })
             .listen('GameCancelled', (e) => {
                 gameState.value = 'cancelled';
+            })
+            .listen('ReactionSent', (e) => {
+                const id = ++reactionSeq;
+                reactions.value.push({ id, emoji: e.emoji, nickname: e.nickname });
+                setTimeout(() => {
+                    reactions.value = reactions.value.filter(r => r.id !== id);
+                }, 3000);
+            })
+            .listen('PowerUpUsed', (e) => {
+                const id = ++powerupSeq;
+                powerupEvents.value.push({ id, nickname: e.nickname, powerup: e.powerup });
+                setTimeout(() => {
+                    powerupEvents.value = powerupEvents.value.filter(p => p.id !== id);
+                }, 2500);
             });
+    }
+
+    async function usePowerup(playerId, powerup, questionId, playerToken) {
+        try {
+            const response = await axios.post(`/api/games/${gameSessionId}/powerup`, {
+                player_id: playerId,
+                powerup,
+                question_id: questionId,
+                player_token: playerToken,
+            });
+            return response.data; // { powerups_available, hidden_answers? }
+        } catch (error) {
+            return null;
+        }
+    }
+
+    async function sendReaction(playerId, emoji, playerToken) {
+        try {
+            await axios.post(`/api/games/${gameSessionId}/react`, {
+                player_id: playerId,
+                emoji,
+                player_token: playerToken,
+            });
+            return true;
+        } catch (error) {
+            // Throttled (429) or disabled (403) — fail silently for UX.
+            return false;
+        }
     }
 
     function leaveChannel() {
@@ -127,10 +176,15 @@ export function useGame(gameSessionId) {
         isPoll,
         finalLeaderboard,
         podium,
+        teamLeaderboard,
         myResult,
+        reactions,
+        powerupEvents,
         joinChannel,
         leaveChannel,
         submitAnswer,
+        sendReaction,
+        usePowerup,
         fetchStatus,
     };
 }

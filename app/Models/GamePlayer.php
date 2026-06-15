@@ -15,11 +15,14 @@ class GamePlayer extends Model
 
     protected $fillable = [
         'game_session_id',
+        'game_team_id',
         'user_id',
         'nickname',
         'avatar',
         'score',
         'streak',
+        'powerups_available',
+        'powerups_used',
         'is_connected',
         'player_token',
         'finished_at',
@@ -34,6 +37,8 @@ class GamePlayer extends Model
         return [
             'score' => 'integer',
             'streak' => 'integer',
+            'powerups_available' => 'array',
+            'powerups_used' => 'array',
             'is_connected' => 'boolean',
             'finished_at' => 'datetime',
         ];
@@ -53,6 +58,14 @@ class GamePlayer extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return BelongsTo<GameTeam, $this>
+     */
+    public function team(): BelongsTo
+    {
+        return $this->belongsTo(GameTeam::class, 'game_team_id');
     }
 
     /**
