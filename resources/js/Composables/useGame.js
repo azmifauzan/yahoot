@@ -19,7 +19,9 @@ export function useGame(gameSessionId) {
     const finalLeaderboard = ref([]);
     const podium = ref([]);
     const myResult = ref(null);
+    const reactions = ref([]); // active floating reactions: { id, emoji, nickname }
     const channel = ref(null);
+    let reactionSeq = 0;
 
     function joinChannel() {
         if (!window.Echo || !gameSessionId) return;
@@ -69,7 +71,28 @@ export function useGame(gameSessionId) {
             })
             .listen('GameCancelled', (e) => {
                 gameState.value = 'cancelled';
+            })
+            .listen('ReactionSent', (e) => {
+                const id = ++reactionSeq;
+                reactions.value.push({ id, emoji: e.emoji, nickname: e.nickname });
+                setTimeout(() => {
+                    reactions.value = reactions.value.filter(r => r.id !== id);
+                }, 3000);
             });
+    }
+
+    async function sendReaction(playerId, emoji, playerToken) {
+        try {
+            await axios.post(`/api/games/${gameSessionId}/react`, {
+                player_id: playerId,
+                emoji,
+                player_token: playerToken,
+            });
+            return true;
+        } catch (error) {
+            // Throttled (429) or disabled (403) — fail silently for UX.
+            return false;
+        }
     }
 
     function leaveChannel() {
@@ -128,9 +151,11 @@ export function useGame(gameSessionId) {
         finalLeaderboard,
         podium,
         myResult,
+        reactions,
         joinChannel,
         leaveChannel,
         submitAnswer,
+        sendReaction,
         fetchStatus,
     };
 }

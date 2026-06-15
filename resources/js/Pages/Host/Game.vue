@@ -11,6 +11,7 @@ import QRCodeDisplay from '@/Components/Game/QRCodeDisplay.vue';
 import GameLayout from '@/Components/Game/GameLayout.vue';
 import CountdownOverlay from '@/Components/Game/CountdownOverlay.vue';
 import TimerBar from '@/Components/Game/TimerBar.vue';
+import FloatingReactions from '@/Components/Game/FloatingReactions.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
@@ -50,7 +51,7 @@ const {
     gameState, players: livePlayers, currentQuestion, questionNumber, totalQuestions,
     timeLimit, answeredCount, totalPlayers, leaderboard, playerPositions,
     correctAnswer, answerStats, playerResults, isPoll, finalLeaderboard, podium,
-    joinChannel,
+    reactions, joinChannel,
 } = useGame(props.gameSession.id);
 
 // Initialize from props
@@ -218,6 +219,9 @@ watch(gameState, (state) => {
     <GameLayout>
         <!-- Confetti overlay -->
         <ConfettiEffect v-if="showConfetti" :duration="6000" @complete="showConfetti = false" />
+
+        <!-- Floating emoji reactions from players -->
+        <FloatingReactions :reactions="reactions" />
 
         <!-- Mute toggle -->
         <button

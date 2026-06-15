@@ -413,6 +413,12 @@
         "accuracy": "Accuracy",
         "empty": "You haven't finished any games yet. Join one to start tracking your progress!"
     },
+    "reactions": {
+        "title": "Reactions",
+        "send": "Send a reaction",
+        "enabled": "Allow reactions",
+        "disabled": "Reactions off"
+    },
     "common": {
         "save": "Save",
         "cancel": "Cancel",

@@ -413,6 +413,12 @@
         "accuracy": "Akurasi",
         "empty": "Kamu belum menyelesaikan game apa pun. Ikuti satu game untuk mulai melacak progresmu!"
     },
+    "reactions": {
+        "title": "Reaksi",
+        "send": "Kirim reaksi",
+        "enabled": "Izinkan reaksi",
+        "disabled": "Reaksi mati"
+    },
     "common": {
         "save": "Simpan",
         "cancel": "Batal",

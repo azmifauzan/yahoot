@@ -13,5 +13,6 @@ Route::prefix('games')->group(function () {
     Route::post('/join', [PlayerController::class, 'apiJoin']);
     Route::post('/{gameSession}/answer', [PlayerController::class, 'apiAnswer']);
     Route::post('/{gameSession}/leave', [PlayerController::class, 'apiLeave']);
+    Route::post('/{gameSession}/react', [PlayerController::class, 'apiReact']);
     Route::get('/{gameSession}/status', [PlayerController::class, 'apiStatus']);
 });

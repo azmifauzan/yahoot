@@ -12,6 +12,8 @@ import CountdownOverlay from '@/Components/Game/CountdownOverlay.vue';
 import TimerBar from '@/Components/Game/TimerBar.vue';
 import ScoreAnimation from '@/Components/Game/ScoreAnimation.vue';
 import StreakBadge from '@/Components/Game/StreakBadge.vue';
+import ReactionBar from '@/Components/Game/ReactionBar.vue';
+import FloatingReactions from '@/Components/Game/FloatingReactions.vue';
 
 const { t } = useI18n();
 
@@ -38,8 +40,15 @@ const {
     gameState, players, currentQuestion, questionNumber, totalQuestions,
     timeLimit, myResult, correctAnswer, answerStats, playerResults, isPoll,
     leaderboard, playerPositions, finalLeaderboard, podium,
-    joinChannel, submitAnswer,
+    reactions, joinChannel, submitAnswer, sendReaction,
 } = useGame(props.gameSession.id);
+
+const reactionsEnabled = computed(() => props.gameSession?.reactions_enabled ?? true);
+
+function react(emoji) {
+    if (!player.value) return;
+    sendReaction(player.value.id, emoji, player.value.player_token);
+}
 
 // Notify the host when this player leaves (tab close, refresh, navigation away)
 function notifyLeave() {
@@ -204,6 +213,17 @@ function goHome() {
     <GameLayout :shake="showShake">
         <!-- Confetti overlay -->
         <ConfettiEffect v-if="showConfetti" :duration="4000" @complete="showConfetti = false" />
+
+        <!-- Floating emoji reactions overlay -->
+        <FloatingReactions :reactions="reactions" />
+
+        <!-- Reaction bar (lobby, between questions, scoreboard) -->
+        <div
+            v-if="reactionsEnabled && player && ['lobby', 'answering', 'result', 'scoreboard'].includes(gameState)"
+            class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 px-3 py-2 rounded-2xl bg-black/30 backdrop-blur"
+        >
+            <ReactionBar @react="react" />
+        </div>
 
         <!-- Mute toggle -->
         <button

@@ -6,8 +6,10 @@ use App\Enums\GameStatus;
 use App\Events\AnswerSubmitted;
 use App\Events\PlayerJoined;
 use App\Events\PlayerLeft;
+use App\Events\ReactionSent;
 use App\Http\Requests\Game\JoinGameRequest;
 use App\Http\Requests\Game\LeaveGameRequest;
+use App\Http\Requests\Game\SendReactionRequest;
 use App\Http\Requests\Game\SubmitAnswerRequest;
 use App\Models\GamePlayer;
 use App\Models\GameSession;
@@ -16,6 +18,7 @@ use App\Services\RevealService;
 use App\Services\ScoringService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -55,6 +58,7 @@ class PlayerController extends Controller
                 'quiz_title' => $session->quiz->title,
                 'sound_theme' => $session->quiz->settings['sound_theme'] ?? 'classic',
                 'music_enabled' => $session->quiz->settings['music_enabled'] ?? true,
+                'reactions_enabled' => $session->settings['reactions_enabled'] ?? true,
             ],
         ]);
     }
@@ -155,6 +159,44 @@ class PlayerController extends Controller
         ));
 
         return response()->json(['message' => 'Left game.']);
+    }
+
+    /**
+     * API: Send an ephemeral emoji reaction (broadcast only, not persisted).
+     */
+    public function apiReact(SendReactionRequest $request, GameSession $gameSession): JsonResponse
+    {
+        $validated = $request->validated();
+
+        if (($gameSession->settings['reactions_enabled'] ?? true) === false) {
+            return response()->json(['message' => 'Reactions are disabled.'], 403);
+        }
+
+        $player = GamePlayer::query()
+            ->where('id', $validated['player_id'])
+            ->where('game_session_id', $gameSession->id)
+            ->firstOrFail();
+
+        if (! hash_equals((string) $player->player_token, (string) $validated['player_token'])) {
+            return response()->json(['message' => 'Invalid player token.'], 403);
+        }
+
+        $throttleKey = 'react:'.$player->id;
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 1)) {
+            return response()->json(['message' => 'Slow down.'], 429);
+        }
+
+        RateLimiter::hit($throttleKey, (int) config('reactions.throttle_seconds', 1));
+
+        broadcast(new ReactionSent(
+            $gameSession->id,
+            $player->id,
+            $player->nickname,
+            $validated['emoji']
+        ));
+
+        return response()->json(['message' => 'Reaction sent.']);
     }
 
     /**
