@@ -9,12 +9,14 @@ use App\Events\GameEnded;
 use App\Events\GameStarted;
 use App\Events\QuestionStarted;
 use App\Jobs\AutoRevealAnswer;
+use App\Jobs\ProcessGameResults;
 use App\Models\GameSession;
 use App\Models\PlayerAnswer;
 use App\Models\Quiz;
 use App\Services\GameCodeService;
 use App\Services\RevealService;
 use App\Services\ScoringService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -208,6 +210,11 @@ class GameSessionController extends Controller
     {
         $this->authorize('end', $gameSession);
 
+        // Guard against ending (and re-accumulating ranking/achievements) twice.
+        if ($gameSession->status === GameStatus::Finished) {
+            return redirect()->route('game.results', $gameSession);
+        }
+
         $gameSession->update([
             'status' => GameStatus::Finished,
             'finished_at' => now(),
@@ -225,6 +232,9 @@ class GameSessionController extends Controller
             $podium,
             $playerStats
         ));
+
+        // Accumulate lifetime XP/ranking + award achievement badges (heavy → queued).
+        ProcessGameResults::dispatch($gameSession->id);
 
         return redirect()->route('game.results', $gameSession);
     }
@@ -321,6 +331,47 @@ class GameSessionController extends Controller
             'leaderboard' => $leaderboard,
             'totalQuestions' => $totalQuestions,
             'questions' => $questions,
+        ]);
+    }
+
+    /**
+     * Render a print-friendly report (leaderboard + per-question analysis)
+     * the host can save as PDF via the browser's print dialog.
+     */
+    public function report(GameSession $gameSession): View
+    {
+        $this->authorize('results', $gameSession);
+
+        $gameSession->load(['quiz.questions', 'players.playerAnswers']);
+
+        $leaderboard = $this->scoringService->getLeaderboard($gameSession->id);
+        $totalQuestions = $gameSession->quiz->questions->count();
+        $playerCount = $gameSession->players->count();
+
+        $questions = $gameSession->quiz->questions->map(function ($question) use ($gameSession, $playerCount) {
+            $answers = $gameSession->players
+                ->flatMap->playerAnswers
+                ->where('question_id', $question->id);
+
+            $correct = $answers->where('is_correct', true)->count();
+            $answered = $answers->whereNotNull('answer_id')->count();
+
+            return [
+                'question_text' => $question->question_text,
+                'correct_count' => $correct,
+                'incorrect_count' => $answered - $correct,
+                'no_answer_count' => $playerCount - $answered,
+                'correct_pct' => $playerCount > 0 ? round($correct / $playerCount * 100) : 0,
+            ];
+        });
+
+        return view('reports.game', [
+            'gameSession' => $gameSession,
+            'quiz' => $gameSession->quiz,
+            'leaderboard' => $leaderboard,
+            'questions' => $questions,
+            'totalQuestions' => $totalQuestions,
+            'playerCount' => $playerCount,
         ]);
     }
 

@@ -32,6 +32,8 @@ const effectiveCollapsed = computed(() => isDesktop.value && collapsed.value);
 const menuLinks = computed(() => {
     const links = [
         { href: route('dashboard'), label: t('nav.my_quizzes'), icon: 'home', active: route().current('dashboard') },
+        { href: route('progress'), label: t('nav.progress'), icon: 'chart', active: route().current('progress') },
+        { href: route('leaderboard'), label: t('nav.leaderboard'), icon: 'trophy', active: route().current('leaderboard') },
     ];
 
     if (page.props.jetstream.hasApiFeatures) {

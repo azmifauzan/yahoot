@@ -17,7 +17,9 @@
         "menu": "Menu",
         "admin_panel": "Admin Panel",
         "collapse": "Collapse",
-        "expand": "Expand"
+        "expand": "Expand",
+        "progress": "My Progress",
+        "leaderboard": "Leaderboard"
     },
     "landing": {
         "hero_title": "Create Quizzes, Play Together!",
@@ -258,7 +260,9 @@
         "player_rankings": "Player Standings",
         "question_analysis": "Question Analysis",
         "correct_pct": "Correct Rate",
-        "no_answer": "No Answer"
+        "no_answer": "No Answer",
+        "download_pdf": "Download PDF",
+        "view_analytics": "Analytics"
     },
     "admin": {
         "dashboard": "Admin Panel",
@@ -350,6 +354,64 @@
         "theme_energetic": "Energetic",
         "theme_none": "No Sound",
         "music_enabled": "Background Music"
+    },
+    "leaderboard": {
+        "title": "Global Leaderboard",
+        "subtitle": "Top players ranked by lifetime XP.",
+        "your_rank": "Your Rank",
+        "rank": "Rank",
+        "player": "Player",
+        "total_xp": "Total XP",
+        "games_played": "Played",
+        "games_won": "Won",
+        "empty": "No players ranked yet. Play a game to get on the board!",
+        "not_ranked": "Play a game to get ranked!",
+        "unranked": "Unranked"
+    },
+    "badges": {
+        "title": "Achievements",
+        "earned": "Earned",
+        "locked": "Locked",
+        "earned_on": "Earned on {date}",
+        "progress": "{earned} of {total} unlocked",
+        "first_game": { "name": "First Steps", "desc": "Play your first game." },
+        "first_win": { "name": "Winner", "desc": "Win your first game." },
+        "veteran": { "name": "Veteran", "desc": "Play 25 games." },
+        "champion": { "name": "Champion", "desc": "Win 10 games." },
+        "sharp_shooter": { "name": "Sharp Shooter", "desc": "Answer 100 questions correctly." },
+        "streak_master": { "name": "Streak Master", "desc": "Reach a streak of 10 correct answers." },
+        "high_scorer": { "name": "High Scorer", "desc": "Earn 10,000 lifetime XP." }
+    },
+    "analytics": {
+        "title": "Question Analytics",
+        "subtitle": "Difficulty insights across {count} session(s).",
+        "no_data": "No game data yet. Play this quiz to see analytics.",
+        "question": "Question",
+        "difficulty": "Difficulty",
+        "correct_rate": "Correct Rate",
+        "avg_time": "Avg Time",
+        "attempts": "Attempts",
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard",
+        "unknown": "No Data",
+        "seconds": "{n}s"
+    },
+    "progress": {
+        "title": "My Progress",
+        "subtitle": "Your performance across all games played.",
+        "games_played": "Games Played",
+        "games_won": "Games Won",
+        "total_xp": "Total XP",
+        "avg_accuracy": "Avg Accuracy",
+        "score_trend": "Score Trend",
+        "accuracy_trend": "Accuracy Trend",
+        "recent_games": "Recent Games",
+        "quiz": "Quiz",
+        "date": "Date",
+        "score": "Score",
+        "accuracy": "Accuracy",
+        "empty": "You haven't finished any games yet. Join one to start tracking your progress!"
     },
     "common": {
         "save": "Save",
