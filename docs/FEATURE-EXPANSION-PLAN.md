@@ -15,6 +15,11 @@
   `team_selection` saat start game, host toggle UI di Dashboard untuk power-up/reaksi/mode
   tim, pemilihan tim manual saat join (`GET /api/games/code/{code}/info`), serta grouping
   per-tim di lobby host + standings tim di podium finished.
+- ✅ **Phase 1-3 gap-fixing pass #2 (2026-06-15):** `apiUsePowerup` kini menolak request
+  setelah pertanyaan tidak lagi aktif (status `reviewing`) — sebelumnya `fifty_fifty` bisa
+  membocorkan 2 jawaban salah meski hasil sudah di-reveal; `powerupsAvailable` di
+  `Player/Game.vue` kini di-seed dari data pemain hasil join (bukan list statis), agar
+  power-up yang sudah dipakai tetap tampak terpakai setelah refresh halaman.
 - ⬜ Belum: Practice/Solo (4), Import/Export (9), Question Bank (10),
   Marketplace/Explore (11), AI Question Generator (12), Live Chat (14a chat — emoji done).
 

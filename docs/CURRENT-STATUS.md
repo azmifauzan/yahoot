@@ -135,6 +135,11 @@ All done (see `docs/FEATURE-EXPANSION-PLAN.md` for full spec):
 - `Host/Game.vue` lobby groups players by team and shows team standings on the finished/podium screen (team mode)
 - New i18n keys added to `id.json`/`en.json`: `host.game_settings`, `powerups.enabled/disabled`, `team.team_selection/auto_balance/manual_select`
 
+### Gap-fixing pass #2 (2026-06-15)
+- `PlayerController::apiUsePowerup()` now rejects requests once the question is no longer active (`status !== Playing`), matching the same guard already on `apiAnswer` — previously a power-up could be consumed (and `fifty_fifty` could leak the hidden wrong answers) during the `reviewing` state after a question was revealed
+- `Pages/Player/Game.vue` now seeds `powerupsAvailable` from the player's actual `powerups_available` (returned at join / restored from `sessionStorage`) instead of a hardcoded all-three list, so the power-up bar reflects power-ups already used after a page refresh
+- Added regression test `powerup is rejected once the question is no longer active` to `tests/Feature/Game/PowerUpTest.php`
+
 ---
 
 ## Architecture Reality vs PRD

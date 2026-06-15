@@ -263,6 +263,10 @@ class PlayerController extends Controller
     {
         $validated = $request->validated();
 
+        if ($gameSession->status !== GameStatus::Playing) {
+            return response()->json(['message' => 'Power-ups can only be used while a question is active.'], 422);
+        }
+
         if (($gameSession->settings['powerups_enabled'] ?? true) === false) {
             return response()->json(['message' => 'Power-ups are disabled.'], 403);
         }

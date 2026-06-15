@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\GameStatus;
 use App\Enums\PointType;
 use App\Jobs\AutoRevealAnswer;
 use App\Models\Answer;
@@ -110,6 +111,19 @@ test('powerups are rejected when disabled via session settings', function () {
         'powerup' => 'double_points',
         'question_id' => $question->id,
     ])->assertForbidden();
+});
+
+test('powerup is rejected once the question is no longer active', function () {
+    [$session, $player, $question] = createPowerUpSetup();
+
+    $session->update(['status' => GameStatus::Reviewing]);
+
+    $this->postJson("/api/games/{$session->id}/powerup", [
+        'player_id' => $player->id,
+        'player_token' => $player->player_token,
+        'powerup' => 'fifty_fifty',
+        'question_id' => $question->id,
+    ])->assertUnprocessable();
 });
 
 test('powerup with invalid player token is rejected', function () {

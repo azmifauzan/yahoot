@@ -54,7 +54,7 @@ function react(emoji) {
 }
 
 // Power-ups
-const powerupsAvailable = ref(['double_points', 'fifty_fifty', 'freeze_timer']);
+const powerupsAvailable = ref([]);
 const powerupUsedThisQuestion = ref(null);
 const hiddenAnswers = ref([]);
 
@@ -85,6 +85,7 @@ onMounted(() => {
     const stored = sessionStorage.getItem('yahoot_player');
     if (stored) {
         player.value = JSON.parse(stored);
+        powerupsAvailable.value = player.value.powerups_available ?? [];
     }
     joinChannel();
     window.addEventListener('pagehide', notifyLeave);
