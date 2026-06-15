@@ -35,7 +35,7 @@ const sections = [
         >
             <div
                 v-if="show"
-                class="fixed bottom-24 right-4 z-50 flex max-h-[70vh] w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-900 sm:right-6 sm:w-96"
+                class="fixed bottom-24 left-4 z-50 flex max-h-[70vh] w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-900 sm:left-6 sm:w-96"
             >
                 <!-- Header -->
                 <div class="flex items-start justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-800">
