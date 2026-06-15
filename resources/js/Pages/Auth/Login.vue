@@ -30,6 +30,12 @@ const submit = () => {
         onFinish: () => form.reset('password'),
     });
 };
+
+const fillDemo = () => {
+    form.email = 'demo@yahoot.app';
+    form.password = 'password';
+    form.clearErrors();
+};
 </script>
 
 <template>
@@ -51,6 +57,19 @@ const submit = () => {
         <div v-if="status" class="mb-4 rounded-lg bg-green-50 p-3 text-sm font-medium text-green-600">
             {{ status }}
         </div>
+
+        <button
+            type="button"
+            @click="fillDemo"
+            class="mb-4 flex w-full items-start gap-3 rounded-lg border border-dashed border-primary-300 bg-primary-50 p-3 text-left transition hover:bg-primary-100 dark:border-primary-700 dark:bg-primary-900/20 dark:hover:bg-primary-900/40"
+        >
+            <span class="text-lg leading-none">✨</span>
+            <span class="flex-1">
+                <span class="block text-sm font-semibold text-primary-700 dark:text-primary-300">{{ t('auth.demo_title') }}</span>
+                <span class="block text-xs text-primary-600/80 dark:text-primary-400/80">{{ t('auth.demo_hint') }}</span>
+                <span class="mt-1 block font-mono text-xs text-gray-500 dark:text-gray-400">demo@yahoot.app · password</span>
+            </span>
+        </button>
 
         <GoogleAuthButton />
 
