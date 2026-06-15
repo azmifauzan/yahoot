@@ -420,6 +420,14 @@
         "enabled": "Izinkan reaksi",
         "disabled": "Reaksi mati"
     },
+    "import_export": {
+        "import": "Impor",
+        "export": "Ekspor",
+        "import_title": "Impor Kuis",
+        "import_help": "Unggah file JSON atau CSV untuk membuat kuis baru sebagai draf.",
+        "choose_file": "Pilih file (JSON/CSV)",
+        "download_template": "Unduh template contoh"
+    },
     "practice": {
         "practice_mode": "Mode Latihan",
         "start_practice": "Latihan",

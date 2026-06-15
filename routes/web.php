@@ -11,6 +11,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuestionImageController;
 use App\Http\Controllers\QuizAnalyticsController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\QuizImportExportController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -94,6 +95,8 @@ Route::middleware([
 
     Route::prefix('quizzes')->name('quizzes.')->group(function () {
         Route::get('/create', [QuizController::class, 'create'])->name('create');
+        Route::post('/import', [QuizImportExportController::class, 'import'])->name('import');
+        Route::get('/{quiz}/export', [QuizImportExportController::class, 'export'])->name('export');
         Route::get('/{quiz}/analytics', [QuizAnalyticsController::class, 'index'])->name('analytics');
         Route::post('/', [QuizController::class, 'store'])->name('store');
         Route::get('/{quiz}/edit', [QuizController::class, 'edit'])->name('edit');

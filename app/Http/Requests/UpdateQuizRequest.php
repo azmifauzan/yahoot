@@ -33,6 +33,7 @@ class UpdateQuizRequest extends FormRequest
             'settings' => ['nullable', 'array'],
             'settings.sound_theme' => ['nullable', Rule::enum(SoundTheme::class)],
             'settings.music_enabled' => ['nullable', 'boolean'],
+            'settings.powerups_enabled' => ['nullable', 'boolean'],
         ];
     }
 }

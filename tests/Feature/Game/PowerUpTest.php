@@ -31,7 +31,7 @@ function createPowerUpSetup(array $settings = [], int $wrongCount = 3): array
         'host_id' => $host->id,
         'current_question_index' => 0,
         'question_started_at' => now(),
-        'settings' => $settings,
+        'settings' => array_merge(['powerups_enabled' => true], $settings),
     ]);
 
     $player = GamePlayer::factory()->create(['game_session_id' => $session->id]);

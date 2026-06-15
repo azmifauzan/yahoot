@@ -46,7 +46,7 @@ const {
 } = useGame(props.gameSession.id);
 
 const reactionsEnabled = computed(() => props.gameSession?.reactions_enabled ?? true);
-const powerupsEnabled = computed(() => props.gameSession?.powerups_enabled ?? true);
+const powerupsEnabled = computed(() => props.gameSession?.powerups_enabled ?? false);
 
 function react(emoji) {
     if (!player.value) return;

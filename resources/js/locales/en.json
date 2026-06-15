@@ -420,6 +420,14 @@
         "enabled": "Allow reactions",
         "disabled": "Reactions off"
     },
+    "import_export": {
+        "import": "Import",
+        "export": "Export",
+        "import_title": "Import Quiz",
+        "import_help": "Upload a JSON or CSV file to create a new quiz as a draft.",
+        "choose_file": "Choose a file (JSON/CSV)",
+        "download_template": "Download sample template"
+    },
     "practice": {
         "practice_mode": "Practice Mode",
         "start_practice": "Practice",

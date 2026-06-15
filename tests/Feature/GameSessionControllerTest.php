@@ -35,7 +35,7 @@ test('host can create a game session', function () {
     ]);
 });
 
-test('game session defaults to powerups and reactions enabled with auto team selection', function () {
+test('game session defaults to powerups disabled and reactions enabled with auto team selection', function () {
     [$user, $quiz] = createGameSetup();
 
     $this->actingAs($user)
@@ -44,12 +44,12 @@ test('game session defaults to powerups and reactions enabled with auto team sel
 
     $session = GameSession::query()->latest('id')->first();
 
-    expect($session->settings['powerups_enabled'])->toBeTrue()
+    expect($session->settings['powerups_enabled'])->toBeFalse()
         ->and($session->settings['reactions_enabled'])->toBeTrue()
         ->and($session->settings['team_selection'])->toBe('auto');
 });
 
-test('host can disable powerups/reactions and pick manual team selection', function () {
+test('host can disable reactions and pick manual team selection', function () {
     [$user, $quiz] = createGameSetup();
 
     $this->actingAs($user)
@@ -57,7 +57,6 @@ test('host can disable powerups/reactions and pick manual team selection', funct
             'mode' => 'team',
             'team_count' => 2,
             'team_selection' => 'manual',
-            'powerups_enabled' => false,
             'reactions_enabled' => false,
         ])
         ->assertRedirect();
@@ -67,6 +66,22 @@ test('host can disable powerups/reactions and pick manual team selection', funct
     expect($session->settings['powerups_enabled'])->toBeFalse()
         ->and($session->settings['reactions_enabled'])->toBeFalse()
         ->and($session->settings['team_selection'])->toBe('manual');
+});
+
+test('game session enables powerups when the quiz has powerups enabled in its settings', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->published()->for($user)->create(['settings' => ['powerups_enabled' => true]]);
+    $question = Question::factory()->for($quiz)->create(['order' => 0, 'time_limit' => 20]);
+    Answer::factory()->correct()->red()->for($question)->create();
+    Answer::factory()->blue()->for($question)->create();
+
+    $this->actingAs($user)
+        ->post(route('game.store', $quiz))
+        ->assertRedirect();
+
+    $session = GameSession::query()->latest('id')->first();
+
+    expect($session->settings['powerups_enabled'])->toBeTrue();
 });
 
 test('non-owner cannot create a game session', function () {

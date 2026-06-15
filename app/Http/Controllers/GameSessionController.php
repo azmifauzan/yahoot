@@ -53,7 +53,7 @@ class GameSessionController extends Controller
 
         $settings = [
             'mode' => $mode,
-            'powerups_enabled' => $request->boolean('powerups_enabled', true),
+            'powerups_enabled' => (bool) ($quiz->settings['powerups_enabled'] ?? false),
             'reactions_enabled' => $request->boolean('reactions_enabled', true),
         ];
 

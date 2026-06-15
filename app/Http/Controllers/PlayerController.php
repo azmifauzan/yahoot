@@ -62,7 +62,7 @@ class PlayerController extends Controller
                 'sound_theme' => $session->quiz->settings['sound_theme'] ?? 'classic',
                 'music_enabled' => $session->quiz->settings['music_enabled'] ?? true,
                 'reactions_enabled' => $session->settings['reactions_enabled'] ?? true,
-                'powerups_enabled' => $session->settings['powerups_enabled'] ?? true,
+                'powerups_enabled' => $session->settings['powerups_enabled'] ?? false,
                 'mode' => $session->settings['mode'] ?? 'individual',
             ],
         ]);
@@ -263,7 +263,7 @@ class PlayerController extends Controller
     {
         $validated = $request->validated();
 
-        if (($gameSession->settings['powerups_enabled'] ?? true) === false) {
+        if (($gameSession->settings['powerups_enabled'] ?? false) === false) {
             return response()->json(['message' => 'Power-ups are disabled.'], 403);
         }
 

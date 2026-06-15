@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Game;
+namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StartGameSessionRequest extends FormRequest
+class ImportQuizRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -18,10 +18,13 @@ class StartGameSessionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'mode' => ['nullable', 'in:individual,team'],
-            'team_count' => ['nullable', 'integer', 'min:2', 'max:6'],
-            'team_selection' => ['nullable', 'in:auto,manual'],
-            'reactions_enabled' => ['nullable', 'boolean'],
+            'file' => [
+                'required',
+                'file',
+                'max:2048',
+                'extensions:json,csv,txt',
+                'mimetypes:application/json,text/plain,text/csv,application/csv',
+            ],
         ];
     }
 }

@@ -31,6 +31,7 @@ const quizForm = useForm({
 });
 
 // Local questions state
+const showExport = ref(false);
 const questions = ref(props.quiz?.questions || []);
 const selectedQuestionIndex = ref(questions.value.length > 0 ? 0 : -1);
 const selectedQuestion = computed(() =>
@@ -464,6 +465,31 @@ function isQuestionComplete(question) {
                         </svg>
                         <span class="hidden sm:inline">{{ t('quiz.save') }}</span>
                     </button>
+
+                    <!-- Export menu -->
+                    <div v-if="!isNew" class="relative">
+                        <button
+                            @click="showExport = !showExport"
+                            class="rounded-lg px-3 sm:px-4 py-2 text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 flex items-center gap-1.5"
+                        >
+                            ⬇ <span class="hidden sm:inline">{{ t('import_export.export') }}</span>
+                        </button>
+                        <div
+                            v-if="showExport"
+                            class="absolute right-0 z-50 mt-1 w-32 rounded-lg bg-white shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700 overflow-hidden"
+                        >
+                            <a
+                                :href="route('quizzes.export', { quiz: quiz.id, format: 'json' })"
+                                @click="showExport = false"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                            >JSON</a>
+                            <a
+                                :href="route('quizzes.export', { quiz: quiz.id, format: 'csv' })"
+                                @click="showExport = false"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                            >CSV</a>
+                        </div>
+                    </div>
 
                     <!-- Publish button -->
                     <button
