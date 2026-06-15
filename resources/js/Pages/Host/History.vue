@@ -41,12 +41,20 @@ function cancelGame(session) {
                 <h2 class="font-display text-xl font-bold leading-tight text-gray-800 dark:text-gray-100">
                     {{ t('host.history_title') }} &middot; {{ quiz.title }}
                 </h2>
-                <Link
-                    :href="route('quizzes.edit', quiz.id)"
-                    class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm border border-gray-200 transition hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-800 dark:hover:bg-gray-800"
-                >
-                    {{ t('quiz.back') }}
-                </Link>
+                <div class="flex items-center gap-2">
+                    <Link
+                        :href="route('quizzes.analytics', quiz.id)"
+                        class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm border border-gray-200 transition hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-800 dark:hover:bg-gray-800"
+                    >
+                        📊 {{ t('host.view_analytics') }}
+                    </Link>
+                    <Link
+                        :href="route('quizzes.edit', quiz.id)"
+                        class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm border border-gray-200 transition hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-800 dark:hover:bg-gray-800"
+                    >
+                        {{ t('quiz.back') }}
+                    </Link>
+                </div>
             </div>
         </template>
 

@@ -36,6 +36,9 @@ class User extends Authenticatable
         'avatar',
         'locale',
         'is_admin',
+        'total_xp',
+        'games_played',
+        'games_won',
     ];
 
     /**
@@ -71,6 +74,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'total_xp' => 'integer',
+            'games_played' => 'integer',
+            'games_won' => 'integer',
         ];
     }
 
@@ -106,5 +112,13 @@ class User extends Authenticatable
     public function gamePlayers(): HasMany
     {
         return $this->hasMany(GamePlayer::class);
+    }
+
+    /**
+     * @return HasMany<UserBadge, $this>
+     */
+    public function badges(): HasMany
+    {
+        return $this->hasMany(UserBadge::class);
     }
 }

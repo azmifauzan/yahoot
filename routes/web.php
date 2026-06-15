@@ -3,9 +3,12 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\GameSessionController;
+use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\PlayerController;
+use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuestionImageController;
+use App\Http\Controllers\QuizAnalyticsController;
 use App\Http\Controllers\QuizController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,6 +33,9 @@ Route::middleware('guest')->prefix('auth/google')->name('auth.google.')->group(f
 // Player routes (no auth required — guests can play)
 Route::get('/play', [PlayerController::class, 'join'])->name('play');
 Route::get('/play/{code}', [PlayerController::class, 'play'])->name('play.game');
+
+// Global leaderboard (public)
+Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
 
 // Admin routes
 Route::middleware([
@@ -78,8 +84,12 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', [QuizController::class, 'index'])->name('dashboard');
 
+    // Cross-session progress + earned achievement badges
+    Route::get('/me/progress', [ProgressController::class, 'index'])->name('progress');
+
     Route::prefix('quizzes')->name('quizzes.')->group(function () {
         Route::get('/create', [QuizController::class, 'create'])->name('create');
+        Route::get('/{quiz}/analytics', [QuizAnalyticsController::class, 'index'])->name('analytics');
         Route::post('/', [QuizController::class, 'store'])->name('store');
         Route::get('/{quiz}/edit', [QuizController::class, 'edit'])->name('edit');
         Route::put('/{quiz}', [QuizController::class, 'update'])->name('update');
@@ -110,6 +120,7 @@ Route::middleware([
         Route::post('/{gameSession}/cancel', [GameSessionController::class, 'cancel'])->name('cancel');
         Route::get('/{gameSession}/results', [GameSessionController::class, 'results'])->name('results');
         Route::get('/{gameSession}/stats', [GameSessionController::class, 'stats'])->name('stats');
+        Route::get('/{gameSession}/report', [GameSessionController::class, 'report'])->name('report');
         Route::get('/{gameSession}/export', [GameSessionController::class, 'export'])->name('export');
     });
 });
