@@ -102,7 +102,7 @@ const logout = () => {
             <!-- Fullscreen mode: header only, no sidebar -->
             <template v-if="fullscreen">
                 <header v-if="$slots.header" class="bg-white shadow-sm dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shrink-0">
-                    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                    <div class="w-full py-3 px-3 sm:px-4">
                         <slot name="header" />
                     </div>
                 </header>

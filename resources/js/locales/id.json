@@ -478,6 +478,58 @@
         "api_key_hint": "Disimpan terenkripsi. Kosongkan untuk tetap memakai key saat ini.",
         "saved": "Pengaturan AI tersimpan"
     },
+    "editor_help": {
+        "button": "Bantuan",
+        "title": "Panduan Editor Kuis",
+        "intro": "Semua yang bisa kamu lakukan di sini dan cara mengisi kuis.",
+        "got_it": "Mengerti",
+        "types_title": "Tipe pertanyaan",
+        "types_items": [
+            "Pilihan Ganda — 4 opsi jawaban, tepat satu yang benar.",
+            "Benar / Salah — 2 opsi, pilih yang benar."
+        ],
+        "sidebar_title": "Daftar pertanyaan (panel kiri)",
+        "sidebar_items": [
+            "Tambah Pertanyaan — buat pertanyaan baru di akhir.",
+            "Generate dengan AI — buat pertanyaan dari topik (perlu pengaturan AI).",
+            "Seret pertanyaan untuk mengubah urutan.",
+            "Tanda \"!\" merah menandai pertanyaan yang belum lengkap.",
+            "Arahkan kursor ke pertanyaan lalu klik ikon tong sampah untuk menghapus."
+        ],
+        "question_title": "Mengisi pertanyaan (panel tengah)",
+        "question_items": [
+            "Ketik teks pertanyaan di kolom besar paling atas.",
+            "Opsional: unggah gambar untuk pertanyaan.",
+            "Isi teks untuk setiap jawaban.",
+            "Centang penanda pada jawaban yang benar.",
+            "Tiap jawaban punya warna dan bentuk sendiri yang dilihat pemain."
+        ],
+        "properties_title": "Pengaturan pertanyaan (panel kanan)",
+        "properties_items": [
+            "Batas waktu — berapa detik pemain boleh menjawab.",
+            "Poin — Standar atau Ganda untuk pertanyaan lebih sulit."
+        ],
+        "settings_title": "Pengaturan kuis",
+        "settings_items": [
+            "Judul & deskripsi — beri nama kuismu di bagian atas.",
+            "Tema — gaya visual saat permainan berlangsung.",
+            "Kategori & tag — bantu mengatur dan menemukan kuis.",
+            "Tema suara & musik — audio latar saat permainan.",
+            "Visibilitas — biarkan privat atau publikasikan."
+        ],
+        "ai_title": "Generator pertanyaan AI",
+        "ai_items": [
+            "Klik \"Generate dengan AI\", lalu isi topik, jumlah, kesulitan, dan tipe.",
+            "Atur dulu provider dan API key di Pengaturan AI.",
+            "Selalu tinjau pertanyaan hasil AI sebelum dipublikasikan."
+        ],
+        "save_title": "Menyimpan",
+        "save_items": [
+            "Perubahan tersimpan otomatis saat kamu berhenti sejenak.",
+            "Gunakan tombol Simpan untuk menyimpan langsung.",
+            "Ada indikator saat ada perubahan yang belum tersimpan."
+        ]
+    },
     "common": {
         "save": "Simpan",
         "cancel": "Batal",
