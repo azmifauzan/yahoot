@@ -19,7 +19,8 @@
         "collapse": "Collapse",
         "expand": "Expand",
         "progress": "My Progress",
-        "leaderboard": "Leaderboard"
+        "leaderboard": "Leaderboard",
+        "ai_settings": "AI Settings"
     },
     "landing": {
         "hero_title": "Create Quizzes, Play Together!",
@@ -109,7 +110,23 @@
         "unsaved_title": "Unsaved Changes",
         "unsaved_text": "You have unsaved changes. Are you sure you want to leave?",
         "leave": "Leave",
-        "theme": "Theme"
+        "theme": "Theme",
+        "ai_generate": "Generate with AI",
+        "ai_generate_title": "Generate Questions with AI",
+        "ai_topic": "Topic",
+        "ai_topic_placeholder": "e.g. The Solar System",
+        "ai_count": "Number of questions",
+        "ai_difficulty": "Difficulty",
+        "ai_difficulty_easy": "Easy",
+        "ai_difficulty_medium": "Medium",
+        "ai_difficulty_hard": "Hard",
+        "ai_question_type": "Question type",
+        "ai_generate_button": "Generate",
+        "ai_generating": "Generating...",
+        "ai_generate_success": "AI-generated questions added",
+        "ai_disclaimer": "Review AI-generated questions before publishing your quiz.",
+        "ai_not_configured": "AI question generator is not configured yet.",
+        "ai_not_configured_action": "Open AI Settings"
     },
     "game": {
         "game_code": "Game Code",
@@ -440,6 +457,23 @@
         "choose_team": "Choose your team",
         "team_score": "Team score",
         "team_standings": "Team standings"
+    },
+    "ai": {
+        "title": "AI Settings",
+        "description": "Configure the LLM provider used by the AI quiz question generator. Your API key is stored encrypted.",
+        "provider": "Provider",
+        "provider_openai": "OpenAI",
+        "provider_anthropic": "Anthropic",
+        "model": "Model",
+        "model_placeholder": "e.g. gpt-4o-mini",
+        "base_url": "Base URL",
+        "base_url_placeholder": "Default: {url}",
+        "api_key": "API Key",
+        "api_key_configured": "API key is configured",
+        "api_key_change": "Change API key",
+        "api_key_placeholder": "Enter API key",
+        "api_key_hint": "Stored encrypted. Leave blank to keep your current key.",
+        "saved": "AI settings saved"
     },
     "common": {
         "save": "Save",

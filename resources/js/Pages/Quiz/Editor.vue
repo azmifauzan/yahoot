@@ -10,6 +10,7 @@ import ThemeSelector from '@/Components/Quiz/ThemeSelector.vue';
 import CategorySelect from '@/Components/Quiz/CategorySelect.vue';
 import TagInput from '@/Components/Quiz/TagInput.vue';
 import SoundThemeSelector from '@/Components/Quiz/SoundThemeSelector.vue';
+import AiGenerateModal from '@/Components/Quiz/AiGenerateModal.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
@@ -22,6 +23,7 @@ const props = defineProps({
     answerColors: Array,
     themes: Array,
     categories: { type: Array, default: () => [] },
+    llmConfigured: { type: Boolean, default: false },
 });
 
 // Quiz header form
@@ -396,6 +398,37 @@ function isQuestionComplete(question) {
 
     return true;
 }
+
+// AI question generation
+const aiGenerateModalOpen = ref(false);
+
+function openAiGenerate() {
+    if (!props.llmConfigured) {
+        confirm({
+            title: t('quiz.ai_not_configured'),
+            text: '',
+            confirmText: t('quiz.ai_not_configured_action'),
+            cancelText: t('common.cancel'),
+            icon: 'warning',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                router.visit(route('settings.ai.edit'));
+            }
+        });
+        return;
+    }
+
+    aiGenerateModalOpen.value = true;
+}
+
+function onAiGenerated(newQuestions) {
+    questions.value = newQuestions;
+    if (selectedQuestionIndex.value === -1 && questions.value.length > 0) {
+        selectedQuestionIndex.value = 0;
+    }
+    aiGenerateModalOpen.value = false;
+    toast(t('quiz.ai_generate_success'));
+}
 </script>
 
 <template>
@@ -515,6 +548,7 @@ function isQuestionComplete(question) {
                 @add="addQuestion"
                 @reorder="reorderQuestions"
                 @delete="deleteQuestion"
+                @ai-generate="openAiGenerate"
             />
 
             <!-- Main Content - Question Editor -->
@@ -627,6 +661,12 @@ function isQuestionComplete(question) {
             </div>
         </div>
 
-
+        <AiGenerateModal
+            v-if="!isNew"
+            :show="aiGenerateModalOpen"
+            :quiz-id="quiz.id"
+            @close="aiGenerateModalOpen = false"
+            @generated="onAiGenerated"
+        />
     </AppLayout>
 </template>

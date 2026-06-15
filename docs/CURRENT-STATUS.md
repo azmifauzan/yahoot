@@ -147,11 +147,12 @@ All done (see `docs/FEATURE-EXPANSION-PLAN.md` for full spec):
 ### Backend (matches PRD)
 - `app/Http/Controllers/`: GameSessionController, PlayerController, QuizController, QuestionController ✅
 - `app/Http/Controllers/Admin/`: DashboardController, UserController, QuizController, GameController, SettingController ✅
-- `app/Services/`: GameCodeService, ScoringService, RevealService ✅
+- `app/Services/`: GameCodeService, ScoringService, RevealService, AiQuestionService ✅
 - `app/Events/`: all 9 broadcasting events ✅
-- `app/Models/`: User, Quiz, Question, Answer, GameSession, GamePlayer, PlayerAnswer, AppSetting ✅
+- `app/Models/`: User, Quiz, Question, Answer, GameSession, GamePlayer, PlayerAnswer, AppSetting, LlmSetting ✅
 - `app/Policies/`: QuizPolicy ✅, GameSessionPolicy ✅
-- `app/Enums/`: GameStatus, QuestionType, PointType, QuizVisibility, AnswerColor, QuizTheme ✅
+- `app/Enums/`: GameStatus, QuestionType, PointType, QuizVisibility, AnswerColor, QuizTheme, LlmProvider ✅
+- `app/Rules/`: PublicHttpUrl (SSRF guard) ✅ · `app/Exceptions/`: AiGenerationException ✅
 
 ### Frontend (matches PRD)
 All PRD shared game components now exist as separate files:
@@ -178,6 +179,7 @@ All PRD shared game components now exist as separate files:
 - Public routes: `/`, `/play`, `/play/{code}` ✅
 - Auth routes: Jetstream defaults ✅
 - Creator routes: `/dashboard`, `/quizzes/*`, `/game-sessions/*` ✅
+- AI routes: `/settings/ai` (edit/update), `POST /quizzes/{quiz}/ai-generate` ✅
 - Player API: `/api/games/code/{code}/info`, `/api/games/join`, `/api/games/{session}/answer`, `/api/games/{session}/status`, `/api/games/{session}/react`, `/api/games/{session}/powerup`, `/api/games/{session}/leave` ✅
 - Admin routes: `/admin/*` (dashboard, users, quizzes, games, settings) ✅
 
@@ -197,3 +199,4 @@ All PRD shared game components now exist as separate files:
 | Admin Games | ✅ AdminGameManagementTest |
 | Admin Settings | ✅ AdminSettingsTest |
 | Engagement (Phase 3) | ✅ PowerUpTest, TeamModeTest, ReactionTest, PollQuestionTest |
+| AI Question Generator | ✅ LlmSettingTest, AiQuestionGenerateTest |

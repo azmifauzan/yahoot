@@ -6,6 +6,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -120,5 +121,13 @@ class User extends Authenticatable
     public function badges(): HasMany
     {
         return $this->hasMany(UserBadge::class);
+    }
+
+    /**
+     * @return HasOne<LlmSetting, $this>
+     */
+    public function llmSetting(): HasOne
+    {
+        return $this->hasOne(LlmSetting::class);
     }
 }

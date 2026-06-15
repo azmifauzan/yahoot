@@ -36,6 +36,8 @@ const menuLinks = computed(() => {
         { href: route('leaderboard'), label: t('nav.leaderboard'), icon: 'trophy', active: route().current('leaderboard') },
     ];
 
+    links.push({ href: route('settings.ai.edit'), label: t('nav.ai_settings'), icon: 'sparkles', active: route().current('settings.ai.edit') });
+
     if (page.props.jetstream.hasApiFeatures) {
         links.push({ href: route('api-tokens.index'), label: t('nav.api_tokens'), icon: 'key', active: route().current('api-tokens.index') });
     }
