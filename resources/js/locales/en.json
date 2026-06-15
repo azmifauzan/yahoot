@@ -478,6 +478,58 @@
         "api_key_hint": "Stored encrypted. Leave blank to keep your current key.",
         "saved": "AI settings saved"
     },
+    "editor_help": {
+        "button": "Help",
+        "title": "Quiz Editor Guide",
+        "intro": "Everything you can do here and how to fill in a quiz.",
+        "got_it": "Got it",
+        "types_title": "Question types",
+        "types_items": [
+            "Multiple Choice — 4 answer options, exactly one correct.",
+            "True / False — 2 options, pick which one is correct."
+        ],
+        "sidebar_title": "Question list (left panel)",
+        "sidebar_items": [
+            "Add Question — create a new question at the end.",
+            "Generate with AI — create questions from a topic (needs AI settings).",
+            "Drag a question to reorder it.",
+            "A red \"!\" badge marks a question that is still incomplete.",
+            "Hover a question and click the trash icon to delete it."
+        ],
+        "question_title": "Editing a question (center panel)",
+        "question_items": [
+            "Type the question text in the big field at the top.",
+            "Optionally upload an image for the question.",
+            "Fill in every answer's text.",
+            "Tick the checkbox/marker on the answer that is correct.",
+            "Each answer has its own colour and shape, shown to players."
+        ],
+        "properties_title": "Question settings (right panel)",
+        "properties_items": [
+            "Time limit — how many seconds players get to answer.",
+            "Points — Standard or Double points for harder questions."
+        ],
+        "settings_title": "Quiz settings",
+        "settings_items": [
+            "Title & description — name your quiz at the top.",
+            "Theme — visual style shown during the game.",
+            "Category & tags — help organise and discover the quiz.",
+            "Sound theme & music — background audio for the game.",
+            "Visibility — keep it private or publish it publicly."
+        ],
+        "ai_title": "AI question generator",
+        "ai_items": [
+            "Click \"Generate with AI\", then enter a topic, count, difficulty and type.",
+            "First configure a provider and API key under AI Settings.",
+            "Always review AI-generated questions before publishing."
+        ],
+        "save_title": "Saving",
+        "save_items": [
+            "Changes are saved automatically when you pause.",
+            "Use the Save button to save immediately.",
+            "An indicator shows when you have unsaved changes."
+        ]
+    },
     "common": {
         "save": "Save",
         "cancel": "Cancel",
