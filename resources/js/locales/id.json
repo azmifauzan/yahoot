@@ -420,6 +420,20 @@
         "enabled": "Izinkan reaksi",
         "disabled": "Reaksi mati"
     },
+    "practice": {
+        "practice_mode": "Mode Latihan",
+        "start_practice": "Latihan",
+        "summary": "Ringkasan Latihan",
+        "your_score": "Skor",
+        "accuracy": "Akurasi",
+        "correct": "Benar",
+        "avg_time": "Rata-rata waktu",
+        "points": "poin",
+        "try_again": "Ulangi",
+        "back_home": "Kembali",
+        "next_question": "Lanjut",
+        "see_results": "Lihat Hasil"
+    },
     "powerups": {
         "title": "Power-up",
         "double_points": "Poin Ganda",

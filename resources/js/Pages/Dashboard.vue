@@ -358,6 +358,12 @@ function getPlaceholderColor(index) {
                                 >
                                     ▶ <span class="hidden sm:inline">{{ t('dashboard.play') }}</span>
                                 </button>
+                                <Link
+                                    :href="route('quizzes.practice', quiz.id)"
+                                    class="flex-1 rounded-lg bg-amber-50 py-1.5 px-2 text-center text-xs font-medium text-amber-600 transition hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50 flex items-center justify-center gap-1"
+                                >
+                                    🎯 <span class="hidden sm:inline">{{ t('practice.start_practice') }}</span>
+                                </Link>
                                 <button
                                     @click="duplicateQuiz(quiz)"
                                     class="flex-1 rounded-lg bg-gray-50 py-1.5 px-2 text-center text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
@@ -436,6 +442,12 @@ function getPlaceholderColor(index) {
                                 >
                                     ▶ <span class="hidden md:inline">{{ t('dashboard.play') }}</span>
                                 </button>
+                                <Link
+                                    :href="route('quizzes.practice', quiz.id)"
+                                    class="rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-600 transition hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50"
+                                >
+                                    🎯 <span class="hidden md:inline">{{ t('practice.start_practice') }}</span>
+                                </Link>
                                 <button
                                     @click="duplicateQuiz(quiz)"
                                     class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"

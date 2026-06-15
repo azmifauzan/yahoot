@@ -420,6 +420,20 @@
         "enabled": "Allow reactions",
         "disabled": "Reactions off"
     },
+    "practice": {
+        "practice_mode": "Practice Mode",
+        "start_practice": "Practice",
+        "summary": "Practice Summary",
+        "your_score": "Score",
+        "accuracy": "Accuracy",
+        "correct": "Correct",
+        "avg_time": "Avg. time",
+        "points": "pts",
+        "try_again": "Try again",
+        "back_home": "Back",
+        "next_question": "Next",
+        "see_results": "See Results"
+    },
     "powerups": {
         "title": "Power-ups",
         "double_points": "Double Points",

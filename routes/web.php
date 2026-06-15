@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\GameSessionController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\PlayerController;
+use App\Http\Controllers\PracticeController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuestionImageController;
@@ -36,6 +37,10 @@ Route::get('/play/{code}', [PlayerController::class, 'play'])->name('play.game')
 
 // Global leaderboard (public)
 Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
+
+// Practice / solo mode (public for published+public quizzes; owner for private)
+Route::get('/quizzes/{quiz}/practice', [PracticeController::class, 'start'])->name('quizzes.practice');
+Route::post('/quizzes/{quiz}/practice', [PracticeController::class, 'submit'])->name('quizzes.practice.submit');
 
 // Admin routes
 Route::middleware([
