@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
@@ -31,6 +32,8 @@ const submit = () => {
     });
 };
 
+const showDemo = ref(false);
+
 const fillDemo = () => {
     form.email = 'demo@yahoot.app';
     form.password = 'password';
@@ -57,19 +60,6 @@ const fillDemo = () => {
         <div v-if="status" class="mb-4 rounded-lg bg-green-50 p-3 text-sm font-medium text-green-600">
             {{ status }}
         </div>
-
-        <button
-            type="button"
-            @click="fillDemo"
-            class="mb-4 flex w-full items-start gap-3 rounded-lg border border-dashed border-primary-300 bg-primary-50 p-3 text-left transition hover:bg-primary-100 dark:border-primary-700 dark:bg-primary-900/20 dark:hover:bg-primary-900/40"
-        >
-            <span class="text-lg leading-none">✨</span>
-            <span class="flex-1">
-                <span class="block text-sm font-semibold text-primary-700 dark:text-primary-300">{{ t('auth.demo_title') }}</span>
-                <span class="block text-xs text-primary-600/80 dark:text-primary-400/80">{{ t('auth.demo_hint') }}</span>
-                <span class="mt-1 block font-mono text-xs text-gray-500 dark:text-gray-400">demo@yahoot.app · password</span>
-            </span>
-        </button>
 
         <GoogleAuthButton />
 
@@ -135,6 +125,29 @@ const fillDemo = () => {
             </p>
         </form>
 
+        <div class="mt-6 border-t border-gray-100 pt-4 dark:border-gray-700">
+            <button
+                type="button"
+                @click="showDemo = !showDemo"
+                class="mx-auto flex items-center gap-1 text-xs font-medium text-gray-400 transition hover:text-primary-600 dark:text-gray-500 dark:hover:text-primary-400"
+            >
+                {{ t('auth.demo_title') }}
+                <svg class="h-3 w-3 transition-transform" :class="{ 'rotate-180': showDemo }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
 
+            <div v-if="showDemo" class="mt-3 rounded-lg border border-dashed border-primary-300 bg-primary-50 p-3 dark:border-primary-700 dark:bg-primary-900/20">
+                <p class="text-xs text-primary-600/80 dark:text-primary-400/80">{{ t('auth.demo_hint') }}</p>
+                <p class="mt-1 font-mono text-xs text-gray-500 dark:text-gray-400">demo@yahoot.app · password</p>
+                <button
+                    type="button"
+                    @click="fillDemo"
+                    class="mt-2 rounded-md bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-primary-700"
+                >
+                    {{ t('auth.demo_fill') }}
+                </button>
+            </div>
+        </div>
     </AuthenticationCard>
 </template>

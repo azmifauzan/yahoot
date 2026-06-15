@@ -204,8 +204,9 @@
         "continue_with_google": "Lanjutkan dengan Google",
         "terms": "Ketentuan Layanan",
         "privacy": "Kebijakan Privasi",
-        "demo_title": "Coba akun demo",
-        "demo_hint": "Klik untuk mengisi login demo dan menjelajah."
+        "demo_title": "Akun demo",
+        "demo_hint": "Jelajahi Yahoot dengan akun demo bersama. Data direset tiap jam.",
+        "demo_fill": "Pakai login demo"
     },
     "play": {
         "join_game": "Gabung Game",
