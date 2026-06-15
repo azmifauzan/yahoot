@@ -44,10 +44,12 @@ app/
 ├── Http/Controllers/         # Quiz, Game, Player controllers
 ├── Http/Controllers/Admin/   # DashboardController, UserController, QuizController, GameController, SettingController
 ├── Http/Requests/            # Form Request validation classes
-├── Models/                   # User, Quiz, Question, Answer, GameSession, GamePlayer, PlayerAnswer, AppSetting
+├── Models/                   # User, Quiz, Question, Answer, GameSession, GamePlayer, PlayerAnswer, AppSetting, LlmSetting
 ├── Events/                   # Broadcasting events for Reverb WebSocket
-├── Services/                 # GameCodeService, ScoringService, RevealService
-├── Enums/                    # GameStatus, QuestionType, etc.
+├── Services/                 # GameCodeService, ScoringService, RevealService, AiQuestionService
+├── Enums/                    # GameStatus, QuestionType, LlmProvider, etc.
+├── Rules/                    # PublicHttpUrl (SSRF guard for user-supplied URLs)
+├── Exceptions/               # AiGenerationException
 └── Policies/                 # QuizPolicy, GameSessionPolicy
 
 resources/js/
@@ -114,6 +116,23 @@ tests/
 
 - **Multiple Choice** — 4 options
 - **True/False** — 2 options
+
+## AI Question Generator
+
+Generate quiz questions from a topic via a user-configured LLM. Synchronous (no queued job).
+
+- **Per-user LLM settings** (`/settings/ai`, `LlmSettingController`, model `LlmSetting`, one row per user):
+  - `provider` — `openai` or `anthropic` (Anthropic-compatible), enum `LlmProvider`
+  - `model`, `base_url` (optional; falls back to provider default via `resolvedBaseUrl()`)
+  - `api_key` — **encrypted at rest** via Laravel's `encrypted` cast; never sent back to the client (only a `has_api_key` boolean)
+  - `base_url` validated by `App\Rules\PublicHttpUrl` to block SSRF (private/loopback/link-local/`localhost`/bare hostnames)
+- **Generation** (`POST /quizzes/{quiz}/ai-generate`, `AiQuestionController` → `AiQuestionService`):
+  - Calls OpenAI Chat Completions (`/chat/completions`, `response_format: json_object`) or Anthropic Messages (`/messages`) over Laravel `Http`
+  - Parses strict JSON, strips markdown fences, validates answer counts (4 MC / 2 TF) + exactly one correct, shuffles MC options, persists Questions+Answers in a transaction
+  - Provider error bodies are logged server-side, never leaked to the user
+- **Guard**: if the user's LLM setting is incomplete (`isConfigured()` false), the editor warns and links to `/settings/ai`; the controller re-checks server-side
+- **Frontend**: `Pages/Settings/AiSettings.vue`, `Components/Quiz/AiGenerateModal.vue`, "✨ Generate with AI" in `QuestionSidebar.vue`; i18n under the `ai` and `quiz.ai_*` locale keys
+- **Tests**: `tests/Feature/LlmSettingTest.php`, `tests/Feature/AiQuestionGenerateTest.php` (`Http::fake()`, no real API calls)
 
 ## Docker Services (dev/prod)
 

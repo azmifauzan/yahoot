@@ -20,8 +20,12 @@
   membocorkan 2 jawaban salah meski hasil sudah di-reveal; `powerupsAvailable` di
   `Player/Game.vue` kini di-seed dari data pemain hasil join (bukan list statis), agar
   power-up yang sudah dipakai tetap tampak terpakai setelah refresh halaman.
+- ✅ **AI Question Generator (12) (2026-06-15):** multi-provider (OpenAI + Anthropic-compatible),
+  pengaturan LLM **per-user** (`/settings/ai`) dengan `api_key` terenkripsi at-rest, generate
+  **sinkron** (bukan queued), guard warning bila setting belum lengkap, SSRF guard pada
+  `base_url`. Lihat detail di section 12.
 - ⬜ Belum: Practice/Solo (4), Import/Export (9), Question Bank (10),
-  Marketplace/Explore (11), AI Question Generator (12), Live Chat (14a chat — emoji done).
+  Marketplace/Explore (11), Live Chat (14a chat — emoji done).
 
 Dokumen ini merinci rencana implementasi untuk 14 fitur baru, dikelompokkan menjadi
 5 group berdasarkan domain & ketergantungan. Setiap fitur memuat: perubahan data
@@ -569,11 +573,41 @@ Section `explore`: `explore_quizzes`, `popular`, `newest`, `featured`, `use_temp
 
 ---
 
-## 12. AI Question Generator
+## 12. AI Question Generator — ✅ Implemented (2026-06-15)
 
-**Tujuan:** Generate soal otomatis dari topik/teks menggunakan Claude API. Fitur
-pembeda utama: host mengetik topik ("Sistem Tata Surya", "10 soal, sedang"), AI
-menghasilkan soal MC + jawaban yang langsung bisa di-edit.
+**Tujuan:** Generate soal otomatis dari topik/teks menggunakan LLM. Host mengetik topik
+("Sistem Tata Surya", "10 soal, sedang"), AI menghasilkan soal MC/TF + jawaban yang
+langsung bisa di-edit.
+
+> **Implementasi final menyimpang dari rencana awal di bawah** (rencana asal Claude-only +
+> queued job + AppSetting global). Yang dibangun:
+> - **Multi-provider**: OpenAI (Chat Completions) **dan** Anthropic-compatible (Messages),
+>   enum `App\Enums\LlmProvider`. Base URL bisa di-override → mendukung endpoint
+>   OpenAI-compatible lain.
+> - **Pengaturan LLM per-user** (bukan AppSetting global): model `LlmSetting` (satu baris per
+>   user, FK unik), halaman `/settings/ai` (`LlmSettingController`). Field: `provider`, `model`,
+>   `base_url` (opsional, fallback `resolvedBaseUrl()`), `api_key`.
+> - **`api_key` terenkripsi at-rest** via cast `encrypted` Laravel (AES/APP_KEY). Tidak pernah
+>   dikirim balik ke client — hanya boolean `has_api_key`.
+> - **Sinkron, bukan queued job**: `AiQuestionController@generate` memanggil `AiQuestionService`
+>   langsung via Laravel `Http`, parse JSON, simpan Question+Answer dalam transaksi.
+> - **Guard setting belum lengkap**: editor memberi warning + link ke `/settings/ai` bila
+>   `isConfigured()` false; controller re-check server-side (`withErrors(['ai' => ...])`).
+> - **SSRF guard**: `base_url` divalidasi `App\Rules\PublicHttpUrl` (tolak IP privat/loopback/
+>   link-local/`localhost`/hostname tanpa titik). Body error provider di-log server-side, tidak
+>   dibocorkan ke user.
+> - **Anti-bias**: opsi multiple-choice di-shuffle; True/False mempertahankan urutan (konvensi
+>   warna blue=True / red=False).
+> - **Files**: `app/Enums/LlmProvider.php`, `app/Models/LlmSetting.php`,
+>   `app/Services/AiQuestionService.php`, `app/Http/Controllers/{LlmSetting,AiQuestion}Controller.php`,
+>   `app/Http/Requests/{UpdateLlmSetting,GenerateAiQuestions}Request.php`,
+>   `app/Rules/PublicHttpUrl.php`, `app/Exceptions/AiGenerationException.php`,
+>   `database/factories/LlmSettingFactory.php`, `resources/js/Pages/Settings/AiSettings.vue`,
+>   `resources/js/Components/Quiz/AiGenerateModal.vue`. Tes: `tests/Feature/LlmSettingTest.php`,
+>   `tests/Feature/AiQuestionGenerateTest.php` (`Http::fake()`).
+
+<details>
+<summary>Rencana awal (historis, sebelum implementasi)</summary>
 
 > **Stack note:** integrasi memakai **Claude API** (Anthropic). Default ke model
 > Claude terbaru. Lihat `docs/superpowers` / skill `claude-api` untuk referensi
@@ -621,6 +655,8 @@ Section `ai`: label tombol, field modal, status (generating/done/error), disclai
   → 403. Gunakan `Http::fake()`.
 
 **Effort:** M (kompleksitas utama: prompt design, parsing andal, error handling).
+
+</details>
 
 ---
 

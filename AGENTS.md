@@ -16,9 +16,10 @@ Quiz → GameSession → GamePlayer → PlayerAnswer
 
 ## Key Directories
 
-- `app/Services/` — GameService, ScoringService (core business logic)
+- `app/Services/` — GameService, ScoringService, AiQuestionService (core business logic)
 - `app/Events/` — Broadcasting events for Reverb WebSocket
-- `app/Enums/` — GameStatus, QuestionType, etc.
+- `app/Enums/` — GameStatus, QuestionType, LlmProvider, etc.
+- `app/Rules/` — PublicHttpUrl (SSRF guard for user-supplied URLs like AI base_url)
 - `routes/channels.php` — WebSocket channel authorization
 - `routes/api.php` — Stateless REST API (join/answer/status, for mobile)
 - `resources/js/Pages/` — Inertia page components

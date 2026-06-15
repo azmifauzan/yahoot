@@ -65,7 +65,7 @@ class QuizController extends Controller
         ]);
     }
 
-    public function create(): Response
+    public function create(Request $request): Response
     {
         return Inertia::render('Quiz/Editor', [
             'quiz' => null,
@@ -82,6 +82,7 @@ class QuizController extends Controller
                 'gradients' => $theme->gradients(),
             ]),
             'categories' => Category::orderBy('name')->get(),
+            'llmConfigured' => $request->user()->llmSetting?->isConfigured() ?? false,
         ]);
     }
 
@@ -109,7 +110,7 @@ class QuizController extends Controller
         return redirect()->route('quizzes.edit', $quiz);
     }
 
-    public function edit(Quiz $quiz): Response
+    public function edit(Quiz $quiz, Request $request): Response
     {
         $this->authorize('update', $quiz);
 
@@ -130,6 +131,7 @@ class QuizController extends Controller
                 'gradients' => $theme->gradients(),
             ]),
             'categories' => Category::orderBy('name')->get(),
+            'llmConfigured' => $request->user()->llmSetting?->isConfigured() ?? false,
         ]);
     }
 

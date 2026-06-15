@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\AiQuestionController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\GameSessionController;
 use App\Http\Controllers\LeaderboardController;
+use App\Http\Controllers\LlmSettingController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\QuestionController;
@@ -87,6 +89,10 @@ Route::middleware([
     // Cross-session progress + earned achievement badges
     Route::get('/me/progress', [ProgressController::class, 'index'])->name('progress');
 
+    // Personal LLM settings for the AI question generator
+    Route::get('/settings/ai', [LlmSettingController::class, 'edit'])->name('settings.ai.edit');
+    Route::put('/settings/ai', [LlmSettingController::class, 'update'])->name('settings.ai.update');
+
     Route::prefix('quizzes')->name('quizzes.')->group(function () {
         Route::get('/create', [QuizController::class, 'create'])->name('create');
         Route::get('/{quiz}/analytics', [QuizAnalyticsController::class, 'index'])->name('analytics');
@@ -99,6 +105,7 @@ Route::middleware([
         Route::get('/{quiz}/history', [GameSessionController::class, 'history'])->name('history');
 
         Route::post('/{quiz}/questions', [QuestionController::class, 'store'])->name('questions.store');
+        Route::post('/{quiz}/ai-generate', [AiQuestionController::class, 'generate'])->name('ai-generate');
     });
 
     Route::prefix('questions')->name('questions.')->group(function () {

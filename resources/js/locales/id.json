@@ -19,7 +19,8 @@
         "collapse": "Ciutkan",
         "expand": "Perluas",
         "progress": "Progres Saya",
-        "leaderboard": "Papan Peringkat"
+        "leaderboard": "Papan Peringkat",
+        "ai_settings": "Pengaturan AI"
     },
     "landing": {
         "hero_title": "Buat Kuis, Main Bareng!",
@@ -109,7 +110,23 @@
         "unsaved_title": "Perubahan Belum Disimpan",
         "unsaved_text": "Ada perubahan yang belum disimpan. Yakin ingin keluar?",
         "leave": "Keluar",
-        "theme": "Tema"
+        "theme": "Tema",
+        "ai_generate": "Buat dengan AI",
+        "ai_generate_title": "Buat Soal dengan AI",
+        "ai_topic": "Topik",
+        "ai_topic_placeholder": "misal: Sistem Tata Surya",
+        "ai_count": "Jumlah soal",
+        "ai_difficulty": "Tingkat kesulitan",
+        "ai_difficulty_easy": "Mudah",
+        "ai_difficulty_medium": "Sedang",
+        "ai_difficulty_hard": "Sulit",
+        "ai_question_type": "Tipe soal",
+        "ai_generate_button": "Buat",
+        "ai_generating": "Membuat...",
+        "ai_generate_success": "Soal hasil AI berhasil ditambahkan",
+        "ai_disclaimer": "Tinjau soal hasil AI sebelum mempublikasikan kuismu.",
+        "ai_not_configured": "Generator soal AI belum dikonfigurasi.",
+        "ai_not_configured_action": "Buka Pengaturan AI"
     },
     "game": {
         "game_code": "Kode Game",
@@ -440,6 +457,23 @@
         "choose_team": "Pilih timmu",
         "team_score": "Skor tim",
         "team_standings": "Klasemen tim"
+    },
+    "ai": {
+        "title": "Pengaturan AI",
+        "description": "Atur penyedia LLM yang digunakan generator soal kuis AI. API key kamu disimpan terenkripsi.",
+        "provider": "Penyedia",
+        "provider_openai": "OpenAI",
+        "provider_anthropic": "Anthropic",
+        "model": "Model",
+        "model_placeholder": "misal: gpt-4o-mini",
+        "base_url": "Base URL",
+        "base_url_placeholder": "Default: {url}",
+        "api_key": "API Key",
+        "api_key_configured": "API key sudah dikonfigurasi",
+        "api_key_change": "Ganti API key",
+        "api_key_placeholder": "Masukkan API key",
+        "api_key_hint": "Disimpan terenkripsi. Kosongkan untuk tetap memakai key saat ini.",
+        "saved": "Pengaturan AI tersimpan"
     },
     "common": {
         "save": "Simpan",
