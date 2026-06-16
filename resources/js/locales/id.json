@@ -128,6 +128,10 @@
         "ai_not_configured": "Generator soal AI belum dikonfigurasi.",
         "ai_not_configured_action": "Buka Pengaturan AI"
     },
+    "question": {
+        "multiple_choice": "Pilihan Ganda",
+        "true_false": "Benar / Salah"
+    },
     "game": {
         "game_code": "Kode Game",
         "join": "Gabung",
@@ -183,7 +187,8 @@
         "set_password_description": "Akun Anda menggunakan login Google dan belum memiliki password. Atur password agar Anda juga bisa login dengan email dan password.",
         "current_password": "Password Saat Ini",
         "new_password": "Password Baru",
-        "confirm_new_password": "Konfirmasi Password"
+        "confirm_new_password": "Konfirmasi Password",
+        "no_account_settings": "Tidak ada pengaturan akun yang tersedia."
     },
     "avatar_categories": {
         "animals": "Hewan",
@@ -260,6 +265,7 @@
         "questions": "pertanyaan",
         "player": "Pemain",
         "correct": "Benar",
+        "wrong": "Salah",
         "streak": "Streak",
         "score": "Skor",
         "back_dashboard": "Kembali ke Dashboard",

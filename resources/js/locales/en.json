@@ -128,6 +128,10 @@
         "ai_not_configured": "AI question generator is not configured yet.",
         "ai_not_configured_action": "Open AI Settings"
     },
+    "question": {
+        "multiple_choice": "Multiple Choice",
+        "true_false": "True / False"
+    },
     "game": {
         "game_code": "Game Code",
         "join": "Join",
@@ -183,7 +187,8 @@
         "set_password_description": "Your account uses Google sign-in and has no password yet. Set one to also be able to log in with your email and password.",
         "current_password": "Current Password",
         "new_password": "New Password",
-        "confirm_new_password": "Confirm Password"
+        "confirm_new_password": "Confirm Password",
+        "no_account_settings": "No account settings available."
     },
     "avatar_categories": {
         "animals": "Animals",
@@ -260,6 +265,7 @@
         "questions": "questions",
         "player": "Player",
         "correct": "Correct",
+        "wrong": "Wrong",
         "streak": "Streak",
         "score": "Score",
         "back_dashboard": "Back to Dashboard",
