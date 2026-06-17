@@ -37,7 +37,7 @@ class GameSessionController extends Controller
      */
     public function store(StartGameSessionRequest $request, Quiz $quiz): RedirectResponse
     {
-        $this->authorize('update', $quiz);
+        $this->authorize('host', $quiz);
 
         if (! $quiz->is_published) {
             return back()->withErrors(['quiz' => 'Quiz must be published before starting a game.']);
@@ -47,13 +47,15 @@ class GameSessionController extends Controller
             return back()->withErrors(['quiz' => 'Quiz must have at least one question.']);
         }
 
+        $quiz->increment('plays_count');
+
         $validated = $request->validated();
         $mode = $validated['mode'] ?? 'individual';
         $teamCount = (int) ($validated['team_count'] ?? 2);
 
         $settings = [
             'mode' => $mode,
-            'powerups_enabled' => $request->boolean('powerups_enabled', true),
+            'powerups_enabled' => (bool) ($quiz->settings['powerups_enabled'] ?? false),
             'reactions_enabled' => $request->boolean('reactions_enabled', true),
         ];
 

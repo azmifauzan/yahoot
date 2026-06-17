@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import ImportModal from '@/Components/Quiz/ImportModal.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
@@ -21,6 +22,7 @@ const activeFilter = ref(props.filters.filter || 'all');
 const categoryFilter = ref(props.filters.category || '');
 const tagFilter = ref(props.filters.tag || '');
 const viewMode = ref('list');
+const showImport = ref(false);
 
 const filterOptions = [
     { value: 'all', label: () => t('dashboard.filter_all') },
@@ -125,10 +127,6 @@ async function playQuiz(quiz) {
     const { value: settings } = await Swal.fire({
         title: t('host.game_settings'),
         html: `
-            <label class="flex items-center gap-2 text-left mb-2">
-                <input type="checkbox" id="swal-powerups" checked class="w-4 h-4">
-                <span>${t('powerups.enabled')}</span>
-            </label>
             <label class="flex items-center gap-2 text-left">
                 <input type="checkbox" id="swal-reactions" checked class="w-4 h-4">
                 <span>${t('reactions.enabled')}</span>
@@ -139,7 +137,6 @@ async function playQuiz(quiz) {
         showCancelButton: true,
         cancelButtonText: t('common.cancel'),
         preConfirm: () => ({
-            powerups_enabled: document.getElementById('swal-powerups').checked,
             reactions_enabled: document.getElementById('swal-reactions').checked,
         }),
     });
@@ -155,7 +152,6 @@ async function playQuiz(quiz) {
     const fields = {
         _token: token,
         mode,
-        powerups_enabled: settings.powerups_enabled ? 1 : 0,
         reactions_enabled: settings.reactions_enabled ? 1 : 0,
     };
     if (mode === 'team') {
@@ -196,17 +192,27 @@ function getPlaceholderColor(index) {
                 <h2 class="font-display text-xl font-bold leading-tight text-gray-800 dark:text-gray-100">
                     {{ t('dashboard.title') }}
                 </h2>
-                <Link
-                    :href="route('quizzes.create')"
-                    class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
-                    {{ t('dashboard.create_quiz') }}
-                </Link>
+                <div class="flex items-center gap-2">
+                    <button
+                        @click="showImport = true"
+                        class="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                    >
+                        ⬆ <span class="hidden sm:inline">{{ t('import_export.import') }}</span>
+                    </button>
+                    <Link
+                        :href="route('quizzes.create')"
+                        class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        {{ t('dashboard.create_quiz') }}
+                    </Link>
+                </div>
             </div>
         </template>
+
+        <ImportModal v-if="showImport" @close="showImport = false" />
 
         <div class="py-8">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -358,6 +364,12 @@ function getPlaceholderColor(index) {
                                 >
                                     ▶ <span class="hidden sm:inline">{{ t('dashboard.play') }}</span>
                                 </button>
+                                <Link
+                                    :href="route('quizzes.practice', quiz.id)"
+                                    class="flex-1 rounded-lg bg-amber-50 py-1.5 px-2 text-center text-xs font-medium text-amber-600 transition hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50 flex items-center justify-center gap-1"
+                                >
+                                    🎯 <span class="hidden sm:inline">{{ t('practice.start_practice') }}</span>
+                                </Link>
                                 <button
                                     @click="duplicateQuiz(quiz)"
                                     class="flex-1 rounded-lg bg-gray-50 py-1.5 px-2 text-center text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
@@ -436,6 +448,12 @@ function getPlaceholderColor(index) {
                                 >
                                     ▶ <span class="hidden md:inline">{{ t('dashboard.play') }}</span>
                                 </button>
+                                <Link
+                                    :href="route('quizzes.practice', quiz.id)"
+                                    class="rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-600 transition hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50"
+                                >
+                                    🎯 <span class="hidden md:inline">{{ t('practice.start_practice') }}</span>
+                                </Link>
                                 <button
                                     @click="duplicateQuiz(quiz)"
                                     class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"

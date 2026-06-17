@@ -119,7 +119,6 @@ class AiQuestionService
     {
         $json = trim($content);
 
-        // Strip markdown code fences some models add despite instructions.
         if (str_starts_with($json, '```')) {
             $json = preg_replace('/^```[a-zA-Z]*\n|```$/m', '', $json);
             $json = trim($json);
@@ -154,9 +153,6 @@ class AiQuestionService
                 continue;
             }
 
-            // Shuffle multiple-choice options so the correct answer is not
-            // predictably positioned. True/False keeps its order to preserve the
-            // blue=True / red=False colour convention.
             if ($type !== 'true_false') {
                 shuffle($normalizedAnswers);
             }

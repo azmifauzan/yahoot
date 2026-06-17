@@ -3,15 +3,19 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\AiQuestionController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\GameSessionController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\LlmSettingController;
 use App\Http\Controllers\PlayerController;
+use App\Http\Controllers\PracticeController;
 use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\QuestionBankController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuestionImageController;
 use App\Http\Controllers\QuizAnalyticsController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\QuizImportExportController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -38,6 +42,13 @@ Route::get('/play/{code}', [PlayerController::class, 'play'])->name('play.game')
 
 // Global leaderboard (public)
 Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
+
+// Explore public quizzes
+Route::get('/explore', [ExploreController::class, 'index'])->name('explore');
+
+// Practice / solo mode (public for published+public quizzes; owner for private)
+Route::get('/quizzes/{quiz}/practice', [PracticeController::class, 'start'])->name('quizzes.practice');
+Route::post('/quizzes/{quiz}/practice', [PracticeController::class, 'submit'])->name('quizzes.practice.submit');
 
 // Admin routes
 Route::middleware([
@@ -93,8 +104,16 @@ Route::middleware([
     Route::get('/settings/ai', [LlmSettingController::class, 'edit'])->name('settings.ai.edit');
     Route::put('/settings/ai', [LlmSettingController::class, 'update'])->name('settings.ai.update');
 
+    // Question bank
+    Route::get('/question-bank', [QuestionBankController::class, 'index'])->name('question-bank.index');
+    Route::get('/question-bank/list', [QuestionBankController::class, 'list'])->name('question-bank.list');
+    Route::post('/question-bank', [QuestionBankController::class, 'store'])->name('question-bank.store');
+    Route::delete('/question-bank/{bankQuestion}', [QuestionBankController::class, 'destroy'])->name('question-bank.destroy');
+
     Route::prefix('quizzes')->name('quizzes.')->group(function () {
         Route::get('/create', [QuizController::class, 'create'])->name('create');
+        Route::post('/import', [QuizImportExportController::class, 'import'])->name('import');
+        Route::get('/{quiz}/export', [QuizImportExportController::class, 'export'])->name('export');
         Route::get('/{quiz}/analytics', [QuizAnalyticsController::class, 'index'])->name('analytics');
         Route::post('/', [QuizController::class, 'store'])->name('store');
         Route::get('/{quiz}/edit', [QuizController::class, 'edit'])->name('edit');
@@ -103,9 +122,13 @@ Route::middleware([
         Route::post('/{quiz}/duplicate', [QuizController::class, 'duplicate'])->name('duplicate');
         Route::post('/{quiz}/publish', [QuizController::class, 'publish'])->name('publish');
         Route::get('/{quiz}/history', [GameSessionController::class, 'history'])->name('history');
+        Route::post('/{quiz}/favorite', [ExploreController::class, 'favorite'])->name('favorite');
+        Route::post('/{quiz}/ai-generate', [AiQuestionController::class, 'generate'])->name('ai-generate');
+
+        Route::post('/{quiz}/from-bank', [QuestionBankController::class, 'fromBank'])->name('from-bank');
 
         Route::post('/{quiz}/questions', [QuestionController::class, 'store'])->name('questions.store');
-        Route::post('/{quiz}/ai-generate', [AiQuestionController::class, 'generate'])->name('ai-generate');
+        Route::post('/{quiz}/questions/bulk', [QuestionController::class, 'storeBulk'])->name('questions.store-bulk');
     });
 
     Route::prefix('questions')->name('questions.')->group(function () {

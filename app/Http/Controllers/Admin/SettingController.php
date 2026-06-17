@@ -18,6 +18,7 @@ class SettingController extends Controller
         'require_email_verification' => '0',
         'allow_guest_play' => '1',
         'maintenance_mode' => '0',
+        'ai_generation_enabled' => '1',
     ];
 
     public function index(): Response
@@ -42,6 +43,7 @@ class SettingController extends Controller
             'require_email_verification' => 'sometimes|boolean',
             'allow_guest_play' => 'sometimes|boolean',
             'maintenance_mode' => 'sometimes|boolean',
+            'ai_generation_enabled' => 'sometimes|boolean',
         ]);
 
         foreach ($validated as $key => $value) {

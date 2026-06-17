@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateQuestionRequest;
 use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -47,6 +48,53 @@ class QuestionController extends Controller
                     'shape' => $color->shape(),
                     'order' => $index,
                 ]);
+            }
+        });
+
+        return redirect()->back();
+    }
+
+    /**
+     * Store bulk questions for a quiz.
+     */
+    public function storeBulk(Request $request, Quiz $quiz): RedirectResponse
+    {
+        $this->authorize('update', $quiz);
+
+        $data = $request->validate([
+            'questions' => 'required|array',
+            'questions.*.type' => 'required|string|in:multiple_choice,true_false',
+            'questions.*.question_text' => 'required|string|max:1000',
+            'questions.*.time_limit' => 'required|integer|min:5|max:120',
+            'questions.*.points' => 'required|string|in:standard,double,none',
+            'questions.*.answers' => 'required|array',
+            'questions.*.answers.*.answer_text' => 'required|string|max:500',
+            'questions.*.answers.*.is_correct' => 'required|boolean',
+            'questions.*.answers.*.color' => 'required|string|in:red,blue,yellow,green',
+        ]);
+
+        $maxOrder = $quiz->questions()->max('order') ?? -1;
+
+        DB::transaction(function () use ($quiz, $data, $maxOrder): void {
+            foreach ($data['questions'] as $qIndex => $qData) {
+                $question = $quiz->questions()->create([
+                    'type' => $qData['type'],
+                    'question_text' => $qData['question_text'],
+                    'time_limit' => $qData['time_limit'],
+                    'points' => $qData['points'],
+                    'order' => $maxOrder + 1 + $qIndex,
+                ]);
+
+                foreach ($qData['answers'] as $aIndex => $aData) {
+                    $color = AnswerColor::from($aData['color']);
+                    $question->answers()->create([
+                        'answer_text' => $aData['answer_text'],
+                        'is_correct' => $aData['is_correct'],
+                        'color' => $color,
+                        'shape' => $color->shape(),
+                        'order' => $aIndex,
+                    ]);
+                }
             }
         });
 

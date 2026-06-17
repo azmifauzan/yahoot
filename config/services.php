@@ -41,4 +41,9 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'anthropic' => [
+        'key' => env('ANTHROPIC_API_KEY'),
+        'url' => env('ANTHROPIC_API_URL', 'https://api.anthropic.com/v1/messages'),
+    ],
+
 ];

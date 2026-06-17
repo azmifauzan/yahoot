@@ -20,7 +20,9 @@
         "expand": "Perluas",
         "progress": "Progres Saya",
         "leaderboard": "Papan Peringkat",
-        "ai_settings": "Pengaturan AI"
+        "ai_settings": "Pengaturan AI",
+        "question_bank": "Bank Soal",
+        "explore": "Jelajahi"
     },
     "landing": {
         "hero_title": "Buat Kuis, Main Bareng!",
@@ -126,7 +128,19 @@
         "ai_generate_success": "Soal hasil AI berhasil ditambahkan",
         "ai_disclaimer": "Tinjau soal hasil AI sebelum mempublikasikan kuismu.",
         "ai_not_configured": "Generator soal AI belum dikonfigurasi.",
-        "ai_not_configured_action": "Buka Pengaturan AI"
+        "ai_not_configured_action": "Buka Pengaturan AI",
+        "help_button": "Bantuan editor",
+        "help_title": "Panduan Editor Kuis",
+        "help_items": [
+            { "title": "Judul & deskripsi", "desc": "Klik judul kuis di bagian atas untuk mengubahnya. Perubahan tersimpan otomatis setelah beberapa detik, atau pakai tombol Simpan." },
+            { "title": "Pertanyaan", "desc": "Gunakan sidebar untuk menambah, mengurutkan, dan memilih pertanyaan. Setiap pertanyaan bisa berupa Pilihan Ganda, Benar/Salah, atau Polling (tanpa jawaban benar)." },
+            { "title": "Batas waktu & poin", "desc": "Di panel kanan, atur berapa detik waktu jawab pemain dan apakah pertanyaan memberi poin Standar, Ganda, atau Tidak Ada." },
+            { "title": "Tema", "desc": "Pilih tema visual yang mengubah warna dan latar yang dilihat pemain selama permainan." },
+            { "title": "Kategori & tag", "desc": "Atur kategori dan hingga 5 tag agar kuis lebih mudah diorganisir dan ditemukan." },
+            { "title": "Suara", "desc": "Pilih tema suara dan atur musik latar untuk sesi permainan." },
+            { "title": "Power-up", "desc": "Aktifkan agar pemain bisa memakai power-up (Poin Ganda, 50:50, Bekukan Waktu) saat kuis ini dimainkan. Defaultnya nonaktif." },
+            { "title": "Publikasi & Main", "desc": "Publikasikan kuis agar bisa dimainkan, lalu pakai tombol Main untuk memulai sesi permainan dan mendapatkan kode gabung." }
+        ]
     },
     "game": {
         "game_code": "Kode Game",
@@ -349,6 +363,7 @@
         "setting_require_email_verification": "Wajib Verifikasi Email",
         "setting_allow_guest_play": "Izinkan Tamu Bermain",
         "setting_maintenance_mode": "Mode Pemeliharaan",
+        "setting_ai_generation_enabled": "Izinkan Pembuatan Soal dengan AI",
         "categories": "Kategori",
         "delete_category": "Hapus Kategori",
         "confirm_delete_category": "Yakin ingin menghapus kategori ini?",
@@ -440,6 +455,45 @@
         "enabled": "Izinkan reaksi",
         "disabled": "Reaksi mati"
     },
+    "question_bank": {
+        "title": "Bank Soal",
+        "search_placeholder": "Cari soal...",
+        "all_types": "Semua tipe",
+        "all_categories": "Semua kategori",
+        "empty": "Belum ada soal di bank.",
+        "delete": "Hapus Soal",
+        "confirm_delete": "Yakin ingin menghapus soal ini dari bank?",
+        "deleted": "Soal dihapus dari bank",
+        "answers": "jawaban",
+        "add_from_bank": "Dari Bank",
+        "add_selected": "Tambah ({count})",
+        "save_to_bank": "Simpan ke Bank",
+        "added": "Soal ditambahkan dari bank",
+        "saved": "Soal disimpan ke bank",
+        "save_failed": "Gagal menyimpan soal"
+    },
+    "import_export": {
+        "import": "Impor",
+        "export": "Ekspor",
+        "import_title": "Impor Kuis",
+        "import_help": "Unggah file JSON atau CSV untuk membuat kuis baru sebagai draf.",
+        "choose_file": "Pilih file (JSON/CSV)",
+        "download_template": "Unduh template contoh"
+    },
+    "practice": {
+        "practice_mode": "Mode Latihan",
+        "start_practice": "Latihan",
+        "summary": "Ringkasan Latihan",
+        "your_score": "Skor",
+        "accuracy": "Akurasi",
+        "correct": "Benar",
+        "avg_time": "Rata-rata waktu",
+        "points": "poin",
+        "try_again": "Ulangi",
+        "back_home": "Kembali",
+        "next_question": "Lanjut",
+        "see_results": "Lihat Hasil"
+    },
     "powerups": {
         "title": "Power-up",
         "double_points": "Poin Ganda",
@@ -447,7 +501,8 @@
         "freeze_timer": "Bekukan",
         "used": "{nickname} memakai {powerup}!",
         "enabled": "Izinkan power-up",
-        "disabled": "Power-up mati"
+        "disabled": "Power-up mati",
+        "editor_hint": "Jika aktif, pemain bisa memakai power-up (poin ganda, 50:50, bekukan waktu) saat kuis ini berlangsung."
     },
     "team": {
         "choose_mode": "Pilih mode permainan",
@@ -460,6 +515,25 @@
         "choose_team": "Pilih timmu",
         "team_score": "Skor tim",
         "team_standings": "Klasemen tim"
+    },
+    "explore": {
+        "title": "Jelajahi Kuis Publik",
+        "subtitle": "Temukan kuis yang dibuat oleh komunitas untuk dimainkan atau dijadikan template kuis Anda sendiri.",
+        "search_placeholder": "Cari kuis...",
+        "sort_popular": "Terpopuler",
+        "sort_newest": "Terbaru",
+        "sort_featured": "Unggulan",
+        "all_categories": "Semua Kategori",
+        "all_tags": "Semua Tag",
+        "play_solo": "Latihan Solo",
+        "use_template": "Gunakan Template",
+        "by_author": "Oleh",
+        "plays": "{count} kali dimainkan",
+        "questions_count": "{count} soal",
+        "empty_state": "Kuis tidak ditemukan. Coba ubah pencarian atau filter Anda.",
+        "favorite_success": "Status favorit kuis berhasil diubah",
+        "favorites_only": "Hanya Favorit",
+        "featured_badge": "Unggulan"
     },
     "ai": {
         "title": "Pengaturan AI",
@@ -476,7 +550,25 @@
         "api_key_change": "Ganti API key",
         "api_key_placeholder": "Masukkan API key",
         "api_key_hint": "Disimpan terenkripsi. Kosongkan untuk tetap memakai key saat ini.",
-        "saved": "Pengaturan AI tersimpan"
+        "saved": "Pengaturan AI tersimpan",
+        "generate_title": "Buat Soal dengan AI",
+        "generate_btn": "✨ Buat dengan AI",
+        "topic_label": "Topik Kuis",
+        "topic_placeholder": "mis. Tata Surya, Sejarah Indonesia, Dasar Pemrograman",
+        "count_label": "Jumlah Pertanyaan",
+        "difficulty_label": "Tingkat Kesulitan",
+        "difficulty_easy": "Mudah",
+        "difficulty_medium": "Sedang",
+        "difficulty_hard": "Sulit",
+        "type_label": "Tipe Pertanyaan",
+        "type_multiple_choice": "Pilihan Ganda",
+        "type_true_false": "Benar / Salah",
+        "type_all": "Campuran",
+        "disclaimer": "Catatan: Soal dihasilkan oleh AI. Harap periksa kembali keakuratan jawaban sebelum mempublikasikan kuis.",
+        "generating": "Sedang membuat soal... Ini mungkin memakan waktu beberapa detik.",
+        "success": "Pekerjaan pembuatan soal dengan AI telah dimulai di latar belakang. Soal akan otomatis muncul di editor Anda.",
+        "error_disabled": "Pembuatan soal dengan AI sedang dinonaktifkan oleh admin.",
+        "generation_failed": "Gagal membuat soal dengan AI. Silakan coba lagi."
     },
     "editor_help": {
         "button": "Bantuan",

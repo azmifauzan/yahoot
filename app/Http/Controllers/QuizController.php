@@ -202,8 +202,11 @@ class QuizController extends Controller
     {
         $this->authorize('duplicate', $quiz);
 
+        $quiz->increment('duplicates_count');
+
         $newQuiz = DB::transaction(function () use ($quiz) {
             $newQuiz = $quiz->replicate(['id', 'created_at', 'updated_at']);
+            $newQuiz->user_id = auth()->id();
             $newQuiz->title = $quiz->title.' (Salinan)';
             $newQuiz->is_published = false;
             $newQuiz->save();

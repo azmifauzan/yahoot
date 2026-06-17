@@ -11,11 +11,16 @@ import CategorySelect from '@/Components/Quiz/CategorySelect.vue';
 import TagInput from '@/Components/Quiz/TagInput.vue';
 import SoundThemeSelector from '@/Components/Quiz/SoundThemeSelector.vue';
 import AiGenerateModal from '@/Components/Quiz/AiGenerateModal.vue';
+import BankPickerModal from '@/Components/Quiz/BankPickerModal.vue';
 import EditorHelpModal from '@/Components/Quiz/EditorHelpModal.vue';
 import { useSwal } from '@/Composables/useSwal';
 
-const { t } = useI18n();
+const { t, tm } = useI18n();
 const { toast, confirm, error: swalError } = useSwal();
+
+// Help modal
+const showHelp = ref(false);
+const helpItems = computed(() => tm('quiz.help_items'));
 
 const props = defineProps({
     quiz: Object,
@@ -34,6 +39,10 @@ const quizForm = useForm({
 });
 
 // Local questions state
+const showExport = ref(false);
+const showBankPicker = ref(false);
+const showAiGenerate = ref(false);
+const bankSubmitting = ref(false);
 const questions = ref(props.quiz?.questions || []);
 const selectedQuestionIndex = ref(questions.value.length > 0 ? 0 : -1);
 const selectedQuestion = computed(() =>
@@ -192,6 +201,57 @@ function addQuestion() {
     });
 }
 
+// Pull selected questions from the user's bank into this quiz
+function addFromBank(itemIds) {
+    bankSubmitting.value = true;
+    router.post(route('quizzes.from-bank', props.quiz.id), { item_ids: itemIds }, {
+        preserveScroll: true,
+        onSuccess: (page) => {
+            questions.value = page.props.quiz?.questions || [];
+            selectedQuestionIndex.value = questions.value.length - 1;
+            showBankPicker.value = false;
+            toast(t('question_bank.added'));
+        },
+        onFinish: () => { bankSubmitting.value = false; },
+    });
+}
+
+function handleAiGenerated(generatedQuestions) {
+    if (!generatedQuestions || generatedQuestions.length === 0) return;
+
+    router.post(route('questions.store-bulk', props.quiz.id), {
+        questions: generatedQuestions
+    }, {
+        preserveScroll: true,
+        onSuccess: (page) => {
+            questions.value = page.props.quiz?.questions || [];
+            selectedQuestionIndex.value = questions.value.length - 1;
+            toast(t('common.success'));
+        }
+    });
+}
+
+// Save the current question into the user's reusable bank
+function saveToBank(question) {
+    if (!question) return;
+    router.post(route('question-bank.store'), {
+        type: question.type,
+        question_text: question.question_text,
+        time_limit: question.time_limit,
+        points: question.points,
+        answers: (question.answers || []).map((a) => ({
+            answer_text: a.answer_text,
+            is_correct: a.is_correct,
+            color: a.color,
+        })),
+    }, {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: () => toast(t('question_bank.saved')),
+        onError: () => swalError(t('question_bank.save_failed')),
+    });
+}
+
 // Select question — save current if dirty before switching
 function selectQuestion(index) {
     if (index === selectedQuestionIndex.value) return;
@@ -336,6 +396,7 @@ const categoryId = ref(props.quiz?.category_id ?? null);
 const tags = ref(props.quiz?.tags?.map((tag) => tag.name) ?? []);
 const soundTheme = ref(props.quiz?.settings?.sound_theme ?? 'classic');
 const musicEnabled = ref(props.quiz?.settings?.music_enabled ?? true);
+const powerupsEnabled = ref(props.quiz?.settings?.powerups_enabled ?? false);
 
 function updateCategory(value) {
     categoryId.value = value;
@@ -375,6 +436,17 @@ function toggleMusicEnabled() {
     if (isNew.value) return;
     router.put(route('quizzes.update', props.quiz.id), {
         settings: { music_enabled: musicEnabled.value },
+    }, {
+        preserveScroll: true,
+        preserveState: true,
+    });
+}
+
+function togglePowerupsEnabled() {
+    powerupsEnabled.value = !powerupsEnabled.value;
+    if (isNew.value) return;
+    router.put(route('quizzes.update', props.quiz.id), {
+        settings: { powerups_enabled: powerupsEnabled.value },
     }, {
         preserveScroll: true,
         preserveState: true,
@@ -436,7 +508,7 @@ const helpModalOpen = ref(false);
 </script>
 
 <template>
-    <AppLayout :title="isNew ? t('dashboard.create_quiz') : quizForm.title || t('quiz.untitled')" :fullscreen="true">
+    <AppLayout :title="isNew ? t('dashboard.create_quiz') : quizForm.title || t('quiz.untitled')" :fullscreen="true" :headerFullWidth="true">
         <!-- Custom header -->
         <template #header>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -501,6 +573,58 @@ const helpModalOpen = ref(false);
                         </svg>
                         <span class="hidden sm:inline">{{ t('quiz.save') }}</span>
                     </button>
+
+                    <!-- Add from bank -->
+                    <button
+                        v-if="!isNew"
+                        @click="showBankPicker = true"
+                        class="rounded-lg px-3 sm:px-4 py-2 text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 flex items-center gap-1.5"
+                    >
+                        🗂️ <span class="hidden sm:inline">{{ t('question_bank.add_from_bank') }}</span>
+                    </button>
+
+                    <!-- AI Question Generator -->
+                    <button
+                        v-if="!isNew"
+                        @click="showAiGenerate = true"
+                        class="rounded-lg px-3 sm:px-4 py-2 text-sm font-semibold transition bg-primary-50 text-primary-700 hover:bg-primary-100 dark:bg-primary-950/40 dark:text-primary-300 dark:hover:bg-primary-950 flex items-center gap-1.5 border border-primary-200/50 dark:border-primary-900/30"
+                    >
+                        ✨ <span class="hidden sm:inline">{{ t('ai.generate_btn') }}</span>
+                    </button>
+
+                    <!-- Save current question to bank -->
+                    <button
+                        v-if="!isNew && selectedQuestion"
+                        @click="saveToBank(selectedQuestion)"
+                        class="rounded-lg px-3 sm:px-4 py-2 text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 flex items-center gap-1.5"
+                    >
+                        ⭐ <span class="hidden sm:inline">{{ t('question_bank.save_to_bank') }}</span>
+                    </button>
+
+                    <!-- Export menu -->
+                    <div v-if="!isNew" class="relative">
+                        <button
+                            @click="showExport = !showExport"
+                            class="rounded-lg px-3 sm:px-4 py-2 text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 flex items-center gap-1.5"
+                        >
+                            ⬇ <span class="hidden sm:inline">{{ t('import_export.export') }}</span>
+                        </button>
+                        <div
+                            v-if="showExport"
+                            class="absolute right-0 z-50 mt-1 w-32 rounded-lg bg-white shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700 overflow-hidden"
+                        >
+                            <a
+                                :href="route('quizzes.export', { quiz: quiz.id, format: 'json' })"
+                                @click="showExport = false"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                            >JSON</a>
+                            <a
+                                :href="route('quizzes.export', { quiz: quiz.id, format: 'csv' })"
+                                @click="showExport = false"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                            >CSV</a>
+                        </div>
+                    </div>
 
                     <!-- Publish button -->
                     <button
@@ -633,6 +757,21 @@ const helpModalOpen = ref(false);
                         </button>
                     </label>
                 </div>
+
+                <!-- Power-ups -->
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <label class="flex items-center justify-between">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('powerups.enabled') }}</span>
+                        <button
+                            type="button"
+                            @click="togglePowerupsEnabled"
+                            :class="['relative inline-flex h-6 w-11 rounded-full transition', powerupsEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700']"
+                        >
+                            <span :class="['absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform', powerupsEnabled ? 'translate-x-5' : 'translate-x-0']" />
+                        </button>
+                    </label>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('powerups.editor_hint') }}</p>
+                </div>
             </div>
         </div>
 
@@ -667,10 +806,17 @@ const helpModalOpen = ref(false);
 
         <AiGenerateModal
             v-if="!isNew"
-            :show="aiGenerateModalOpen"
+            :show="showAiGenerate"
             :quiz-id="quiz.id"
-            @close="aiGenerateModalOpen = false"
-            @generated="onAiGenerated"
+            @close="showAiGenerate = false"
+            @generated="handleAiGenerated"
+        />
+
+        <BankPickerModal
+            v-if="showBankPicker && !isNew"
+            :submitting="bankSubmitting"
+            @submit="addFromBank"
+            @close="showBankPicker = false"
         />
 
         <!-- Floating help button -->

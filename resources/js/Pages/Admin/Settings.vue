@@ -19,6 +19,7 @@ const form = useForm({
     require_email_verification: props.settings.require_email_verification === '1',
     allow_guest_play: props.settings.allow_guest_play === '1',
     maintenance_mode: props.settings.maintenance_mode === '1',
+    ai_generation_enabled: props.settings.ai_generation_enabled === '1',
 });
 
 function save() {
@@ -62,7 +63,7 @@ function save() {
 
                         <!-- Toggles -->
                         <div class="space-y-4 pt-2 border-t border-gray-100 dark:border-gray-800">
-                            <label v-for="key in ['allow_registration', 'require_email_verification', 'allow_guest_play', 'maintenance_mode']" :key="key" class="flex items-center justify-between">
+                            <label v-for="key in ['allow_registration', 'require_email_verification', 'allow_guest_play', 'maintenance_mode', 'ai_generation_enabled']" :key="key" class="flex items-center justify-between">
                                 <span class="text-sm text-gray-700 dark:text-gray-300">{{ t(`admin.setting_${key}`) }}</span>
                                 <button
                                     type="button"
