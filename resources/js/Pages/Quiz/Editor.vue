@@ -41,7 +41,6 @@ const quizForm = useForm({
 // Local questions state
 const showExport = ref(false);
 const showBankPicker = ref(false);
-const showAiGenerate = ref(false);
 const bankSubmitting = ref(false);
 const questions = ref(props.quiz?.questions || []);
 const selectedQuestionIndex = ref(questions.value.length > 0 ? 0 : -1);
@@ -213,21 +212,6 @@ function addFromBank(itemIds) {
             toast(t('question_bank.added'));
         },
         onFinish: () => { bankSubmitting.value = false; },
-    });
-}
-
-function handleAiGenerated(generatedQuestions) {
-    if (!generatedQuestions || generatedQuestions.length === 0) return;
-
-    router.post(route('questions.store-bulk', props.quiz.id), {
-        questions: generatedQuestions
-    }, {
-        preserveScroll: true,
-        onSuccess: (page) => {
-            questions.value = page.props.quiz?.questions || [];
-            selectedQuestionIndex.value = questions.value.length - 1;
-            toast(t('common.success'));
-        }
     });
 }
 
@@ -583,15 +567,6 @@ const helpModalOpen = ref(false);
                         🗂️ <span class="hidden sm:inline">{{ t('question_bank.add_from_bank') }}</span>
                     </button>
 
-                    <!-- AI Question Generator -->
-                    <button
-                        v-if="!isNew"
-                        @click="showAiGenerate = true"
-                        class="rounded-lg px-3 sm:px-4 py-2 text-sm font-semibold transition bg-primary-50 text-primary-700 hover:bg-primary-100 dark:bg-primary-950/40 dark:text-primary-300 dark:hover:bg-primary-950 flex items-center gap-1.5 border border-primary-200/50 dark:border-primary-900/30"
-                    >
-                        ✨ <span class="hidden sm:inline">{{ t('ai.generate_btn') }}</span>
-                    </button>
-
                     <!-- Save current question to bank -->
                     <button
                         v-if="!isNew && selectedQuestion"
@@ -806,10 +781,10 @@ const helpModalOpen = ref(false);
 
         <AiGenerateModal
             v-if="!isNew"
-            :show="showAiGenerate"
+            :show="aiGenerateModalOpen"
             :quiz-id="quiz.id"
-            @close="showAiGenerate = false"
-            @generated="handleAiGenerated"
+            @close="aiGenerateModalOpen = false"
+            @generated="onAiGenerated"
         />
 
         <BankPickerModal

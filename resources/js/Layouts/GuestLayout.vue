@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import LanguageSwitcher from '@/Components/UI/LanguageSwitcher.vue';
@@ -9,6 +10,8 @@ const { t } = useI18n();
 defineProps({
     title: String,
 });
+
+const mobileMenuOpen = ref(false);
 </script>
 
 <template>
@@ -18,36 +21,40 @@ defineProps({
         <!-- Navigation -->
         <nav class="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-950/80">
             <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-                <!-- Logo -->
-                <Link href="/" class="group flex items-center">
-                    <img src="/images/logo.png?v=3" alt="Yahoot Logo" class="h-8 sm:h-10 w-auto transition group-hover:-rotate-3 object-contain dark:hidden" />
-                    <img src="/images/logo-dark.png?v=1" alt="Yahoot Logo" class="hidden h-8 sm:h-10 w-auto transition group-hover:-rotate-3 object-contain dark:block" />
-                </Link>
-
-                <!-- Right side -->
-                <div class="flex items-center gap-3">
-                    <Link
-                        :href="route('explore')"
-                        class="hidden sm:inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                    >
-                        🔍 {{ t('nav.explore') || 'Explore' }}
+                <!-- Left: Logo + nav links -->
+                <div class="flex items-center gap-6">
+                    <Link href="/" class="group flex items-center">
+                        <img src="/images/logo.png?v=3" alt="Yahoot Logo" class="h-8 sm:h-10 w-auto transition group-hover:-rotate-3 object-contain dark:hidden" />
+                        <img src="/images/logo-dark.png?v=1" alt="Yahoot Logo" class="hidden h-8 sm:h-10 w-auto transition group-hover:-rotate-3 object-contain dark:block" />
                     </Link>
-                    <Link
-                        :href="route('leaderboard')"
-                        class="hidden sm:inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                    >
-                        🏆 {{ t('nav.leaderboard') }}
-                    </Link>
-                    <a
-                        href="https://github.com/azmifauzan/yahoot"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
-                    >
-                        <svg class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-                        GitHub
-                    </a>
 
+                    <!-- Desktop nav links -->
+                    <div class="hidden sm:flex items-center gap-1">
+                        <Link
+                            :href="route('explore')"
+                            class="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                        >
+                            {{ t('nav.explore') || 'Explore' }}
+                        </Link>
+                        <Link
+                            :href="route('leaderboard')"
+                            class="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                        >
+                            {{ t('nav.leaderboard') }}
+                        </Link>
+                        <a
+                            href="https://github.com/azmifauzan/yahoot"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                        >
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right: utilities + auth + hamburger -->
+                <div class="flex items-center gap-2">
                     <LanguageSwitcher />
                     <ThemeSwitcher />
 
@@ -55,21 +62,89 @@ defineProps({
                         <Link
                             v-if="$page.props.auth.user"
                             :href="route('dashboard')"
-                            class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
+                            class="hidden sm:inline-flex rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
                         >
                             {{ t('nav.dashboard') }}
                         </Link>
                         <template v-else>
                             <Link
                                 :href="route('login')"
-                                class="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                                class="hidden sm:inline-flex rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
                             >
                                 {{ t('nav.login') }}
                             </Link>
                             <Link
                                 v-if="route().has('register')"
                                 :href="route('register')"
-                                class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
+                                class="hidden sm:inline-flex rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
+                            >
+                                {{ t('nav.register') }}
+                            </Link>
+                        </template>
+                    </template>
+
+                    <!-- Hamburger (mobile only) -->
+                    <button
+                        @click="mobileMenuOpen = !mobileMenuOpen"
+                        class="sm:hidden flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                        :aria-label="t('nav.menu')"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path v-if="mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            <path v-else stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile menu -->
+            <div v-if="mobileMenuOpen" class="sm:hidden border-t border-gray-100 dark:border-gray-800 px-4 py-3 space-y-1">
+                <Link
+                    :href="route('explore')"
+                    @click="mobileMenuOpen = false"
+                    class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                >
+                    {{ t('nav.explore') || 'Explore' }}
+                </Link>
+                <Link
+                    :href="route('leaderboard')"
+                    @click="mobileMenuOpen = false"
+                    class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                >
+                    {{ t('nav.leaderboard') }}
+                </Link>
+                <a
+                    href="https://github.com/azmifauzan/yahoot"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    @click="mobileMenuOpen = false"
+                    class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                >
+                    GitHub
+                </a>
+                <div class="pt-2 border-t border-gray-100 dark:border-gray-800">
+                    <template v-if="route().has('login')">
+                        <Link
+                            v-if="$page.props.auth.user"
+                            :href="route('dashboard')"
+                            @click="mobileMenuOpen = false"
+                            class="block rounded-lg px-3 py-2 text-sm font-semibold text-primary-600 transition hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-900/20"
+                        >
+                            {{ t('nav.dashboard') }}
+                        </Link>
+                        <template v-else>
+                            <Link
+                                :href="route('login')"
+                                @click="mobileMenuOpen = false"
+                                class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                            >
+                                {{ t('nav.login') }}
+                            </Link>
+                            <Link
+                                v-if="route().has('register')"
+                                :href="route('register')"
+                                @click="mobileMenuOpen = false"
+                                class="block rounded-lg px-3 py-2 text-sm font-semibold text-primary-600 transition hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-900/20"
                             >
                                 {{ t('nav.register') }}
                             </Link>
