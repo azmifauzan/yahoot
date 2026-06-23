@@ -391,7 +391,7 @@ async function hostQuiz(quiz) {
                     v-for="link in quizzes.links"
                     :key="link.label"
                     :href="link.url || '#'"
-                    v-html="link.label"
+                    v-html="['pagination.previous', 'pagination.next'].includes(link.label) ? t(link.label) : link.label"
                     :class="[
                         'rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200',
                         link.active

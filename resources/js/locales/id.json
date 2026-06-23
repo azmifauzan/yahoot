@@ -635,5 +635,9 @@
         "or": "atau",
         "and": "dan",
         "yes": "Ya"
+    },
+    "pagination": {
+        "previous": "&laquo; Sebelumnya",
+        "next": "Selanjutnya &raquo;"
     }
 }

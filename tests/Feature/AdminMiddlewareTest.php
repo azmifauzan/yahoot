@@ -1,8 +1,10 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 test('admin middleware allows admin users', function () {
     $admin = User::factory()->admin()->create();
@@ -44,7 +46,7 @@ test('is_admin is cast to boolean', function () {
 
 test('ensure user is admin middleware returns 403 for guests', function () {
     // Register a route with admin middleware for testing
-    \Illuminate\Support\Facades\Route::middleware(['web', 'auth', 'admin'])->get('/_test-admin', function () {
+    Route::middleware(['web', 'auth', 'admin'])->get('/_test-admin', function () {
         return response()->json(['ok' => true]);
     });
 
@@ -52,7 +54,7 @@ test('ensure user is admin middleware returns 403 for guests', function () {
 });
 
 test('ensure user is admin middleware returns 403 for non-admin', function () {
-    \Illuminate\Support\Facades\Route::middleware(['web', 'auth', 'admin'])->get('/_test-admin', function () {
+    Route::middleware(['web', 'auth', 'admin'])->get('/_test-admin', function () {
         return response()->json(['ok' => true]);
     });
 
@@ -62,7 +64,7 @@ test('ensure user is admin middleware returns 403 for non-admin', function () {
 });
 
 test('ensure user is admin middleware allows admin', function () {
-    \Illuminate\Support\Facades\Route::middleware(['web', 'auth', 'admin'])->get('/_test-admin', function () {
+    Route::middleware(['web', 'auth', 'admin'])->get('/_test-admin', function () {
         return response()->json(['ok' => true]);
     });
 

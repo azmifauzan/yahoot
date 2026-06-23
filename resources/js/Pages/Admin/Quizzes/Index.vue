@@ -131,7 +131,7 @@ function restore(quiz) {
                         v-for="link in quizzes.links"
                         :key="link.label"
                         :href="link.url || '#'"
-                        v-html="link.label"
+                        v-html="['pagination.previous', 'pagination.next'].includes(link.label) ? t(link.label) : link.label"
                         :class="['px-3 py-1 rounded text-sm', link.active ? 'bg-primary-600 text-white' : 'bg-white text-gray-600 dark:bg-gray-800 dark:text-gray-300', !link.url && 'opacity-50 cursor-not-allowed']"
                     />
                 </div>

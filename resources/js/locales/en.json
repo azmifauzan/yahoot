@@ -635,5 +635,9 @@
         "or": "or",
         "and": "and",
         "yes": "Yes"
+    },
+    "pagination": {
+        "previous": "&laquo; Previous",
+        "next": "Next &raquo;"
     }
 }

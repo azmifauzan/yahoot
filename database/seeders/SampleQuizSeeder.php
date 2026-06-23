@@ -34,7 +34,7 @@ class SampleQuizSeeder extends Seeder
 
         // Idempotent: wipe any existing demo quizzes (cascades questions,
         // answers, and game sessions) so re-seeding never duplicates.
-        $user->quizzes()->delete();
+        $user->quizzes()->forceDelete();
 
         foreach ($this->quizzes() as $quizData) {
             $quiz = Quiz::create([

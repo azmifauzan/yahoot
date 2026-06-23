@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PointType;
 use App\Enums\QuestionType;
+use Database\Factories\QuestionFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Question extends Model
 {
-    /** @use HasFactory<\Database\Factories\QuestionFactory> */
+    /** @use HasFactory<QuestionFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -55,7 +56,7 @@ class Question extends Model
     }
 
     /**
-     * @return BelongsTo<\App\Models\Quiz, $this>
+     * @return BelongsTo<Quiz, $this>
      */
     public function quiz(): BelongsTo
     {
@@ -63,7 +64,7 @@ class Question extends Model
     }
 
     /**
-     * @return HasMany<\App\Models\Answer, $this>
+     * @return HasMany<Answer, $this>
      */
     public function answers(): HasMany
     {

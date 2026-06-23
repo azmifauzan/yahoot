@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Enums\AnswerColor;
+use Database\Factories\AnswerFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Answer extends Model
 {
-    /** @use HasFactory<\Database\Factories\AnswerFactory> */
+    /** @use HasFactory<AnswerFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -31,7 +32,7 @@ class Answer extends Model
     }
 
     /**
-     * @return BelongsTo<\App\Models\Question, $this>
+     * @return BelongsTo<Question, $this>
      */
     public function question(): BelongsTo
     {
