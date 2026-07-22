@@ -3,6 +3,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import AvatarDisplay from '@/Components/Avatar/AvatarDisplay.vue';
+import Icon from '@/Components/UI/Icon.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
@@ -38,7 +39,7 @@ function cancelGame(session) {
     <AppLayout :title="t('host.history_title')">
         <template #header>
             <div class="flex items-center justify-between">
-                <h2 class="font-display text-xl font-bold leading-tight text-gray-800 dark:text-gray-100">
+                <h2 class="font-display text-2xl font-black leading-tight tracking-tight text-gray-900 dark:text-white">
                     {{ t('host.history_title') }} &middot; {{ quiz.title }}
                 </h2>
                 <div class="flex items-center gap-2">
@@ -46,7 +47,7 @@ function cancelGame(session) {
                         :href="route('quizzes.analytics', quiz.id)"
                         class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm border border-gray-200 transition hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-800 dark:hover:bg-gray-800"
                     >
-                        📊 {{ t('host.view_analytics') }}
+                        <Icon name="chart" class="h-4 w-4" /> {{ t('host.view_analytics') }}
                     </Link>
                     <Link
                         :href="route('quizzes.edit', quiz.id)"
@@ -61,7 +62,7 @@ function cancelGame(session) {
         <div class="py-8">
             <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
                 <!-- Empty state -->
-                <div v-if="sessions.length === 0" class="flex flex-col items-center justify-center rounded-xl bg-white py-16 shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
+                <div v-if="sessions.length === 0" class="flex flex-col items-center justify-center rounded-[1.5rem] border border-white bg-white/90 py-16 shadow-xl shadow-primary-950/5 dark:border-white/10 dark:bg-gray-900/90">
                     <div class="mb-4 rounded-full bg-primary-100 dark:bg-primary-900/30 p-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-500 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14" />
@@ -75,7 +76,7 @@ function cancelGame(session) {
                     <div
                         v-for="(session, index) in sessions"
                         :key="session.id"
-                        class="flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl bg-white p-4 shadow-sm border border-gray-100 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-500/10 dark:bg-gray-900 dark:border-gray-800 animate-slide-in-up"
+                        class="flex flex-col gap-4 rounded-[1.4rem] border border-white bg-white/90 p-4 shadow-lg shadow-primary-950/5 transition hover:-translate-y-1 hover:shadow-xl dark:border-white/10 dark:bg-gray-900/90 sm:flex-row sm:items-center animate-slide-in-up"
                         :style="{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }"
                     >
                         <Link
@@ -88,7 +89,7 @@ function cancelGame(session) {
                                         {{ t('host.played_on') }} {{ formatDate(session.finished_at) }}
                                     </template>
                                     <template v-else>
-                                        🟢 {{ t('host.in_progress') }}
+                                        <span class="mr-1 inline-block h-2 w-2 rounded-full bg-green-500"></span>{{ t('host.in_progress') }}
                                     </template>
                                 </p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -103,7 +104,7 @@ function cancelGame(session) {
                                 <div v-if="session.winner" class="flex items-center gap-2">
                                     <AvatarDisplay :name="session.winner.avatar" :size="32" />
                                     <div class="text-left sm:text-right">
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">🥇 {{ t('host.winner') }}</p>
+                                        <p class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400"><Icon name="trophy" class="h-3.5 w-3.5 text-amber-500" /> {{ t('host.winner') }}</p>
                                         <p class="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[120px]">{{ session.winner.nickname }}</p>
                                     </div>
                                 </div>
@@ -129,7 +130,7 @@ function cancelGame(session) {
                                 :title="t('host.cancel_game')"
                                 class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 whitespace-nowrap"
                             >
-                                ✕ <span class="hidden sm:inline">{{ t('host.cancel_game') }}</span>
+                                <Icon name="x" class="inline h-3.5 w-3.5" /> <span class="hidden sm:inline">{{ t('host.cancel_game') }}</span>
                             </button>
                         </div>
                     </div>

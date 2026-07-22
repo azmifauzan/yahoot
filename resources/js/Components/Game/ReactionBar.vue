@@ -1,11 +1,24 @@
 <script setup>
+import Icon from '@/Components/UI/Icon.vue';
+
 const props = defineProps({
     emojis: {
         type: Array,
-        default: () => ['🎉', '😂', '😮', '😍', '👏', '🔥', '😢', '👍'],
+        default: () => ['celebrate', 'laugh', 'surprised', 'love', 'applause', 'fire', 'sad', 'like'],
     },
     disabled: { type: Boolean, default: false },
 });
+
+const reactionIcons = {
+    celebrate: 'star',
+    laugh: 'smile',
+    surprised: 'surprise',
+    love: 'heart',
+    applause: 'applause',
+    fire: 'fire',
+    sad: 'sad',
+    like: 'like',
+};
 
 const emit = defineEmits(['react']);
 
@@ -22,10 +35,12 @@ function send(emoji) {
             :key="emoji"
             type="button"
             :disabled="disabled"
-            class="text-2xl rounded-full bg-white/10 hover:bg-white/25 active:scale-90 transition w-12 h-12 flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+            :aria-label="emoji"
+            :title="emoji"
+            class="group flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/10 transition hover:-translate-y-0.5 hover:bg-white/25 active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
             @click="send(emoji)"
         >
-            {{ emoji }}
+            <Icon :name="reactionIcons[emoji] ?? 'star'" class="h-5 w-5 transition-transform group-hover:scale-110" />
         </button>
     </div>
 </template>

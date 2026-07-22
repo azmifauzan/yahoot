@@ -28,7 +28,7 @@ const tabs = [
 <template>
     <AppLayout :title="t('nav.profile')">
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-100">
+            <h2 class="font-display text-2xl font-black leading-tight tracking-tight text-gray-900 dark:text-white">
                 {{ t('nav.profile') }}
             </h2>
         </template>
@@ -36,13 +36,13 @@ const tabs = [
         <div class="py-8">
             <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
                 <!-- Tabs -->
-                <div class="mb-6 flex gap-1 rounded-xl bg-white p-1 shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
+                <div class="mb-6 flex gap-1 rounded-[1.4rem] border border-white bg-white/90 p-1.5 shadow-lg shadow-primary-950/5 dark:border-white/10 dark:bg-gray-900/90">
                     <button
                         v-for="tab in tabs"
                         :key="tab.key"
                         @click="activeTab = tab.key"
                         :class="[
-                            'flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition',
+                            'flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition',
                             activeTab === tab.key
                                 ? 'bg-primary-600 text-white'
                                 : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200',
@@ -56,21 +56,21 @@ const tabs = [
                 </div>
 
                 <!-- Tab Content -->
-                <div class="rounded-xl bg-white shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
+                <div class="overflow-hidden rounded-[1.5rem] border border-white bg-white/90 shadow-xl shadow-primary-950/5 dark:border-white/10 dark:bg-gray-900/90">
                     <!-- Profile Tab -->
-                    <div v-if="activeTab === 'profile'">
+                    <div v-if="activeTab === 'profile'" class="p-6 sm:p-8">
                         <div v-if="$page.props.jetstream.canUpdateProfileInformation">
                             <UpdateProfileInformationForm :user="$page.props.auth.user" />
                         </div>
                     </div>
 
                     <!-- Security Tab -->
-                    <div v-if="activeTab === 'security'">
+                    <div v-if="activeTab === 'security'" class="space-y-10 p-6 sm:p-8">
                         <div v-if="$page.props.jetstream.canUpdatePassword">
                             <UpdatePasswordForm />
                         </div>
 
-                        <div v-if="$page.props.jetstream.canManageTwoFactorAuthentication" class="border-t border-gray-100 dark:border-gray-800">
+                        <div v-if="$page.props.jetstream.canManageTwoFactorAuthentication" class="border-t border-gray-100 pt-10 dark:border-gray-800">
                             <TwoFactorAuthenticationForm
                                 :requires-confirmation="confirmsTwoFactorAuthentication"
                             />
@@ -78,12 +78,12 @@ const tabs = [
                     </div>
 
                     <!-- Sessions Tab -->
-                    <div v-if="activeTab === 'sessions'">
+                    <div v-if="activeTab === 'sessions'" class="p-6 sm:p-8">
                         <LogoutOtherBrowserSessionsForm :sessions="sessions" />
                     </div>
 
                     <!-- Account Tab -->
-                    <div v-if="activeTab === 'account'">
+                    <div v-if="activeTab === 'account'" class="p-6 sm:p-8">
                         <template v-if="$page.props.jetstream.hasAccountDeletionFeatures">
                             <DeleteUserForm />
                         </template>

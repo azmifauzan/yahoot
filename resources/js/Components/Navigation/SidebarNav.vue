@@ -30,11 +30,11 @@ const icons = {
     <div>
         <p
             v-if="label && !collapsed"
-            class="mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500"
+            class="mb-2 px-3 text-[.68rem] font-bold uppercase tracking-[.16em] text-gray-400 dark:text-gray-500"
         >
             {{ label }}
         </p>
-        <div class="space-y-1">
+        <div class="space-y-1.5">
             <Link
                 v-for="link in links"
                 :key="link.href"
@@ -42,14 +42,14 @@ const icons = {
                 @click="$emit('navigate')"
                 :title="collapsed ? link.label : undefined"
                 :class="[
-                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition',
+                    'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition',
                     collapsed ? 'justify-center' : '',
                     link.active
-                        ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-primary-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-primary-400',
+                        ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20'
+                        : 'text-gray-600 hover:bg-primary-50 hover:text-primary-700 dark:text-gray-300 dark:hover:bg-primary-950/40 dark:hover:text-primary-300',
                 ]"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 transition group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" :d="icons[link.icon]" />
                 </svg>
                 <span v-if="!collapsed">{{ link.label }}</span>

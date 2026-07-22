@@ -17,13 +17,13 @@ const timerColor = computed(() => {
 
 <template>
     <div>
-        <div v-if="showNumber" class="text-5xl font-extrabold text-white mb-3">
+        <div v-if="showNumber" class="mb-3 text-5xl font-black tabular-nums text-white">
             {{ Math.ceil(timeRemaining) }}
         </div>
-        <div class="h-2 bg-gray-700" :class="rounded ? 'w-full rounded-full overflow-hidden' : ''">
+        <div class="h-2.5 bg-white/10" :class="rounded ? 'w-full rounded-full overflow-hidden' : ''">
             <div
                 :class="[timerColor, rounded ? 'rounded-full' : '']"
-                class="h-full transition-all duration-100 ease-linear"
+                class="h-full shadow-[0_0_18px_currentColor] transition-all duration-100 ease-linear"
                 :style="{ width: progress + '%' }"
             ></div>
         </div>

@@ -16,6 +16,16 @@ class LeaderboardController extends Controller
      */
     public function index(Request $request): Response
     {
+        return $this->renderPage($request, 'Leaderboard');
+    }
+
+    public function userIndex(Request $request): Response
+    {
+        return $this->renderPage($request, 'User/Leaderboard');
+    }
+
+    private function renderPage(Request $request, string $component): Response
+    {
         $user = $request->user();
 
         $myRank = null;
@@ -31,7 +41,7 @@ class LeaderboardController extends Controller
             ];
         }
 
-        return Inertia::render('Leaderboard', [
+        return Inertia::render($component, [
             'topPlayers' => $this->rankingService->topPlayers(50),
             'myRank' => $myRank,
         ]);

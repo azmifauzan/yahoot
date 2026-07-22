@@ -3,6 +3,8 @@ import { computed } from 'vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AvatarDisplay from '@/Components/Avatar/AvatarDisplay.vue';
+import GameLayout from '@/Components/Game/GameLayout.vue';
+import Icon from '@/Components/UI/Icon.vue';
 
 const { t } = useI18n();
 
@@ -15,17 +17,18 @@ const props = defineProps({
 });
 
 const podium = computed(() => props.leaderboard.slice(0, 3));
-const rest = computed(() => props.leaderboard.slice(3));
 </script>
 
 <template>
     <Head :title="`${quiz.title} - ${t('host.results')}`" />
 
-    <div class="min-h-screen bg-gradient-to-br from-primary-600 to-purple-700 text-white">
+    <GameLayout>
+    <div class="flex min-h-screen flex-col text-white">
         <!-- Header -->
-        <div class="text-center pt-8 pb-4 px-4">
-            <h1 class="text-3xl md:text-4xl font-extrabold mb-1">{{ quiz.title }}</h1>
-            <p class="opacity-80">{{ t('host.game_code') }}: {{ gameSession.game_code }} · {{ totalQuestions }} {{ t('host.questions') }}</p>
+        <div class="px-4 pb-4 pt-8 text-center">
+            <span class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-300 text-amber-950 shadow-xl shadow-amber-500/20"><Icon name="trophy" class="h-8 w-8" /></span>
+            <h1 class="mb-1 text-3xl font-black md:text-4xl">{{ quiz.title }}</h1>
+            <p class="text-white/60">{{ t('host.game_code') }}: {{ gameSession.game_code }} · {{ totalQuestions }} {{ t('host.questions') }}</p>
         </div>
 
         <!-- Podium -->
@@ -35,8 +38,8 @@ const rest = computed(() => props.leaderboard.slice(3));
                 <AvatarDisplay :name="podium[1].avatar" :size="64" class="mx-auto mb-2" />
                 <p class="font-bold text-sm truncate">{{ podium[1].nickname }}</p>
                 <p class="text-xs opacity-80">{{ podium[1].score }} pts</p>
-                <div class="bg-gray-300/30 w-full h-24 rounded-t-xl mt-2 flex items-center justify-center">
-                    <span class="text-4xl">🥈</span>
+                <div class="mt-2 flex h-24 w-full items-center justify-center rounded-t-2xl border border-white/10 bg-slate-300/20">
+                    <span class="text-3xl font-black">2</span>
                 </div>
             </div>
             <!-- 1st -->
@@ -44,8 +47,8 @@ const rest = computed(() => props.leaderboard.slice(3));
                 <AvatarDisplay :name="podium[0].avatar" :size="80" class="mx-auto mb-2" />
                 <p class="font-bold truncate">{{ podium[0].nickname }}</p>
                 <p class="text-sm opacity-80">{{ podium[0].score }} pts</p>
-                <div class="bg-yellow-300/30 w-full h-32 rounded-t-xl mt-2 flex items-center justify-center">
-                    <span class="text-5xl">🥇</span>
+                <div class="mt-2 flex h-32 w-full items-center justify-center rounded-t-2xl border border-amber-200/20 bg-amber-300/25">
+                    <span class="text-4xl font-black">1</span>
                 </div>
             </div>
             <!-- 3rd -->
@@ -53,15 +56,15 @@ const rest = computed(() => props.leaderboard.slice(3));
                 <AvatarDisplay :name="podium[2].avatar" :size="56" class="mx-auto mb-2" />
                 <p class="font-bold text-sm truncate">{{ podium[2].nickname }}</p>
                 <p class="text-xs opacity-80">{{ podium[2].score }} pts</p>
-                <div class="bg-orange-300/30 w-full h-16 rounded-t-xl mt-2 flex items-center justify-center">
-                    <span class="text-3xl">🥉</span>
+                <div class="mt-2 flex h-16 w-full items-center justify-center rounded-t-2xl border border-orange-200/20 bg-orange-300/20">
+                    <span class="text-2xl font-black">3</span>
                 </div>
             </div>
         </div>
 
         <!-- Leaderboard table -->
         <div class="max-w-3xl mx-auto px-6 pb-8">
-            <div class="bg-white/10 backdrop-blur rounded-2xl overflow-hidden">
+            <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.07] shadow-2xl backdrop-blur-xl">
                 <table class="w-full">
                     <thead>
                         <tr class="text-left text-sm text-white/60 border-b border-white/10">
@@ -80,10 +83,7 @@ const rest = computed(() => props.leaderboard.slice(3));
                             :style="{ animationDelay: `${1.5 + index * 0.08}s` }"
                         >
                             <td class="p-3 font-extrabold">
-                                <template v-if="entry.rank <= 3">
-                                    {{ ['🥇','🥈','🥉'][entry.rank - 1] }}
-                                </template>
-                                <template v-else>{{ entry.rank }}</template>
+                                <span class="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-black" :class="entry.rank <= 3 ? 'bg-amber-300 text-amber-950' : 'bg-white/10 text-white'">{{ entry.rank }}</span>
                             </td>
                             <td class="p-3">
                                 <div class="flex items-center gap-2">
@@ -107,27 +107,28 @@ const rest = computed(() => props.leaderboard.slice(3));
         </div>
 
         <!-- Actions -->
-        <div class="sticky bottom-0 bg-black/30 backdrop-blur p-4">
+        <div class="sticky bottom-0 mt-auto border-t border-white/10 bg-slate-950/60 p-4 backdrop-blur-xl">
             <div class="max-w-3xl mx-auto flex justify-center gap-4 flex-wrap">
                 <button
                     @click="router.post(route('game.store', quiz.id))"
-                    class="px-6 py-3 bg-green-500 hover:bg-green-400 text-white font-bold rounded-xl transition-colors"
+                    class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-emerald-400"
                 >
-                    🔄 {{ t('game.play_again') }}
+                    <Icon name="refresh" class="h-5 w-5" /> {{ t('game.play_again') }}
                 </button>
                 <a
                     :href="route('game.export', gameSession.id)"
-                    class="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl transition-colors"
+                    class="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-6 py-3 font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-white/20"
                 >
-                    📥 {{ t('host.download_csv') }}
+                    <Icon name="download" class="h-5 w-5" /> {{ t('host.download_csv') }}
                 </a>
                 <Link
                     :href="route('dashboard')"
-                    class="px-6 py-3 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 transition-colors"
+                    class="rounded-xl bg-white px-6 py-3 font-bold text-primary-600 transition-all hover:-translate-y-0.5 hover:bg-primary-50"
                 >
                     {{ t('host.back_dashboard') }}
                 </Link>
             </div>
         </div>
     </div>
+    </GameLayout>
 </template>

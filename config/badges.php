@@ -18,31 +18,31 @@
 
 return [
     'first_game' => [
-        'icon' => '🎮',
+        'icon' => 'play',
         'criteria' => ['games_played' => 1],
     ],
     'first_win' => [
-        'icon' => '🏆',
+        'icon' => 'trophy',
         'criteria' => ['games_won' => 1],
     ],
     'veteran' => [
-        'icon' => '🎖️',
+        'icon' => 'award',
         'criteria' => ['games_played' => 25],
     ],
     'champion' => [
-        'icon' => '👑',
+        'icon' => 'trophy',
         'criteria' => ['games_won' => 10],
     ],
     'sharp_shooter' => [
-        'icon' => '🎯',
+        'icon' => 'target',
         'criteria' => ['total_correct' => 100],
     ],
     'streak_master' => [
-        'icon' => '🔥',
+        'icon' => 'bolt',
         'criteria' => ['best_streak' => 10],
     ],
     'high_scorer' => [
-        'icon' => '⭐',
+        'icon' => 'star',
         'criteria' => ['total_xp' => 10000],
     ],
 ];

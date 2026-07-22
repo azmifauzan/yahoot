@@ -24,30 +24,41 @@ function createReactionSetup(array $settings = []): array
     return [$session, $player];
 }
 
-test('player can send a whitelisted emoji reaction', function () {
+test('player can send a whitelisted reaction', function () {
     Event::fake([ReactionSent::class]);
     [$session, $player] = createReactionSetup();
 
     $this->postJson("/api/games/{$session->id}/react", [
         'player_id' => $player->id,
         'player_token' => $player->player_token,
-        'emoji' => '🎉',
+        'emoji' => 'celebrate',
     ])->assertSuccessful();
 
     Event::assertDispatched(ReactionSent::class, function (ReactionSent $event) use ($session, $player) {
         return $event->gameSessionId === $session->id
-            && $event->emoji === '🎉'
+            && $event->emoji === 'celebrate'
             && $event->nickname === $player->nickname;
     });
 });
 
-test('non-whitelisted emoji is rejected', function () {
+test('legacy mobile reaction tokens remain accepted', function () {
+    Event::fake([ReactionSent::class]);
     [$session, $player] = createReactionSetup();
 
     $this->postJson("/api/games/{$session->id}/react", [
         'player_id' => $player->id,
         'player_token' => $player->player_token,
-        'emoji' => '💩',
+        'emoji' => "\u{1F389}",
+    ])->assertSuccessful();
+});
+
+test('non-whitelisted reaction is rejected', function () {
+    [$session, $player] = createReactionSetup();
+
+    $this->postJson("/api/games/{$session->id}/react", [
+        'player_id' => $player->id,
+        'player_token' => $player->player_token,
+        'emoji' => 'unknown',
     ])->assertUnprocessable();
 });
 
@@ -57,7 +68,7 @@ test('reaction with invalid player token is rejected', function () {
     $this->postJson("/api/games/{$session->id}/react", [
         'player_id' => $player->id,
         'player_token' => 'wrong-token',
-        'emoji' => '🎉',
+        'emoji' => 'celebrate',
     ])->assertForbidden();
 });
 
@@ -67,7 +78,7 @@ test('reactions are rejected when disabled via session settings', function () {
     $this->postJson("/api/games/{$session->id}/react", [
         'player_id' => $player->id,
         'player_token' => $player->player_token,
-        'emoji' => '🎉',
+        'emoji' => 'celebrate',
     ])->assertForbidden();
 });
 
@@ -81,13 +92,13 @@ test('reactions are rate limited per player', function () {
     $this->postJson("/api/games/{$session->id}/react", [
         'player_id' => $player->id,
         'player_token' => $player->player_token,
-        'emoji' => '🎉',
+        'emoji' => 'celebrate',
     ])->assertSuccessful();
 
     // Immediate second reaction throttled.
     $this->postJson("/api/games/{$session->id}/react", [
         'player_id' => $player->id,
         'player_token' => $player->player_token,
-        'emoji' => '😂',
+        'emoji' => 'laugh',
     ])->assertStatus(429);
 });

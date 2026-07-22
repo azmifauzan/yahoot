@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import Icon from '@/Components/UI/Icon.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
@@ -47,13 +48,16 @@ function save() {
 <template>
     <AppLayout :title="t('ai.title')">
         <template #header>
-            <h2 class="font-display text-xl font-bold text-gray-800 dark:text-gray-100">{{ t('ai.title') }}</h2>
+            <h2 class="font-display text-2xl font-black tracking-tight text-gray-900 dark:text-white">{{ t('ai.title') }}</h2>
         </template>
 
         <div class="py-8">
             <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
                 <form @submit.prevent="save" class="space-y-6">
-                    <div class="rounded-xl bg-white shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800 p-6 space-y-5">
+                    <div class="space-y-5 rounded-[1.5rem] border border-white bg-white/90 p-6 shadow-xl shadow-primary-950/5 dark:border-white/10 dark:bg-gray-900/90">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
+                            <Icon name="bolt" class="h-6 w-6" />
+                        </div>
                         <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('ai.description') }}</p>
 
                         <!-- Provider -->
@@ -99,7 +103,7 @@ function save() {
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('ai.api_key') }}</label>
 
                             <div v-if="hasApiKey && !changingApiKey" class="flex items-center justify-between rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm">
-                                <span class="text-gray-600 dark:text-gray-300">✓ {{ t('ai.api_key_configured') }}</span>
+                                <span class="flex items-center gap-2 text-gray-600 dark:text-gray-300"><Icon name="check" class="h-4 w-4 text-green-500" /> {{ t('ai.api_key_configured') }}</span>
                                 <button type="button" @click="changingApiKey = true" class="text-primary-600 hover:underline">
                                     {{ t('ai.api_key_change') }}
                                 </button>
@@ -121,7 +125,7 @@ function save() {
                         <button
                             type="submit"
                             :disabled="form.processing"
-                            class="px-6 py-2 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 disabled:opacity-50 transition"
+                            class="rounded-xl bg-primary-600 px-6 py-2.5 font-bold text-white shadow-lg shadow-primary-600/20 transition hover:-translate-y-0.5 hover:bg-primary-700 disabled:opacity-50"
                         >
                             {{ t('common.save') }}
                         </button>

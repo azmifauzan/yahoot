@@ -20,6 +20,23 @@ test('guest can access explore page and see public published quizzes', function 
         );
 });
 
+test('authenticated user gets the dedicated explore panel page', function () {
+    $user = User::factory()->create();
+    Quiz::factory()->published()->public()->create(['title' => 'Panel Quiz']);
+
+    $this->actingAs($user)
+        ->get(route('user.explore'))
+        ->assertSuccessful()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('User/Explore')
+            ->where('quizzes.data.0.title', 'Panel Quiz')
+        );
+});
+
+test('guest cannot access the explore panel page', function () {
+    $this->get(route('user.explore'))->assertRedirect(route('login'));
+});
+
 test('explore page filters by category', function () {
     $category = Category::factory()->create();
     $quizWithCategory = Quiz::factory()->published()->public()->create([

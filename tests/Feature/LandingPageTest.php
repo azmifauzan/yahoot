@@ -18,8 +18,8 @@ test('landing page shares canLogin and canRegister', function () {
     $response = $this->get('/');
 
     $response->assertInertia(fn ($page) => $page
-        ->has('canLogin')
-        ->has('canRegister')
+        ->where('canLogin', true)
+        ->where('canRegister', true)
     );
 });
 

@@ -4,6 +4,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ImportModal from '@/Components/Quiz/ImportModal.vue';
+import Icon from '@/Components/UI/Icon.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t } = useI18n();
@@ -188,20 +189,21 @@ function getPlaceholderColor(index) {
 <template>
     <AppLayout :title="t('dashboard.title')">
         <template #header>
-            <div class="flex items-center justify-between">
-                <h2 class="font-display text-xl font-bold leading-tight text-gray-800 dark:text-gray-100">
+            <div class="flex items-center justify-between gap-4">
+                <h2 class="font-display text-2xl font-black leading-tight tracking-tight text-gray-900 dark:text-white">
                     {{ t('dashboard.title') }}
                 </h2>
                 <div class="flex items-center gap-2">
                     <button
                         @click="showImport = true"
-                        class="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                        class="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:-translate-y-0.5 hover:border-primary-200 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                     >
-                        ⬆ <span class="hidden sm:inline">{{ t('import_export.import') }}</span>
+                        <Icon name="upload" class="h-4 w-4" />
+                        <span class="hidden sm:inline">{{ t('import_export.import') }}</span>
                     </button>
                     <Link
                         :href="route('quizzes.create')"
-                        class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
+                        class="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-primary-600/20 transition hover:-translate-y-0.5 hover:bg-primary-700"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -214,32 +216,38 @@ function getPlaceholderColor(index) {
 
         <ImportModal v-if="showImport" @close="showImport = false" />
 
-        <div class="py-8">
+        <div class="py-8 sm:py-10">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Stats -->
-                <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-2">
-                    <div class="rounded-xl bg-white p-4 shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('dashboard.stats_quizzes') }}</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.total_quizzes }}</p>
+                <div class="mb-6 grid grid-cols-2 gap-4">
+                    <div class="group rounded-[1.4rem] border border-white bg-white/90 p-5 shadow-lg shadow-primary-950/5 backdrop-blur transition hover:-translate-y-1 dark:border-white/10 dark:bg-gray-900/90">
+                        <div class="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 transition group-hover:-rotate-6 group-hover:scale-110 dark:bg-primary-950 dark:text-primary-300">
+                            <Icon name="document" class="h-5 w-5" />
+                        </div>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ t('dashboard.stats_quizzes') }}</p>
+                        <p class="mt-1 font-display text-3xl font-black text-gray-900 dark:text-white">{{ stats.total_quizzes }}</p>
                     </div>
-                    <div class="rounded-xl bg-white p-4 shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('dashboard.stats_games') }}</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.total_games }}</p>
+                    <div class="group rounded-[1.4rem] border border-white bg-white/90 p-5 shadow-lg shadow-primary-950/5 backdrop-blur transition hover:-translate-y-1 dark:border-white/10 dark:bg-gray-900/90">
+                        <div class="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-yellow/60 text-amber-800 transition group-hover:rotate-6 group-hover:scale-110 dark:bg-amber-900/30 dark:text-amber-300">
+                            <Icon name="bolt" class="h-5 w-5" />
+                        </div>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ t('dashboard.stats_games') }}</p>
+                        <p class="mt-1 font-display text-3xl font-black text-gray-900 dark:text-white">{{ stats.total_games }}</p>
                     </div>
                 </div>
 
                 <!-- Filters & Search -->
-                <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div class="mb-6 flex flex-col gap-4 rounded-[1.4rem] border border-white bg-white/85 p-4 shadow-lg shadow-primary-950/5 backdrop-blur sm:flex-row sm:items-center sm:justify-between dark:border-white/10 dark:bg-gray-900/85">
                     <div class="flex flex-wrap gap-2">
                         <button
                             v-for="option in filterOptions"
                             :key="option.value"
                             @click="setFilter(option.value)"
                             :class="[
-                                'rounded-lg px-4 py-2 text-sm font-medium transition whitespace-nowrap',
+                                'whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold transition',
                                 activeFilter === option.value
                                     ? 'bg-primary-600 text-white shadow-sm shadow-primary-500/30'
-                                    : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800',
+                                    : 'bg-gray-50 text-gray-600 hover:bg-primary-50 hover:text-primary-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-primary-950/40',
                             ]"
                         >
                             {{ option.label() }}
@@ -247,17 +255,17 @@ function getPlaceholderColor(index) {
                         <select
                             v-model="categoryFilter"
                             @change="applyFilters"
-                            class="rounded-lg border-gray-300 text-sm dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200"
+                            class="rounded-xl border-0 bg-gray-50 text-sm focus:ring-2 focus:ring-primary-400 dark:bg-gray-800 dark:text-gray-200"
                         >
                             <option value="">{{ t('category.all') }}</option>
                             <option v-for="category in categories" :key="category.id" :value="category.id">
-                                {{ category.icon ? `${category.icon} ` : '' }}{{ category.name }}
+                                {{ category.name }}
                             </option>
                         </select>
                         <select
                             v-model="tagFilter"
                             @change="applyFilters"
-                            class="rounded-lg border-gray-300 text-sm dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200"
+                            class="rounded-xl border-0 bg-gray-50 text-sm focus:ring-2 focus:ring-primary-400 dark:bg-gray-800 dark:text-gray-200"
                         >
                             <option value="">{{ t('tag.all') }}</option>
                             <option v-for="tag in tags" :key="tag.id" :value="tag.id">
@@ -275,11 +283,11 @@ function getPlaceholderColor(index) {
                                 @input="onSearchInput"
                                 type="text"
                                 :placeholder="t('dashboard.search_placeholder')"
-                                class="w-full sm:w-auto rounded-lg border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-500 dark:focus:border-primary-400 dark:focus:ring-primary-400"
+                                class="w-full rounded-xl border-0 bg-gray-50 py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary-400 sm:w-auto dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
                             />
                         </div>
                         <!-- View toggle -->
-                        <div class="hidden sm:flex items-center gap-1 rounded-lg bg-white p-1 border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
+                        <div class="hidden items-center gap-1 rounded-xl bg-gray-50 p-1 sm:flex dark:bg-gray-800">
                             <button
                                 @click="viewMode = 'grid'"
                                 :class="['rounded-md p-1.5 transition', viewMode === 'grid' ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-400 hover:text-gray-600']"
@@ -297,7 +305,7 @@ function getPlaceholderColor(index) {
                 </div>
 
                 <!-- Empty State -->
-                <div v-if="quizzes.length === 0" class="flex flex-col items-center justify-center rounded-xl bg-white py-16 shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
+                <div v-if="quizzes.length === 0" class="flex flex-col items-center justify-center rounded-[1.5rem] border border-white bg-white/90 py-16 shadow-xl shadow-primary-950/5 dark:border-white/10 dark:bg-gray-900/90">
                     <div class="mb-4 rounded-full bg-primary-100 dark:bg-primary-900/30 p-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-500 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -320,7 +328,7 @@ function getPlaceholderColor(index) {
                     <div
                         v-for="(quiz, index) in quizzes"
                         :key="quiz.id"
-                        class="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-500/10 dark:bg-gray-900 dark:border-gray-800 animate-slide-in-up"
+                        class="group cursor-pointer overflow-hidden rounded-[1.4rem] border border-white bg-white/90 shadow-lg shadow-primary-950/5 transition hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary-500/10 dark:border-white/10 dark:bg-gray-900/90 animate-slide-in-up"
                         :style="{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }"
                         @click="$inertia.visit(route('quizzes.edit', quiz.id))"
                     >
@@ -349,7 +357,7 @@ function getPlaceholderColor(index) {
                             </p>
                             <div v-if="quiz.category || quiz.tags?.length" class="mb-3 flex flex-wrap items-center gap-1">
                                 <span v-if="quiz.category" class="rounded-full bg-primary-50 dark:bg-primary-900/30 px-2 py-0.5 text-xs text-primary-600 dark:text-primary-400">
-                                    {{ quiz.category.icon }} {{ quiz.category.name }}
+                                    {{ quiz.category.name }}
                                 </span>
                                 <span v-for="tag in quiz.tags" :key="tag.id" class="rounded-full bg-gray-100 dark:bg-gray-700 px-2 py-0.5 text-xs text-gray-500 dark:text-gray-400">
                                     #{{ tag.name }}
@@ -362,31 +370,31 @@ function getPlaceholderColor(index) {
                                     @click="playQuiz(quiz)"
                                     class="flex-1 rounded-lg bg-primary-50 py-1.5 px-2 text-center text-xs font-medium text-primary-600 transition hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-400 dark:hover:bg-primary-900/50"
                                 >
-                                    ▶ <span class="hidden sm:inline">{{ t('dashboard.play') }}</span>
+                                    <Icon name="play" class="mx-auto h-4 w-4 sm:mx-0" /> <span class="hidden sm:inline">{{ t('dashboard.play') }}</span>
                                 </button>
                                 <Link
                                     :href="route('quizzes.practice', quiz.id)"
                                     class="flex-1 rounded-lg bg-amber-50 py-1.5 px-2 text-center text-xs font-medium text-amber-600 transition hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50 flex items-center justify-center gap-1"
                                 >
-                                    🎯 <span class="hidden sm:inline">{{ t('practice.start_practice') }}</span>
+                                    <Icon name="target" class="h-4 w-4" /> <span class="hidden sm:inline">{{ t('practice.start_practice') }}</span>
                                 </Link>
                                 <button
                                     @click="duplicateQuiz(quiz)"
                                     class="flex-1 rounded-lg bg-gray-50 py-1.5 px-2 text-center text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                                 >
-                                    <span class="hidden sm:inline">{{ t('dashboard.duplicate') }}</span><span class="sm:hidden">📋</span>
+                                    <Icon name="copy" class="mx-auto h-4 w-4 sm:hidden" /><span class="hidden sm:inline">{{ t('dashboard.duplicate') }}</span>
                                 </button>
                                 <Link
                                     :href="route('quizzes.history', quiz.id)"
                                     class="flex-1 rounded-lg bg-gray-50 py-1.5 px-2 text-center text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 flex items-center justify-center gap-1"
                                 >
-                                    🕒 <span class="hidden sm:inline">{{ t('host.history') }}</span>
+                                    <Icon name="clock" class="h-4 w-4" /> <span class="hidden sm:inline">{{ t('host.history') }}</span>
                                 </Link>
                                 <button
                                     @click="confirmDelete(quiz)"
                                     class="flex-1 rounded-lg bg-red-50 py-1.5 px-2 text-center text-xs font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
                                 >
-                                    <span class="hidden sm:inline">{{ t('dashboard.delete') }}</span><span class="sm:hidden">🗑️</span>
+                                    <Icon name="trash" class="mx-auto h-4 w-4 sm:hidden" /><span class="hidden sm:inline">{{ t('dashboard.delete') }}</span>
                                 </button>
                             </div>
                         </div>
@@ -394,7 +402,7 @@ function getPlaceholderColor(index) {
                 </div>
 
                 <!-- List View -->
-                <div v-else class="overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
+                <div v-else class="overflow-hidden rounded-[1.4rem] border border-white bg-white/90 shadow-lg shadow-primary-950/5 dark:border-white/10 dark:bg-gray-900/90">
                     <div
                         v-for="(quiz, index) in quizzes"
                         :key="quiz.id"
@@ -417,7 +425,7 @@ function getPlaceholderColor(index) {
                                     &middot;
                                     {{ new Date(quiz.created_at).toLocaleDateString() }}
                                     <template v-if="quiz.category">
-                                        &middot; {{ quiz.category.icon }} {{ quiz.category.name }}
+                                        &middot; {{ quiz.category.name }}
                                     </template>
                                 </p>
                             </div>
@@ -446,31 +454,31 @@ function getPlaceholderColor(index) {
                                     @click="playQuiz(quiz)"
                                     class="rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-600 transition hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-400 dark:hover:bg-primary-900/50"
                                 >
-                                    ▶ <span class="hidden md:inline">{{ t('dashboard.play') }}</span>
+                                    <Icon name="play" class="inline h-4 w-4" /> <span class="hidden md:inline">{{ t('dashboard.play') }}</span>
                                 </button>
                                 <Link
                                     :href="route('quizzes.practice', quiz.id)"
                                     class="rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-600 transition hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50"
                                 >
-                                    🎯 <span class="hidden md:inline">{{ t('practice.start_practice') }}</span>
+                                    <Icon name="target" class="inline h-4 w-4" /> <span class="hidden md:inline">{{ t('practice.start_practice') }}</span>
                                 </Link>
                                 <button
                                     @click="duplicateQuiz(quiz)"
                                     class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                                 >
-                                    <span class="hidden md:inline">{{ t('dashboard.duplicate') }}</span><span class="md:hidden">📋</span>
+                                    <Icon name="copy" class="inline h-4 w-4 md:hidden" /><span class="hidden md:inline">{{ t('dashboard.duplicate') }}</span>
                                 </button>
                                 <Link
                                     :href="route('quizzes.history', quiz.id)"
                                     class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 flex items-center justify-center gap-1"
                                 >
-                                    🕒 <span class="hidden md:inline">{{ t('host.history') }}</span>
+                                    <Icon name="clock" class="inline h-4 w-4" /> <span class="hidden md:inline">{{ t('host.history') }}</span>
                                 </Link>
                                 <button
                                     @click="confirmDelete(quiz)"
                                     class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
                                 >
-                                    <span class="hidden md:inline">{{ t('dashboard.delete') }}</span><span class="md:hidden">🗑️</span>
+                                    <Icon name="trash" class="inline h-4 w-4 md:hidden" /><span class="hidden md:inline">{{ t('dashboard.delete') }}</span>
                                 </button>
                             </div>
                         </div>

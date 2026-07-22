@@ -97,6 +97,9 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', [QuizController::class, 'index'])->name('dashboard');
 
+    Route::get('/me/explore', [ExploreController::class, 'userIndex'])->name('user.explore');
+    Route::get('/me/leaderboard', [LeaderboardController::class, 'userIndex'])->name('user.leaderboard');
+
     // Cross-session progress + earned achievement badges
     Route::get('/me/progress', [ProgressController::class, 'index'])->name('progress');
 

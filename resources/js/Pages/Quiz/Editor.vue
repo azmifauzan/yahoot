@@ -13,6 +13,7 @@ import SoundThemeSelector from '@/Components/Quiz/SoundThemeSelector.vue';
 import AiGenerateModal from '@/Components/Quiz/AiGenerateModal.vue';
 import BankPickerModal from '@/Components/Quiz/BankPickerModal.vue';
 import EditorHelpModal from '@/Components/Quiz/EditorHelpModal.vue';
+import Icon from '@/Components/UI/Icon.vue';
 import { useSwal } from '@/Composables/useSwal';
 
 const { t, tm } = useI18n();
@@ -564,7 +565,7 @@ const helpModalOpen = ref(false);
                         @click="showBankPicker = true"
                         class="rounded-lg px-3 sm:px-4 py-2 text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 flex items-center gap-1.5"
                     >
-                        🗂️ <span class="hidden sm:inline">{{ t('question_bank.add_from_bank') }}</span>
+                        <Icon name="folder" class="h-4 w-4" /> <span class="hidden sm:inline">{{ t('question_bank.add_from_bank') }}</span>
                     </button>
 
                     <!-- Save current question to bank -->
@@ -573,7 +574,7 @@ const helpModalOpen = ref(false);
                         @click="saveToBank(selectedQuestion)"
                         class="rounded-lg px-3 sm:px-4 py-2 text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 flex items-center gap-1.5"
                     >
-                        ⭐ <span class="hidden sm:inline">{{ t('question_bank.save_to_bank') }}</span>
+                        <Icon name="star" class="h-4 w-4" /> <span class="hidden sm:inline">{{ t('question_bank.save_to_bank') }}</span>
                     </button>
 
                     <!-- Export menu -->
@@ -582,7 +583,7 @@ const helpModalOpen = ref(false);
                             @click="showExport = !showExport"
                             class="rounded-lg px-3 sm:px-4 py-2 text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 flex items-center gap-1.5"
                         >
-                            ⬇ <span class="hidden sm:inline">{{ t('import_export.export') }}</span>
+                            <Icon name="download" class="h-4 w-4" /> <span class="hidden sm:inline">{{ t('import_export.export') }}</span>
                         </button>
                         <div
                             v-if="showExport"

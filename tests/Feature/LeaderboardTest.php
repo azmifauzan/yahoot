@@ -104,6 +104,22 @@ test('the global leaderboard page is publicly accessible', function () {
         ->assertInertia(fn ($page) => $page->component('Leaderboard'));
 });
 
+test('authenticated user gets the dedicated leaderboard panel page', function () {
+    $user = User::factory()->create(['total_xp' => 5000, 'games_played' => 3]);
+
+    $this->actingAs($user)
+        ->get(route('user.leaderboard'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('User/Leaderboard')
+            ->where('myRank.name', $user->name)
+        );
+});
+
+test('guest cannot access the leaderboard panel page', function () {
+    $this->get(route('user.leaderboard'))->assertRedirect(route('login'));
+});
+
 test('rankFor returns the correct 1-based position', function () {
     $top = User::factory()->create(['total_xp' => 9000, 'games_played' => 5]);
     $me = User::factory()->create(['total_xp' => 5000, 'games_played' => 3]);

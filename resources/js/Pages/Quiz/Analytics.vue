@@ -41,7 +41,7 @@ const hasData = props.questions.some((q) => q.total_attempts > 0);
                     &larr; {{ t('host.history_title') }}
                 </Link>
             </div>
-            <h2 class="font-display text-xl font-bold text-gray-800 dark:text-gray-100">
+            <h2 class="font-display text-2xl font-black tracking-tight text-gray-900 dark:text-white">
                 {{ quiz.title }} · {{ t('analytics.title') }}
             </h2>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -51,7 +51,7 @@ const hasData = props.questions.some((q) => q.total_attempts > 0);
 
         <div class="py-8">
             <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-                <div v-if="!hasData" class="rounded-xl border border-gray-100 bg-white p-10 text-center text-sm text-gray-500 shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
+                <div v-if="!hasData" class="rounded-[1.5rem] border border-white bg-white/90 p-10 text-center text-sm text-gray-500 shadow-xl shadow-primary-950/5 dark:border-white/10 dark:bg-gray-900/90 dark:text-gray-400">
                     {{ t('analytics.no_data') }}
                 </div>
 
@@ -59,7 +59,7 @@ const hasData = props.questions.some((q) => q.total_attempts > 0);
                     <div
                         v-for="(q, idx) in questions"
                         :key="q.question_id"
-                        class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+                        class="rounded-[1.4rem] border border-white bg-white/90 p-5 shadow-lg shadow-primary-950/5 transition hover:-translate-y-1 dark:border-white/10 dark:bg-gray-900/90"
                     >
                         <div class="mb-3 flex items-start justify-between gap-3">
                             <div class="min-w-0">

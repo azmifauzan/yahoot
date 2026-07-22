@@ -1,5 +1,6 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
+import Icon from '@/Components/UI/Icon.vue';
 
 const { t } = useI18n();
 
@@ -12,15 +13,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['select']);
-
-const themeIcons = {
-    standard: '🎨',
-    ocean: '🌊',
-    sunset: '🌅',
-    forest: '🌲',
-    galaxy: '🌌',
-    candy: '🍬',
-};
 
 const themePreviewGradients = {
     standard: 'bg-gradient-to-br from-indigo-500 to-purple-600',
@@ -52,7 +44,7 @@ const themePreviewGradients = {
                 <div
                     :class="[themePreviewGradients[theme.value], 'h-16 flex items-center justify-center']"
                 >
-                    <span class="text-2xl">{{ themeIcons[theme.value] }}</span>
+                    <Icon name="palette" class="h-7 w-7 text-white/90" />
                 </div>
                 <div class="px-2 py-1.5 text-center bg-white dark:bg-gray-900">
                     <span class="text-xs font-medium text-gray-700 dark:text-gray-300">{{ theme.label }}</span>

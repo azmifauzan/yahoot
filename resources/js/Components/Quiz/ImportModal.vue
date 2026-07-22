@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
+import Icon from '@/Components/UI/Icon.vue';
 
 const { t } = useI18n();
 const emit = defineEmits(['close']);
@@ -56,7 +57,9 @@ function downloadTemplate() {
         <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-800">
             <div class="mb-4 flex items-center justify-between">
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ t('import_export.import_title') }}</h3>
-                <button @click="emit('close')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
+                <button @click="emit('close')" :aria-label="t('common.cancel')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
             </div>
 
             <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">{{ t('import_export.import_help') }}</p>
@@ -64,7 +67,7 @@ function downloadTemplate() {
             <label
                 class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 p-6 text-center transition hover:border-primary-400 dark:border-gray-600"
             >
-                <span class="text-3xl">📄</span>
+                <Icon name="document" class="h-9 w-9 text-primary-500" />
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-200">
                     {{ fileName || t('import_export.choose_file') }}
                 </span>
@@ -78,7 +81,7 @@ function downloadTemplate() {
                 @click="downloadTemplate"
                 class="mt-3 text-xs font-medium text-primary-600 hover:underline dark:text-primary-400"
             >
-                ⬇ {{ t('import_export.download_template') }}
+                <Icon name="download" class="mr-1 inline h-4 w-4" /> {{ t('import_export.download_template') }}
             </button>
 
             <div class="mt-6 flex justify-end gap-2">

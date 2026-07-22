@@ -16,6 +16,7 @@ import ReactionBar from '@/Components/Game/ReactionBar.vue';
 import FloatingReactions from '@/Components/Game/FloatingReactions.vue';
 import PowerUpBar from '@/Components/Game/PowerUpBar.vue';
 import TeamBadge from '@/Components/Game/TeamBadge.vue';
+import Icon from '@/Components/UI/Icon.vue';
 
 const { t } = useI18n();
 
@@ -239,13 +240,13 @@ function goHome() {
         <!-- Confetti overlay -->
         <ConfettiEffect v-if="showConfetti" :duration="4000" @complete="showConfetti = false" />
 
-        <!-- Floating emoji reactions overlay -->
+        <!-- Floating reactions overlay -->
         <FloatingReactions :reactions="reactions" />
 
         <!-- Reaction bar (lobby, between questions, scoreboard) -->
         <div
             v-if="reactionsEnabled && player && ['lobby', 'answering', 'result', 'scoreboard'].includes(gameState)"
-            class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 px-3 py-2 rounded-2xl bg-black/30 backdrop-blur"
+            class="fixed bottom-4 left-1/2 z-40 -translate-x-1/2 rounded-2xl border border-white/10 bg-slate-950/60 px-3 py-2 shadow-xl backdrop-blur-xl"
         >
             <ReactionBar @react="react" />
         </div>
@@ -253,30 +254,30 @@ function goHome() {
         <!-- Mute toggle -->
         <button
             @click="sound.toggleMute()"
-            class="fixed top-3 right-3 z-50 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 text-white text-lg flex items-center justify-center transition-all"
+            class="fixed right-4 top-4 z-50 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/15 bg-slate-950/50 text-white shadow-lg backdrop-blur transition-all hover:-translate-y-0.5 hover:bg-white/15"
             :title="sound.muted.value ? t('play.unmute') : t('play.mute')"
         >
-            {{ sound.muted.value ? '🔇' : '🔊' }}
+            <Icon :name="sound.muted.value ? 'volumeOff' : 'volume'" class="h-5 w-5" />
         </button>
 
         <!-- Lobby: Waiting for host -->
-        <div v-if="gameState === 'lobby'" class="flex-1 flex items-center justify-center bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500">
-            <div class="text-center text-white p-8 animate-slide-in-up">
+        <div v-if="gameState === 'lobby'" class="flex flex-1 items-center justify-center px-5">
+            <div class="w-full max-w-sm rounded-[2.25rem] border border-white/10 bg-white/[0.08] p-8 text-center text-white shadow-2xl shadow-primary-950/30 backdrop-blur-xl animate-slide-in-up">
                 <div v-if="player" class="mb-6">
                     <div class="animate-float">
                         <AvatarDisplay :name="player.avatar" :size="96" class="mx-auto mb-4" />
                     </div>
-                    <h2 class="text-2xl font-bold">{{ player.nickname }}</h2>
+                    <h2 class="text-2xl font-black">{{ player.nickname }}</h2>
                     <div v-if="player.team" class="mt-2 flex justify-center">
                         <TeamBadge :name="player.team.name" :color="player.team.color" />
                     </div>
                 </div>
                 <div>
-                    <p class="text-xl">{{ t('play.waiting_host') }}</p>
+                    <p class="text-xl font-bold">{{ t('play.waiting_host') }}</p>
                     <div class="mt-4 flex justify-center gap-1">
-                        <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0s"></div>
-                        <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                        <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                        <div class="h-2.5 w-2.5 rounded-full bg-primary-300 animate-bounce" style="animation-delay: 0s"></div>
+                        <div class="h-2.5 w-2.5 rounded-full bg-fuchsia-300 animate-bounce" style="animation-delay: 0.2s"></div>
+                        <div class="h-2.5 w-2.5 rounded-full bg-cyan-300 animate-bounce" style="animation-delay: 0.4s"></div>
                     </div>
                 </div>
             </div>
@@ -286,14 +287,14 @@ function goHome() {
         <CountdownOverlay v-else-if="isCountdownRunning" :value="countdownValue" />
 
         <!-- Question: Show answer buttons -->
-        <div v-else-if="gameState === 'question' && !hasAnswered" class="flex-1 flex flex-col bg-gray-900">
+        <div v-else-if="gameState === 'question' && !hasAnswered" class="flex flex-1 flex-col">
             <!-- Timer -->
-            <div class="p-4 text-center animate-slide-in-down">
+            <div class="px-4 pb-3 pt-16 text-center animate-slide-in-down">
                 <TimerBar :progress="progress" :time-remaining="timeRemaining" show-number rounded />
             </div>
 
             <!-- Power-ups (scored questions only) -->
-            <div v-if="powerupsEnabled && currentQuestion?.type !== 'poll'" class="px-3 pb-2">
+            <div v-if="powerupsEnabled && currentQuestion?.type !== 'poll'" class="px-3 pb-3">
                 <PowerUpBar
                     :available="powerupsAvailable"
                     :used="powerupUsedThisQuestion"
@@ -302,7 +303,7 @@ function goHome() {
             </div>
 
             <!-- Answer buttons -->
-            <div class="flex-1 p-3" :class="currentQuestion?.type === 'true_false' ? 'grid grid-cols-1 gap-3' : 'grid grid-cols-2 gap-3'">
+            <div class="flex-1 p-3 sm:p-4" :class="currentQuestion?.type === 'true_false' ? 'grid grid-cols-1 gap-3' : 'grid grid-cols-2 gap-3'">
                 <button
                     v-for="(answer, idx) in currentQuestion?.answers"
                     :key="answer.id"
@@ -312,7 +313,7 @@ function goHome() {
                         answerColors[answer.color]?.bg,
                         rippleId === answer.id ? 'ripple-effect ripple-active' : 'ripple-effect',
                     ]"
-                    class="rounded-2xl flex items-center justify-center text-white text-5xl font-bold shadow-lg active:scale-95 transition-transform min-h-[120px] animate-slide-in-up"
+                    class="flex min-h-[120px] items-center justify-center rounded-[1.75rem] border border-white/15 text-5xl font-bold text-white shadow-xl shadow-slate-950/20 transition-all hover:-translate-y-1 hover:brightness-110 active:scale-95 animate-slide-in-up"
                     :style="{ animationDelay: `${idx * 0.1}s` }"
                 >
                     {{ answerColors[answer.color]?.shape }}
@@ -321,29 +322,29 @@ function goHome() {
         </div>
 
         <!-- Waiting after answering -->
-        <div v-else-if="(gameState === 'question' || gameState === 'answering') && hasAnswered" class="flex-1 flex items-center justify-center bg-gray-800">
-            <div class="text-center text-white animate-slide-in-up">
-                <div class="text-6xl mb-4 animate-score-reveal">✓</div>
-                <p class="text-xl font-bold">{{ t('play.answer_sent') }}</p>
-                <p class="text-gray-400 mt-2">{{ t('play.waiting_others') }}</p>
+        <div v-else-if="(gameState === 'question' || gameState === 'answering') && hasAnswered" class="flex flex-1 items-center justify-center px-5">
+            <div class="w-full max-w-sm rounded-[2rem] border border-white/10 bg-white/[0.08] p-8 text-center text-white shadow-2xl backdrop-blur-xl animate-slide-in-up">
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-400/20 text-emerald-300 animate-score-reveal"><Icon name="check" class="h-9 w-9" /></div>
+                <p class="text-xl font-black">{{ t('play.answer_sent') }}</p>
+                <p class="mt-2 text-white/50">{{ t('play.waiting_others') }}</p>
             </div>
         </div>
 
         <!-- Result: Poll -->
-        <div v-else-if="gameState === 'result' && isPoll" class="flex-1 flex items-center justify-center bg-primary-500">
-            <div class="text-center text-white p-8">
-                <div class="text-6xl mb-4 animate-pop-bounce">📊</div>
-                <h2 class="text-3xl font-extrabold animate-slide-in-up">{{ t('play.poll_thanks') }}</h2>
+        <div v-else-if="gameState === 'result' && isPoll" class="flex flex-1 items-center justify-center px-5">
+            <div class="w-full max-w-sm rounded-[2rem] border border-white/10 bg-primary-500/20 p-8 text-center text-white shadow-2xl backdrop-blur-xl">
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 animate-pop-bounce"><Icon name="chart" class="h-9 w-9" /></div>
+                <h2 class="text-3xl font-black animate-slide-in-up">{{ t('play.poll_thanks') }}</h2>
             </div>
         </div>
 
         <!-- Result: Correct / Wrong -->
-        <div v-else-if="gameState === 'result'" class="flex-1 flex items-center justify-center"
-            :class="myPlayerResult?.is_correct ? 'bg-green-500' : 'bg-red-500'">
-            <div class="text-center text-white p-8">
+        <div v-else-if="gameState === 'result'" class="flex flex-1 items-center justify-center px-5">
+            <div class="w-full max-w-sm rounded-[2rem] border p-8 text-center text-white shadow-2xl backdrop-blur-xl"
+                :class="myPlayerResult?.is_correct ? 'border-emerald-300/20 bg-emerald-500/20' : 'border-rose-300/20 bg-rose-500/20'">
                 <template v-if="myPlayerResult?.is_correct">
-                    <div class="text-6xl mb-4 animate-pop-bounce">🎉</div>
-                    <h2 class="text-3xl font-extrabold mb-2 animate-slide-in-up">{{ t('play.correct') }}</h2>
+                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-400 text-emerald-950 shadow-xl animate-pop-bounce"><Icon name="check" class="h-9 w-9" /></div>
+                    <h2 class="mb-2 text-3xl font-black animate-slide-in-up">{{ t('play.correct') }}</h2>
                     <ScoreAnimation
                         :value="(myPlayerResult?.points_earned || 0) + (myPlayerResult?.streak_bonus || 0)"
                         prefix="+"
@@ -352,17 +353,17 @@ function goHome() {
                     <StreakBadge :streak="myResult?.streak || 0" />
                 </template>
                 <template v-else>
-                    <div class="text-6xl mb-4">😢</div>
-                    <h2 class="text-3xl font-extrabold animate-slide-in-up">{{ t('play.wrong') }}</h2>
+                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-400 text-rose-950 shadow-xl"><Icon name="x" class="h-9 w-9" /></div>
+                    <h2 class="text-3xl font-black animate-slide-in-up">{{ t('play.wrong') }}</h2>
                 </template>
             </div>
         </div>
 
         <!-- Scoreboard -->
-        <div v-else-if="gameState === 'scoreboard'" class="flex-1 flex items-center justify-center bg-gradient-to-br from-primary-600 to-purple-700">
-            <div class="text-center text-white p-8">
+        <div v-else-if="gameState === 'scoreboard'" class="flex flex-1 items-center justify-center px-5">
+            <div class="w-full max-w-sm rounded-[2.25rem] border border-white/10 bg-white/[0.08] p-8 text-center text-white shadow-2xl backdrop-blur-xl">
                 <h2 class="text-lg text-white/70 mb-2 animate-slide-in-down">{{ t('play.your_position') }}</h2>
-                <div class="text-7xl font-extrabold mb-2 animate-score-reveal">#{{ myPosition?.rank || '?' }}</div>
+                <div class="mb-2 text-7xl font-black tracking-tight animate-score-reveal">#{{ myPosition?.rank || '?' }}</div>
                 <p class="text-2xl font-bold animate-slide-in-up" style="animation-delay: 0.3s">{{ myPosition?.score || 0 }} {{ t('play.points') }}</p>
                 <!-- Motivational message -->
                 <p v-if="motivationalMessage" class="mt-4 text-lg animate-slide-in-up" style="animation-delay: 0.5s">
@@ -372,31 +373,31 @@ function goHome() {
         </div>
 
         <!-- Finished -->
-        <div v-else-if="gameState === 'finished'" class="flex-1 flex items-center justify-center bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500">
-            <div class="text-center text-white p-8 max-w-sm">
+        <div v-else-if="gameState === 'finished'" class="flex flex-1 items-center justify-center px-5">
+            <div class="w-full max-w-sm rounded-[2.25rem] border border-white/10 bg-white/[0.08] p-8 text-center text-white shadow-2xl backdrop-blur-xl">
                 <template v-if="myFinalRank && myFinalRank.rank <= 3">
-                    <div class="text-6xl mb-4 animate-pop-bounce">
-                        {{ myFinalRank.rank === 1 ? '🥇' : myFinalRank.rank === 2 ? '🥈' : '🥉' }}
+                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-300 text-2xl font-black text-amber-950 shadow-xl shadow-amber-500/20 animate-pop-bounce">
+                        {{ myFinalRank.rank }}
                     </div>
                 </template>
-                <div v-else class="text-6xl mb-4 animate-pop-bounce">🎮</div>
+                <div v-else class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-400/20 text-primary-200 animate-pop-bounce"><Icon name="gamepad" class="h-9 w-9" /></div>
 
-                <h2 class="text-3xl font-extrabold mb-1 animate-slide-in-up">#{{ myFinalRank?.rank || '?' }}</h2>
+                <h2 class="mb-1 text-3xl font-black animate-slide-in-up">#{{ myFinalRank?.rank || '?' }}</h2>
                 <p class="text-xl mb-4 animate-score-reveal" style="animation-delay: 0.3s">{{ myFinalRank?.score || 0 }} {{ t('play.points') }}</p>
 
-                <button @click="goHome" class="px-8 py-3 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 transition-all hover:scale-105 active:scale-95 animate-slide-in-up" style="animation-delay: 0.5s">
+                <button @click="goHome" class="rounded-xl bg-white px-8 py-3 font-bold text-primary-600 shadow-lg transition-all hover:-translate-y-0.5 hover:bg-primary-50 active:scale-95 animate-slide-in-up" style="animation-delay: 0.5s">
                     {{ t('play.back_home') }}
                 </button>
             </div>
         </div>
 
         <!-- Cancelled -->
-        <div v-else-if="gameState === 'cancelled'" class="flex-1 flex items-center justify-center bg-gray-900">
-            <div class="text-center text-white p-8 max-w-sm">
-                <div class="text-6xl mb-4 animate-bounce">❌</div>
-                <h2 class="text-3xl font-extrabold mb-2 animate-slide-in-up">{{ t('play.game_cancelled') }}</h2>
-                <p class="text-gray-400 mb-6 animate-slide-in-up" style="animation-delay: 0.3s">{{ t('play.game_cancelled_desc') }}</p>
-                <button @click="goHome" class="px-8 py-3 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 transition-all hover:scale-105 active:scale-95 animate-slide-in-up" style="animation-delay: 0.5s">
+        <div v-else-if="gameState === 'cancelled'" class="flex flex-1 items-center justify-center px-5">
+            <div class="w-full max-w-sm rounded-[2.25rem] border border-rose-300/15 bg-rose-500/10 p-8 text-center text-white shadow-2xl backdrop-blur-xl">
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-400/20 text-rose-300 animate-bounce"><Icon name="x" class="h-9 w-9" /></div>
+                <h2 class="mb-2 text-3xl font-black animate-slide-in-up">{{ t('play.game_cancelled') }}</h2>
+                <p class="mb-6 text-white/50 animate-slide-in-up" style="animation-delay: 0.3s">{{ t('play.game_cancelled_desc') }}</p>
+                <button @click="goHome" class="rounded-xl bg-white px-8 py-3 font-bold text-primary-600 shadow-lg transition-all hover:-translate-y-0.5 hover:bg-primary-50 active:scale-95 animate-slide-in-up" style="animation-delay: 0.5s">
                     {{ t('play.back_home') }}
                 </button>
             </div>

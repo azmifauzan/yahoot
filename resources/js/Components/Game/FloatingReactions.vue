@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue';
+import Icon from '@/Components/UI/Icon.vue';
 
 const props = defineProps({
     reactions: {
@@ -21,6 +22,17 @@ const positioned = computed(() =>
         };
     })
 );
+
+const reactionIcons = {
+    celebrate: 'star',
+    laugh: 'smile',
+    surprised: 'surprise',
+    love: 'heart',
+    applause: 'applause',
+    fire: 'fire',
+    sad: 'sad',
+    like: 'like',
+};
 </script>
 
 <template>
@@ -31,8 +43,10 @@ const positioned = computed(() =>
             class="floating-reaction absolute bottom-24 flex flex-col items-center"
             :style="{ left: r.left + '%', '--drift': r.drift + 'px', animationDelay: r.delay + 's' }"
         >
-            <span class="text-4xl drop-shadow-lg">{{ r.emoji }}</span>
-            <span class="text-[10px] text-white/80 font-semibold truncate max-w-[80px]">{{ r.nickname }}</span>
+            <span class="rounded-2xl border border-white/20 bg-primary-500/80 p-3 text-white shadow-xl shadow-primary-950/30 backdrop-blur">
+                <Icon :name="reactionIcons[r.emoji] ?? 'star'" class="h-7 w-7" />
+            </span>
+            <span class="mt-1 max-w-[80px] truncate rounded-full bg-slate-950/60 px-2 py-0.5 text-[10px] font-semibold text-white/80">{{ r.nickname }}</span>
         </div>
     </div>
 </template>

@@ -1,5 +1,6 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
+import Icon from '@/Components/UI/Icon.vue';
 
 const { t } = useI18n();
 
@@ -98,9 +99,9 @@ function getQuestionTypeLabel(qt) {
 
 function getQuestionTypeIcon(qt) {
     const val = typeof qt === 'object' ? qt.value || qt : qt;
-    if (val === 'multiple_choice') return '📝';
-    if (val === 'poll') return '📊';
-    return '✅';
+    if (val === 'multiple_choice') return 'document';
+    if (val === 'poll') return 'chart';
+    return 'check';
 }
 </script>
 
@@ -124,7 +125,7 @@ function getQuestionTypeIcon(qt) {
                             : 'border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500',
                     ]"
                 >
-                    <span class="text-base">{{ getQuestionTypeIcon(qt) }}</span>
+                    <Icon :name="getQuestionTypeIcon(qt)" class="h-5 w-5" />
                     {{ getQuestionTypeLabel(qt) }}
                 </button>
             </div>

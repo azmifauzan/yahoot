@@ -6,6 +6,32 @@
     display: none;
 }
 
+.public-grid {
+    background-image:
+        radial-gradient(circle at 15% 10%, rgb(108 92 231 / 0.09), transparent 25rem),
+        radial-gradient(circle at 90% 25%, rgb(78 205 196 / 0.08), transparent 22rem),
+        linear-gradient(rgb(108 92 231 / 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(108 92 231 / 0.035) 1px, transparent 1px);
+    background-size: auto, auto, 32px 32px, 32px 32px;
+}
+
+.dark .public-grid {
+    background-image:
+        radial-gradient(circle at 15% 10%, rgb(108 92 231 / 0.14), transparent 25rem),
+        radial-gradient(circle at 90% 25%, rgb(78 205 196 / 0.08), transparent 22rem),
+        linear-gradient(rgb(255 255 255 / 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px);
+}
+
+@keyframes drift {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
+    50% { transform: translate3d(0, -12px, 0) rotate(2deg); }
+}
+
+.animate-drift {
+    animation: drift 5s ease-in-out infinite;
+}
+
 /* ===== Game Animations ===== */
 
 /* Bounce In — Lobby player joins */
@@ -203,6 +229,10 @@
     }
 
     .ripple-effect::after {
+        animation: none !important;
+    }
+
+    .animate-drift {
         animation: none !important;
     }
 }

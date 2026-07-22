@@ -37,9 +37,9 @@ const effectiveCollapsed = computed(() => isDesktop.value && collapsed.value);
 const menuLinks = computed(() => {
     const links = [
         { href: route('dashboard'), label: t('nav.my_quizzes'), icon: 'home', active: route().current('dashboard') },
-        { href: route('explore'), label: t('nav.explore') || 'Explore', icon: 'search', active: route().current('explore') },
+        { href: route('user.explore'), label: t('nav.explore') || 'Explore', icon: 'search', active: route().current('user.explore') },
         { href: route('progress'), label: t('nav.progress'), icon: 'chart', active: route().current('progress') },
-        { href: route('leaderboard'), label: t('nav.leaderboard'), icon: 'trophy', active: route().current('leaderboard') },
+        { href: route('user.leaderboard'), label: t('nav.leaderboard'), icon: 'trophy', active: route().current('user.leaderboard') },
         { href: route('question-bank.index'), label: t('nav.question_bank'), icon: 'document', active: route().current('question-bank.*') },
     ];
 
@@ -78,9 +78,9 @@ const logout = () => {
 
         <Banner />
 
-        <div class="h-screen bg-white dark:bg-gray-950 flex flex-col">
+        <div class="public-grid flex h-screen flex-col bg-[#f8f7fc] dark:bg-gray-950">
             <!-- Global Top Navbar -->
-            <div class="sticky top-0 z-50 flex h-16 shrink-0 items-center justify-between border-b border-gray-200 bg-white/80 px-4 sm:px-6 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-950/80">
+            <div class="sticky top-0 z-50 flex h-16 shrink-0 items-center justify-between border-b border-white/80 bg-white/80 px-4 shadow-sm shadow-primary-950/5 backdrop-blur-xl sm:px-6 dark:border-white/10 dark:bg-gray-950/80">
                 <!-- Left side -->
                 <div class="flex items-center gap-3">
                     <button
@@ -108,7 +108,7 @@ const logout = () => {
 
             <!-- Fullscreen mode: header only, no sidebar -->
             <template v-if="fullscreen">
-                <header v-if="$slots.header" class="bg-white shadow-sm dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shrink-0">
+                <header v-if="$slots.header" class="shrink-0 border-b border-white/80 bg-white/75 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/75">
                     <div class="w-full py-3 px-3 sm:px-4">
                         <slot name="header" />
                     </div>
@@ -131,14 +131,14 @@ const logout = () => {
                 <!-- Sidebar -->
                 <aside
                     :class="[
-                        'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-gray-200 bg-white transition-transform duration-200 dark:border-gray-800 dark:bg-gray-900',
+                        'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-white/80 bg-white/90 shadow-xl shadow-primary-950/5 backdrop-blur-xl transition-transform duration-200 dark:border-white/10 dark:bg-gray-900/90',
                         'lg:sticky lg:top-0 lg:h-[calc(100vh-4rem)] lg:translate-x-0 lg:transition-[width]',
                         collapsed ? 'lg:w-20' : 'lg:w-64',
                         mobileOpen ? 'translate-x-0' : '-translate-x-full',
                     ]"
                 >
                     <!-- Sidebar collapse toggle -->
-                    <div class="flex h-12 shrink-0 items-center justify-end border-b border-gray-100 px-4 dark:border-gray-800">
+                    <div class="flex h-12 shrink-0 items-center justify-end border-b border-primary-100/70 px-4 dark:border-white/10">
                         <button
                             @click="toggleCollapsed"
                             class="hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 lg:flex dark:hover:bg-gray-800 dark:hover:text-gray-300"
@@ -162,10 +162,10 @@ const logout = () => {
                     </nav>
 
                     <!-- User Dropdown (Profile & Logout) -->
-                    <div class="shrink-0 border-t border-gray-100 p-3 dark:border-gray-800">
+                    <div class="shrink-0 border-t border-primary-100/70 p-3 dark:border-white/10">
                         <Dropdown align="top-left" width="48" :contentClasses="['py-1', 'bg-white', 'dark:bg-gray-900']">
                             <template #trigger>
-                                <button :class="['flex w-full items-center gap-3 rounded-lg px-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-left', effectiveCollapsed ? 'justify-center' : '']">
+                                <button :class="['flex w-full items-center gap-3 rounded-xl border border-transparent px-2 py-2 text-left transition hover:border-primary-100 hover:bg-primary-50/70 dark:hover:border-primary-900/50 dark:hover:bg-primary-950/30', effectiveCollapsed ? 'justify-center' : '']">
                                     <img
                                         v-if="page.props.jetstream.managesProfilePhotos"
                                         class="h-9 w-9 shrink-0 rounded-full object-cover"
@@ -202,7 +202,7 @@ const logout = () => {
                 <!-- Main column -->
                 <div class="flex min-w-0 flex-1 flex-col overflow-y-auto">
                     <!-- Page Heading -->
-                    <header v-if="$slots.header" class="bg-white shadow-sm dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shrink-0">
+                    <header v-if="$slots.header" class="shrink-0 border-b border-white/80 bg-white/75 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/75">
                         <div :class="headerWrapperClass">
                             <slot name="header" />
                         </div>

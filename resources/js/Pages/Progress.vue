@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import Icon from '@/Components/UI/Icon.vue';
 
 const { t } = useI18n();
 
@@ -40,7 +41,7 @@ const accuracyPath = computed(() => buildPath(games.value.map((g) => g.accuracy)
 
     <AppLayout :title="t('progress.title')">
         <template #header>
-            <h2 class="font-display text-xl font-bold text-gray-800 dark:text-gray-100">{{ t('progress.title') }}</h2>
+            <h2 class="font-display text-2xl font-black tracking-tight text-gray-900 dark:text-white">{{ t('progress.title') }}</h2>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('progress.subtitle') }}</p>
         </template>
 
@@ -48,19 +49,23 @@ const accuracyPath = computed(() => buildPath(games.value.map((g) => g.accuracy)
             <div class="mx-auto max-w-6xl space-y-6 px-4 sm:px-6 lg:px-8">
                 <!-- Totals -->
                 <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                    <div class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="group rounded-[1.4rem] border border-white bg-white/90 p-5 shadow-lg shadow-primary-950/5 transition hover:-translate-y-1 dark:border-white/10 dark:bg-gray-900/90">
+                        <Icon name="play" class="mb-4 h-6 w-6 text-primary-600 dark:text-primary-400" />
                         <p class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">{{ t('progress.games_played') }}</p>
                         <p class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ totals.games_played ?? 0 }}</p>
                     </div>
-                    <div class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="group rounded-[1.4rem] border border-white bg-white/90 p-5 shadow-lg shadow-primary-950/5 transition hover:-translate-y-1 dark:border-white/10 dark:bg-gray-900/90">
+                        <Icon name="trophy" class="mb-4 h-6 w-6 text-amber-500" />
                         <p class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">{{ t('progress.games_won') }}</p>
                         <p class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ totals.games_won ?? 0 }}</p>
                     </div>
-                    <div class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="group rounded-[1.4rem] border border-white bg-white/90 p-5 shadow-lg shadow-primary-950/5 transition hover:-translate-y-1 dark:border-white/10 dark:bg-gray-900/90">
+                        <Icon name="bolt" class="mb-4 h-6 w-6 text-primary-600 dark:text-primary-400" />
                         <p class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">{{ t('progress.total_xp') }}</p>
                         <p class="mt-2 text-3xl font-bold text-primary-600 dark:text-primary-400">{{ (totals.total_xp ?? 0).toLocaleString() }}</p>
                     </div>
-                    <div class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="group rounded-[1.4rem] border border-white bg-white/90 p-5 shadow-lg shadow-primary-950/5 transition hover:-translate-y-1 dark:border-white/10 dark:bg-gray-900/90">
+                        <Icon name="accuracy" class="mb-4 h-6 w-6 text-emerald-500" />
                         <p class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">{{ t('progress.avg_accuracy') }}</p>
                         <p class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ totals.avg_accuracy ?? 0 }}%</p>
                     </div>
@@ -68,13 +73,13 @@ const accuracyPath = computed(() => buildPath(games.value.map((g) => g.accuracy)
 
                 <!-- Trends -->
                 <div v-if="games.length" class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                    <div class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="rounded-[1.4rem] border border-white bg-white/90 p-5 shadow-lg shadow-primary-950/5 dark:border-white/10 dark:bg-gray-900/90">
                         <h3 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-white">{{ t('progress.score_trend') }}</h3>
                         <svg viewBox="0 0 100 40" preserveAspectRatio="none" class="h-32 w-full">
                             <polyline :points="scorePath" fill="none" stroke="#6366f1" stroke-width="1.5" vector-effect="non-scaling-stroke" />
                         </svg>
                     </div>
-                    <div class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="rounded-[1.4rem] border border-white bg-white/90 p-5 shadow-lg shadow-primary-950/5 dark:border-white/10 dark:bg-gray-900/90">
                         <h3 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-white">{{ t('progress.accuracy_trend') }}</h3>
                         <svg viewBox="0 0 100 40" preserveAspectRatio="none" class="h-32 w-full">
                             <polyline :points="accuracyPath" fill="none" stroke="#22c55e" stroke-width="1.5" vector-effect="non-scaling-stroke" />
@@ -83,7 +88,7 @@ const accuracyPath = computed(() => buildPath(games.value.map((g) => g.accuracy)
                 </div>
 
                 <!-- Achievements -->
-                <div class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <div class="rounded-[1.4rem] border border-white bg-white/90 p-5 shadow-lg shadow-primary-950/5 dark:border-white/10 dark:bg-gray-900/90">
                     <div class="mb-4 flex items-center justify-between">
                         <h3 class="font-display text-lg font-bold text-gray-900 dark:text-white">{{ t('badges.title') }}</h3>
                         <span class="text-xs text-gray-500 dark:text-gray-400">
@@ -99,7 +104,9 @@ const accuracyPath = computed(() => buildPath(games.value.map((g) => g.accuracy)
                                 ? 'border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-900/10'
                                 : 'border-gray-100 bg-gray-50 opacity-60 dark:border-gray-800 dark:bg-gray-800/40'"
                         >
-                            <div class="text-3xl" :class="badge.earned ? '' : 'grayscale'">{{ badge.icon }}</div>
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl" :class="badge.earned ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-gray-200 text-gray-400 dark:bg-gray-700'">
+                                <Icon :name="badge.earned ? badge.icon : 'lock'" class="h-5 w-5" />
+                            </div>
                             <div class="min-w-0">
                                 <p class="truncate text-sm font-bold text-gray-900 dark:text-white">{{ t(`badges.${badge.key}.name`) }}</p>
                                 <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ t(`badges.${badge.key}.desc`) }}</p>
@@ -109,7 +116,7 @@ const accuracyPath = computed(() => buildPath(games.value.map((g) => g.accuracy)
                 </div>
 
                 <!-- Recent games -->
-                <div class="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <div class="overflow-x-auto rounded-[1.4rem] border border-white bg-white/90 shadow-lg shadow-primary-950/5 dark:border-white/10 dark:bg-gray-900/90">
                     <div class="border-b border-gray-100 p-5 dark:border-gray-800">
                         <h3 class="font-display text-lg font-bold text-gray-900 dark:text-white">{{ t('progress.recent_games') }}</h3>
                     </div>

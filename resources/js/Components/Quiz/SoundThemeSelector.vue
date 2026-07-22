@@ -1,5 +1,6 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
+import Icon from '@/Components/UI/Icon.vue';
 
 const { t } = useI18n();
 
@@ -15,10 +16,10 @@ const emit = defineEmits(['select']);
 const soundThemes = ['classic', 'chill', 'energetic', 'none'];
 
 const soundThemeIcons = {
-    classic: '🎮',
-    chill: '🌙',
-    energetic: '⚡',
-    none: '🔇',
+    classic: 'volume',
+    chill: 'moon',
+    energetic: 'bolt',
+    none: 'volumeOff',
 };
 </script>
 
@@ -40,7 +41,7 @@ const soundThemeIcons = {
                         : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300',
                 ]"
             >
-                <span class="text-lg">{{ soundThemeIcons[value] }}</span>
+                <Icon :name="soundThemeIcons[value]" class="h-5 w-5" />
                 <span>{{ t(`sound.theme_${value}`) }}</span>
             </button>
         </div>

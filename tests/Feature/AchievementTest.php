@@ -109,5 +109,6 @@ test('the progress page lists earned and locked badges', function () {
             ->component('Progress')
             ->where('earnedCount', 1)
             ->has('badges', count(config('badges')))
+            ->where('badges.0.icon', 'play')
         );
 });

@@ -20,6 +20,16 @@ class ExploreController extends Controller
      */
     public function index(Request $request): Response
     {
+        return $this->renderPage($request, 'Explore');
+    }
+
+    public function userIndex(Request $request): Response
+    {
+        return $this->renderPage($request, 'User/Explore');
+    }
+
+    private function renderPage(Request $request, string $component): Response
+    {
         $search = $request->input('search');
         $categoryId = $request->input('category');
         $tagSlug = $request->input('tag');
@@ -79,7 +89,7 @@ class ExploreController extends Controller
         $categories = Category::all();
         $tags = Tag::all();
 
-        return Inertia::render('Explore', [
+        return Inertia::render($component, [
             'quizzes' => $quizzes,
             'categories' => $categories,
             'tags' => $tags,
