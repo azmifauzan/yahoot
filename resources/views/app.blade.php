@@ -10,6 +10,20 @@
         <!-- Favicon -->
         <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
+        <!-- Social preview -->
+        <meta name="description" content="Platform kuis interaktif real-time yang gratis dan tanpa batasan. Buat kuis dalam hitungan menit dan mainkan bersama.">
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="{{ config('app.name') }}">
+        <meta property="og:title" content="{{ config('app.name') }} — Buat Kuis, Main Bareng!">
+        <meta property="og:description" content="Platform kuis interaktif real-time yang gratis dan tanpa batasan. Buat kuis dalam hitungan menit dan mainkan bersama.">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta property="og:image" content="{{ asset('images/og-image.jpg') }}">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:image:alt" content="Yahoot — kuis interaktif real-time">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="{{ asset('images/og-image.jpg') }}">
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700|gabarito:400,500,600,700,800,900&display=swap" rel="stylesheet" />

@@ -38,3 +38,11 @@ test('authenticated users see landing page', function () {
 
     $response->assertSuccessful();
 });
+
+test('landing page has social preview meta tags', function () {
+    $this->get('/')
+        ->assertSee('<meta property="og:image" content="'.asset('images/og-image.jpg').'">', false)
+        ->assertSee('<meta name="twitter:card" content="summary_large_image">', false);
+
+    expect(public_path('images/og-image.jpg'))->toBeFile();
+});
